@@ -1,0 +1,6 @@
+name: csid-smart-ser-des
+lang: unknown
+git:
+  enable: true
+github:
+  enable: true
