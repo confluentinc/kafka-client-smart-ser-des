@@ -1,9 +1,10 @@
 ## Description
 <!--- Describe your changes in detail -->
 
-## Jira Ticket
+## Jira Ticket(s)
+[CCET-](url)
 
-## Related PRs (if applicable)
+## Related PR(s) (if applicable)
 
 
 ## Type of change
