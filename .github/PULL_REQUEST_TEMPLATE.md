@@ -1,7 +1,9 @@
 ## Description
 <!--- Describe your changes in detail -->
 
-## Related PRs
+## Jira Ticket
+
+## Related PRs (if applicable)
 
 
 ## Type of change
