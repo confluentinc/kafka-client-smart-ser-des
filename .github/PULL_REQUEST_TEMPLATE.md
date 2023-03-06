@@ -5,7 +5,7 @@
 [CCET-](url)
 
 ## Related PR(s) (if applicable)
-
+[PR](url)
 
 ## Type of change
 - [ ] Bug fix (non-breaking change which fixes an issue)

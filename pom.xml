@@ -17,6 +17,36 @@
         <name>Confluent, Inc.</name>
         <url>https://confluent.io</url>
     </organization>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+            <version>7.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-json-schema-provider</artifactId>
+            <version>7.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-protobuf-provider</artifactId>
+            <version>7.3.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-serializer</artifactId>
+            <version>7.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <!-- purposely include the public cflt maven repo to get around
@@ -54,6 +84,18 @@
             </snapshots>
         </repository>
     </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <properties>
         <lombok.version>1.18.22</lombok.version>
@@ -142,6 +184,7 @@
     </dependencyManagement>
 
     <modules>
+        <module>common</module>
         <module>deserializer</module>
         <module>serializer</module>
     </modules>

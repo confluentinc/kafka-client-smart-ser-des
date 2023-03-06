@@ -6,7 +6,7 @@
 package csid.smart.client.deserializer;
 
 import csid.smart.client.deserializer.exception.ConfluentSmartDeserializerException;
-import csid.smart.client.deserializer.schema.SchemaRegistryUtils;
+import csid.smart.client.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;

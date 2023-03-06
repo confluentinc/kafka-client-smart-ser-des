@@ -3,9 +3,9 @@
  * Copyright (C) 2020-2022 Confluent, Inc.
  */
 
-package csid.smart.client.deserializer.schema;
+package csid.smart.client.schema;
 
-import csid.smart.client.deserializer.exception.ConfluentSmartSchemaException;
+import exception.ConfluentSmartSchemaException;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
@@ -17,6 +17,7 @@ import org.apache.kafka.common.config.ConfigException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,23 @@ import java.util.stream.Collectors;
  */
 public final class SchemaRegistryUtils {
     private static final String MOCK_URL_PREFIX = "mock://";
+
+    public final static int NO_SCHEMA_ID = -1;
+
+    /**
+     * Get Schema ID
+     * @param bytes Byte array
+     * @return Schema ID
+     */
+    public static int getSchemaId(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        int magicByte = buffer.get();
+        if (magicByte != 0) {
+            return NO_SCHEMA_ID;
+        }
+
+        return buffer.getInt();
+    }
 
     /**
      * Get Schema Registry Client
