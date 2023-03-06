@@ -21,12 +21,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 public class ConfluentSmartDeserializerTest {
 
     public static final String TEST_TOPIC_NAME = "test-deserializer-topic";
-    public static final int BYTEBUFFER_CAPACITY = 10;
-    public static final int FLOAT_TYPE_LENGTH = 4;
-    public static final int DOUBLE_TYPE_LENGTH = 8;
-    public static final int INT_TYPE_LENGTH = 4;
-    public static final int LONG_TYPE_LENGTH = 8;
+
     public static final int SHORT_TYPE_LENGTH = 2;
+    public static final int FLOAT_TYPE_LENGTH = 4;
+    public static final int INT_TYPE_LENGTH = 4;
+    public static final int DOUBLE_TYPE_LENGTH = 8;
+    public static final int LONG_TYPE_LENGTH = 8;
+    public static final int BYTEBUFFER_CAPACITY = 10;
 
     @Test
     public void testDeserializeString() {
@@ -170,22 +171,22 @@ public class ConfluentSmartDeserializerTest {
 
     @Test
     public void testDeserializeKafkaAvro() {
-        // TODO
+        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
     }
 
     @Test
     public void testDeserializeKafkaJsonSchema() {
-        // TODO
+        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
     }
 
     @Test
     public void testDeserializeKafkaJson() {
-        // TODO
+        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
     }
 
     @Test
     public void testDeserializeKafkaProtobuf() {
-        // TODO
+        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
     }
 
     private static Object confluentDeserializer(Properties props, boolean isKey , byte[] expected, Class<?> stringClass) {

@@ -156,6 +156,11 @@ class ConfluentSmartSerializerTest {
     }
 
     @Test
+    public void testSerializeAvro() {
+        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
+    }
+
+    @Test
     public void testSerializeKafkaJsonSchema() {
         // Given
         Properties props = new Properties();
@@ -171,7 +176,7 @@ class ConfluentSmartSerializerTest {
 
     @Test
     public void testSerializeKafkaJson() {
-        // TODO:
+        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
     }
 
     private static <T> byte[] confluentSerializer(Properties props, boolean isKey , T expected) {
@@ -179,36 +184,4 @@ class ConfluentSmartSerializerTest {
             return confluentSmartSerializer.serialize(TEST_TOPIC_NAME, expected);
         }
     }
-
-    public static class User {
-        int id;
-        String name;
-
-        public User(){
-
-        }
-
-        public User(int id, String name) {
-            super();
-            this.id = id;
-            this.name = name;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
-
 }
