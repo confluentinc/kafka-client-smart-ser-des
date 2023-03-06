@@ -1,11 +1,11 @@
 /*
  * -
- * Copyright (C) 2020-2022 Confluent, Inc.
+ * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
 package csid.smart.client.schema;
 
-import exception.ConfluentSmartSchemaException;
+import csid.smart.client.exception.ConfluentSmartSchemaException;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;

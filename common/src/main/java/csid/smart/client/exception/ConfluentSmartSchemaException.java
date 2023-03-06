@@ -1,5 +1,5 @@
 
-package exception;
+package csid.smart.client.exception;
 
 public class ConfluentSmartSchemaException extends RuntimeException {
     public ConfluentSmartSchemaException(String message) {
