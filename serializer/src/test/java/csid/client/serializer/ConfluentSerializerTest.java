@@ -1,5 +1,6 @@
-package csid.smart.client.serializer;
+package csid.client.serializer;
 
+import csid.client.serializer.ConfluentSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
@@ -13,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.ArgumentMatchers.anyString;
 
-class ConfluentSmartSerializerTest {
+class ConfluentSerializerTest {
 
     public static final String TEST_TOPIC_NAME = "test-serializer-topic";
     public static final String SCHEMA_REGISTRY_URL = "schema.registry.url";
@@ -180,8 +181,8 @@ class ConfluentSmartSerializerTest {
     }
 
     private static <T> byte[] confluentSerializer(Properties props, boolean isKey , T expected) {
-        try (ConfluentSmartSerializer<T> confluentSmartSerializer = new ConfluentSmartSerializer<>(props, isKey)) {
-            return confluentSmartSerializer.serialize(TEST_TOPIC_NAME, expected);
+        try (ConfluentSerializer<T> confluentSerializer = new ConfluentSerializer<>(props, isKey)) {
+            return confluentSerializer.serialize(TEST_TOPIC_NAME, expected);
         }
     }
 }

@@ -3,9 +3,9 @@
  * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
-package csid.smart.client.schema;
+package csid.client.schema;
 
-import csid.smart.client.exception.ConfluentSmartSchemaException;
+import csid.client.exception.ConfluentSchemaException;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
@@ -63,7 +63,7 @@ public final class SchemaRegistryUtils {
                 try {
                     new URL(url);
                 } catch (MalformedURLException exception) {
-                    throw new ConfluentSmartSchemaException("Malformed URL: " + url, exception);
+                    throw new ConfluentSchemaException("Malformed URL: " + url, exception);
                 }
             }
         });

@@ -10,8 +10,8 @@
 
     <packaging>pom</packaging>
 
-    <name>Confluent Smart Serializer Deserializer</name>
-    <inceptionYear>2023</inceptionYear>
+    <name>Confluent Serializer Deserializer</name>
+    <inceptionYear>2022</inceptionYear>
 
     <organization>
         <name>Confluent, Inc.</name>

@@ -3,7 +3,7 @@
  * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
-package csid.smart.client.serializer;
+package csid.client.serializer;
 
 import com.google.protobuf.Message;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
@@ -30,7 +30,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ConfluentSmartSerializer<T> implements Serializer<T> {
+public class ConfluentSerializer<T> implements Serializer<T> {
 
     public static final String SCHEMA_REGISTRY_URL = "schema.registry.url";
 
@@ -39,10 +39,10 @@ public class ConfluentSmartSerializer<T> implements Serializer<T> {
     private Map<String, ?> config;
     private boolean isKey;
 
-    public ConfluentSmartSerializer() {
+    public ConfluentSerializer() {
     }
 
-    public ConfluentSmartSerializer(Properties properties, boolean isKey) {
+    public ConfluentSerializer(Properties properties, boolean isKey) {
         this.config = properties.entrySet()
                 .stream()
                 .collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue));

@@ -3,10 +3,10 @@
  * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
-package csid.smart.client.deserializer;
+package csid.client.deserializer;
 
-import csid.smart.client.deserializer.exception.ConfluentSmartDeserializerException;
-import csid.smart.client.schema.SchemaRegistryUtils;
+import csid.client.deserializer.exception.ConfluentDeserializerException;
+import csid.client.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
  *
  * @param <T> The type of the deserialized object.
  */
-public class ConfluentSmartDeserializer<T> implements Deserializer<T> {
+public class ConfluentDeserializer<T> implements Deserializer<T> {
     private final Class<T> tClass;
     private Deserializer<?> inner;
     private final Map<String, ?> configuration;
     private final boolean isKey;
     private SchemaRegistryClient schemaRegistryClient;
 
-    public ConfluentSmartDeserializer(Properties configs, boolean isKey, Class<T> tClass) {
+    public ConfluentDeserializer(Properties configs, boolean isKey, Class<T> tClass) {
         this.tClass = tClass;
         configuration = configs
                 .entrySet()
@@ -57,7 +57,7 @@ public class ConfluentSmartDeserializer<T> implements Deserializer<T> {
             try {
                 init(bytes);
             } catch (RestClientException | IOException e) {
-                throw new ConfluentSmartDeserializerException("Error during inner deserializer initialization.", e);
+                throw new ConfluentDeserializerException("Error during inner deserializer initialization.", e);
             }
         }
 
@@ -71,7 +71,7 @@ public class ConfluentSmartDeserializer<T> implements Deserializer<T> {
             try {
                 init(bytes);
             } catch (RestClientException | IOException e) {
-                throw new ConfluentSmartDeserializerException("Error during inner deserializer initialization.", e);
+                throw new ConfluentDeserializerException("Error during inner deserializer initialization.", e);
             }
         }
 

@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>csid-confluent-smart-common</artifactId>
+    <artifactId>csid-confluent-ser-des-common</artifactId>
 
     <properties>
         <lombok.version>1.18.22</lombok.version>

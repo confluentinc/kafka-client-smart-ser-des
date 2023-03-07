@@ -1,5 +1,6 @@
-package csid.smart.client.deserializer;
+package csid.client.deserializer;
 
+import csid.client.deserializer.ConfluentDeserializer;
 import org.apache.kafka.common.utils.Bytes;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.ArgumentMatchers.anyString;
 
-public class ConfluentSmartDeserializerTest {
+public class ConfluentDeserializerTest {
 
     public static final String TEST_TOPIC_NAME = "test-deserializer-topic";
 
@@ -190,8 +191,8 @@ public class ConfluentSmartDeserializerTest {
     }
 
     private static Object confluentDeserializer(Properties props, boolean isKey , byte[] expected, Class<?> stringClass) {
-        try (ConfluentSmartDeserializer<?> confluentSmartDeserializer = new ConfluentSmartDeserializer<>(props, isKey, stringClass)) {
-            return confluentSmartDeserializer.deserialize(TEST_TOPIC_NAME, expected);
+        try (ConfluentDeserializer<?> confluentDeserializer = new ConfluentDeserializer<>(props, isKey, stringClass)) {
+            return confluentDeserializer.deserialize(TEST_TOPIC_NAME, expected);
         }
     }
 }
