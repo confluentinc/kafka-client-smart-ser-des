@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.confluent.csid</groupId>
+    <artifactId>csid-smart-ser-des</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <name>Confluent Serializer Deserializer</name>
+    <inceptionYear>2022</inceptionYear>
+
+    <organization>
+        <name>Confluent, Inc.</name>
+        <url>https://confluent.io</url>
+    </organization>
+
+    <repositories>
+        <!-- purposely include the public cflt maven repo to get around
+            an issue where some CFLT artifacts aren't properly published to the internal one.
+            Use the id "cflt-pub" instead of confluent so the mirrors set in Settings.xml
+            don't override it. https://confluent.slack.com/archives/C09EP1SS3/p1674054413442359 -->
+        <repository>
+            <id>cflt-pub</id>
+            <url>https://packages.confluent.io/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>confluent-codeartifact-central</id>
+            <url>https://confluent-519856050701.dp.confluent.io/maven/maven-public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>confluent-codeartifact-internal</id>
+            <url>https://confluent-519856050701.d.codeartifact.us-west-2.amazonaws.com/maven/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <lombok.version>1.18.22</lombok.version>
+        <kafka-serializer-version>7.3.0</kafka-serializer-version>
+        <reactor-bom.version>2022.0.0</reactor-bom.version>
+        <kafka-clients-version>7.3.0-ce</kafka-clients-version>
+        <slf4j.version>1.7.35</slf4j.version>
+        <logback.version>1.2.11</logback.version>
+        <junit-jupiter-version>5.9.0</junit-jupiter-version>
+        <mockito-core.version>2.10.0</mockito-core.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Confluent -->
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-avro-serializer</artifactId>
+                <version>${kafka-serializer-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-protobuf-serializer</artifactId>
+                <version>${kafka-serializer-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-json-schema-serializer</artifactId>
+                <version>${kafka-serializer-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-json-serializer</artifactId>
+                <version>${kafka-serializer-version}</version>
+            </dependency>
+            <!-- Third party -->
+            <dependency>
+                <groupId>io.projectreactor</groupId>
+                <artifactId>reactor-bom</artifactId>
+                <version>${reactor-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>${kafka-clients-version}</version>
+            </dependency>
+            <dependency>
+                <!-- for dependency convergence -->
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit-jupiter-version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito-core.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>common</module>
+        <module>deserializer</module>
+        <module>serializer</module>
+    </modules>
+
+</project>
