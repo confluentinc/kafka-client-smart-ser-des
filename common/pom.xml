@@ -36,6 +36,10 @@
             <groupId>io.confluent</groupId>
             <artifactId>kafka-json-serializer</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+        </dependency>
         <!-- External -->
         <dependency>
             <groupId>org.projectlombok</groupId>

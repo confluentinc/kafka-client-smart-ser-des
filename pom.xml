@@ -17,6 +17,16 @@
         <name>Confluent, Inc.</name>
         <url>https://confluent.io</url>
     </organization>
+    <dependencies>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-schema-registry-client</artifactId>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <!-- purposely include the public cflt maven repo to get around
@@ -69,7 +79,7 @@
 
     <properties>
         <lombok.version>1.18.22</lombok.version>
-        <kafka-serializer-version>7.3.0</kafka-serializer-version>
+        <kafka-serializer-version>7.3.1</kafka-serializer-version>
         <reactor-bom.version>2022.0.0</reactor-bom.version>
         <kafka-clients-version>7.3.0-ce</kafka-clients-version>
         <slf4j.version>1.7.35</slf4j.version>
@@ -99,6 +109,11 @@
             <dependency>
                 <groupId>io.confluent</groupId>
                 <artifactId>kafka-json-serializer</artifactId>
+                <version>${kafka-serializer-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
+                <artifactId>kafka-schema-registry-client</artifactId>
                 <version>${kafka-serializer-version}</version>
             </dependency>
             <!-- Third party -->
