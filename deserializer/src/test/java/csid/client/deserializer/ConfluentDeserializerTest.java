@@ -1,15 +1,36 @@
 package csid.client.deserializer;
 
-import csid.client.deserializer.ConfluentDeserializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import csid.client.deserializer.record.OrderRecord;
+import io.confluent.kafka.schemaregistry.avro.AvroSchema;
+import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaReference;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.schemaregistry.json.JsonSchema;
+import io.confluent.kafka.schemaregistry.json.JsonSchemaUtils;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.KafkaJsonSerializer;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.IndexedRecord;
 import org.apache.kafka.common.utils.Bytes;
 import org.junit.jupiter.api.Test;
 
-
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -23,12 +44,18 @@ public class ConfluentDeserializerTest {
 
     public static final String TEST_TOPIC_NAME = "test-deserializer-topic";
 
+    public static final String ORDERS_AVRO_SCHEMA = "schema/orders-avro.avsc";
+
+    public final String TEST_URL = "mock://test";
+
     public static final int SHORT_TYPE_LENGTH = 2;
     public static final int FLOAT_TYPE_LENGTH = 4;
     public static final int INT_TYPE_LENGTH = 4;
     public static final int DOUBLE_TYPE_LENGTH = 8;
     public static final int LONG_TYPE_LENGTH = 8;
     public static final int BYTEBUFFER_CAPACITY = 10;
+
+    public ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
     public void testDeserializeString() {
@@ -51,7 +78,7 @@ public class ConfluentDeserializerTest {
         byte[] expected = {anyByte()};
 
         // When
-        Object actual = confluentDeserializer(props,false,  expected, byte[].class);
+        Object actual = confluentDeserializer(props, false, expected, byte[].class);
 
         // Then
         assertEquals(expected, actual);
@@ -171,28 +198,106 @@ public class ConfluentDeserializerTest {
     }
 
     @Test
-    public void testDeserializeKafkaAvro() {
-        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
+    public void testDeserializeKafkaAvro() throws IOException, RestClientException {
+        // Given
+        Properties props = new Properties();
+        SchemaRegistryClient schemaRegistry = new MockSchemaRegistryClient();
+        KafkaAvroSerializer avroSerializer = new KafkaAvroSerializer(schemaRegistry, ImmutableMap.of(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL));
+        Schema schema = new Schema.Parser().parse(getClass().getClassLoader().getResourceAsStream(ORDERS_AVRO_SCHEMA));
+
+        props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL);
+
+        IndexedRecord expected = generateOrderGenericRecord(schema, 1);
+        byte[] bytes = avroSerializer.serialize(TEST_TOPIC_NAME, expected);
+        schemaRegistry.register("test-subject", new AvroSchema(expected.getSchema()));
+
+        // When
+        Object actual = confluentDeserializer(props, false, bytes, IndexedRecord.class, schemaRegistry);
+
+        // Then
+        assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
-    public void testDeserializeKafkaJsonSchema() {
-        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
+    public void testDeserializeKafkaJsonSchema() throws RestClientException, IOException {
+        // Given
+        String schema = "{\n"
+                + "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n"
+                + "  \"title\": \"Schema references\",\n"
+                + "  \"description\": \"List of schema references for multiple types in a single topic\",\n"
+                + "  \"oneOf\": [\n"
+                + "    { \"$ref\": \"order.json\"}\n"
+                + "  ]\n"
+                + "}";
+
+        Properties props = new Properties();
+        SchemaRegistryClient schemaRegistry = new MockSchemaRegistryClient();
+        KafkaJsonSchemaSerializer jsonSchemaSerializer = new KafkaJsonSchemaSerializer(schemaRegistry, ImmutableMap.of(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL));
+
+
+        props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL);
+
+        OrderRecord expected = new OrderRecord("test", "test", "test", "test");
+
+        JsonSchema userSchema = JsonSchemaUtils.getSchema(expected);
+        schemaRegistry.register("order", userSchema);
+        List<SchemaReference> refs = ImmutableList.of(
+                new io.confluent.kafka.schemaregistry.client.rest.entities.SchemaReference(
+                        "order.json", "order", 1));
+        Map<String, String> resolvedRefs = ImmutableMap.of("order.json", userSchema.canonicalString());
+        JsonSchema jsonSchema = new JsonSchema(schema, refs, resolvedRefs, null);
+        schemaRegistry.register(TEST_TOPIC_NAME, jsonSchema);
+
+        byte[] bytes = jsonSchemaSerializer.serialize(TEST_TOPIC_NAME, expected);
+
+        // When
+        Object actualObject = confluentDeserializer(props, false, bytes, OrderRecord.class, schemaRegistry);
+        OrderRecord actual = MAPPER.convertValue(actualObject, OrderRecord.class);
+
+        // Then
+        assertEquals(expected.toString(), actual.toString());
     }
 
     @Test
     public void testDeserializeKafkaJson() {
-        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
+        // Given
+        Properties props = new Properties();
+
+
+        KafkaJsonSerializer<Object> serializer = new KafkaJsonSerializer<>();
+        Map<String, Object> config = new HashMap<>();
+        serializer.configure(config, false);
+        OrderRecord expected = new OrderRecord("test", "test", "test", "test");
+        byte[] bytes = serializer.serialize(TEST_TOPIC_NAME, expected);
+
+        // When
+        Object deserializeActual = confluentDeserializer(props, false, bytes, OrderRecord.class);
+        OrderRecord actual = MAPPER.convertValue(deserializeActual, OrderRecord.class);
+
+        // Then
+        assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeKafkaProtobuf() {
-        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
-    }
-
-    private static Object confluentDeserializer(Properties props, boolean isKey , byte[] expected, Class<?> stringClass) {
-        try (ConfluentDeserializer<?> confluentDeserializer = new ConfluentDeserializer<>(props, isKey, stringClass)) {
+    private static Object confluentDeserializer(Properties props, boolean isKey, byte[] expected, Class<?> clazz) {
+        try (ConfluentDeserializer<?> confluentDeserializer = new ConfluentDeserializer<>(props, isKey, clazz)) {
             return confluentDeserializer.deserialize(TEST_TOPIC_NAME, expected);
         }
     }
+
+    private static Object confluentDeserializer(Properties props, boolean isKey, byte[] expected, Class<?> clazz, SchemaRegistryClient schemaRegistryClient) {
+        try (ConfluentDeserializer<?> confluentDeserializer = new ConfluentDeserializer<>(props, isKey, clazz, schemaRegistryClient)) {
+            return confluentDeserializer.deserialize(TEST_TOPIC_NAME, expected);
+        }
+    }
+
+    public static GenericRecord generateOrderGenericRecord(Schema schema, Integer numberOfEvents) {
+        GenericRecord payload = new GenericData.Record(schema);
+        payload.put("name", "name" + numberOfEvents);
+        payload.put("orderRef", "orderRef" + numberOfEvents);
+        payload.put("customer", "customer" + numberOfEvents);
+        payload.put("customerCode", "Code" + numberOfEvents);
+        return payload;
+    }
+
+
 }

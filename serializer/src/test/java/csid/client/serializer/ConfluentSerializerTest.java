@@ -1,8 +1,12 @@
 package csid.client.serializer;
 
-import csid.client.serializer.ConfluentSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import csid.client.serializer.record.OrderRecord;
+import csid.client.serializer.record.OrderSchemaRecord;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 import java.util.UUID;
@@ -17,7 +21,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 class ConfluentSerializerTest {
 
     public static final String TEST_TOPIC_NAME = "test-serializer-topic";
-    public static final String SCHEMA_REGISTRY_URL = "schema.registry.url";
+
+    private ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
     public void testSerializeString() {
@@ -39,7 +44,7 @@ class ConfluentSerializerTest {
         byte[] expected = {anyByte()};
 
         // When
-        byte[] actual = confluentSerializer(props,false,  expected);
+        byte[] actual = confluentSerializer(props, false, expected);
 
         // Then
         assertEquals(expected, actual);
@@ -123,7 +128,7 @@ class ConfluentSerializerTest {
         byte[] expected = {anyByte()};
 
         // When
-        byte[] actual = confluentSerializer(props,false,  expected);
+        byte[] actual = confluentSerializer(props, false, expected);
 
         // Then
         assertEquals(expected, actual);
@@ -136,51 +141,43 @@ class ConfluentSerializerTest {
         UUID expected = UUID.fromString("f90ae889-2866-474c-b21b-88c98ea99515");
 
         // When
-        byte[] actualBytes = confluentSerializer(props,false,  expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected);
         UUID actual = UUID.fromString(new String(actualBytes));
 
         // Then
         assertEquals(expected, actual);
     }
 
+
     @Test
-    public void testSerializeKafkaProtobuf() {
+    public void testSerializeKafkaJsonSchema() throws RestClientException, IOException {
         // Given
         Properties props = new Properties();
-        byte[] expected = {anyByte()};
+        OrderSchemaRecord expected = new OrderSchemaRecord("test", "test", "test", "test");
 
         // When
-        byte[] actual = confluentSerializer(props,false,  expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected);
+        OrderSchemaRecord actual = MAPPER.readValue(actualBytes, OrderSchemaRecord.class);
 
         // Then
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testSerializeAvro() {
-        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
-    }
-
-    @Test
-    public void testSerializeKafkaJsonSchema() {
+    public void testSerializeKafkaJson() throws IOException {
         // Given
         Properties props = new Properties();
-        props.setProperty(SCHEMA_REGISTRY_URL, "http://localhost:9999");
-        Object expected = null;
+        OrderRecord expected = new OrderRecord("test", "test", "test", "test");
 
         // When
-        byte[] actual = confluentSerializer(props,false,  expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected);
+        OrderRecord actual = MAPPER.readValue(actualBytes, OrderRecord.class);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testSerializeKafkaJson() {
-        // TODO: https://confluentinc.atlassian.net/browse/CCET-251
-    }
-
-    private static <T> byte[] confluentSerializer(Properties props, boolean isKey , T expected) {
+    private static <T> byte[] confluentSerializer(Properties props, boolean isKey, T expected) {
         try (ConfluentSerializer<T> confluentSerializer = new ConfluentSerializer<>(props, isKey)) {
             return confluentSerializer.serialize(TEST_TOPIC_NAME, expected);
         }

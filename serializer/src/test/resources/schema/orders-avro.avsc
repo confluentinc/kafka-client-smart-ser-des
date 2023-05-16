@@ -1,0 +1,22 @@
+{
+  "type": "record",
+  "name": "File",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "orderRef",
+      "type": "string"
+    },
+    {
+      "name": "customer",
+      "type": "string"
+    },
+    {
+      "name": "customerCode",
+      "type": "string"
+    }
+  ]
+}

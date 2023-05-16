@@ -16,7 +16,17 @@ import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import lombok.Synchronized;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.serialization.*;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.ByteBufferDeserializer;
+import org.apache.kafka.common.serialization.BytesDeserializer;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.DoubleDeserializer;
+import org.apache.kafka.common.serialization.FloatDeserializer;
+import org.apache.kafka.common.serialization.IntegerDeserializer;
+import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.ShortDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.UUIDDeserializer;
 import org.apache.kafka.common.utils.Bytes;
 
 import java.io.IOException;
@@ -39,6 +49,19 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
     private SchemaRegistryClient schemaRegistryClient;
 
     public ConfluentDeserializer(Properties configs, boolean isKey, Class<T> tClass) {
+        this.tClass = tClass;
+        configuration = configs
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        e -> e.getKey().toString(),
+                        Map.Entry::getValue
+                ));
+        this.isKey = isKey;
+    }
+
+    public ConfluentDeserializer(Properties configs, boolean isKey, Class<T> tClass, SchemaRegistryClient schemaRegistryClient) {
+        this.schemaRegistryClient = schemaRegistryClient;
         this.tClass = tClass;
         configuration = configs
                 .entrySet()
