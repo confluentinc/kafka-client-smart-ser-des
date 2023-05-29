@@ -6,11 +6,13 @@
 package csid.client.serializer;
 
 import com.google.protobuf.Message;
+import csid.client.SerializationTypes;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaJsonSerializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
@@ -30,12 +32,13 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class ConfluentSerializer<T> implements Serializer<T> {
 
+@Slf4j
+public class ConfluentSerializer<T> implements Serializer<T> {
     public static final String SCHEMA_REGISTRY_URL = "schema.registry.url";
 
-    @SuppressWarnings("rawtypes")
-    private Serializer inner;
+    private Serializer<T> inner;
+    private SerializationTypes type;
     private Map<String, ?> config;
     private boolean isKey;
 
@@ -56,7 +59,6 @@ public class ConfluentSerializer<T> implements Serializer<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public byte[] serialize(String topic, T data) {
         if (inner == null) {
             init(data);
@@ -66,12 +68,12 @@ public class ConfluentSerializer<T> implements Serializer<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public byte[] serialize(String topic, Headers headers, T data) {
         if (inner == null) {
             init(data);
         }
 
+        type.toHeaders(headers);
         return inner.serialize(topic, headers, data);
     }
 
@@ -91,33 +93,61 @@ public class ConfluentSerializer<T> implements Serializer<T> {
         }
 
         if (data instanceof String) {
-            inner = new StringSerializer();
+            log.info("String detected, using String serializer.");
+            inner = (Serializer<T>) new StringSerializer();
+            type = SerializationTypes.String;
         } else if (data instanceof byte[]) {
-            inner = new ByteArraySerializer();
+            log.info("Byte array detected, using ByteArray serializer.");
+            inner = (Serializer<T>) new ByteArraySerializer();
+            type = SerializationTypes.ByteArray;
         } else if (data instanceof Short) {
-            inner = new ShortSerializer();
+            log.info("Short detected, using Short serializer.");
+            inner = (Serializer<T>) new ShortSerializer();
+            type = SerializationTypes.Short;
         } else if (data instanceof Integer) {
-            inner = new IntegerSerializer();
+            log.info("Integer detected, using Integer serializer.");
+            inner = (Serializer<T>) new IntegerSerializer();
+            type = SerializationTypes.Integer;
         } else if (data instanceof Long) {
-            inner = new LongSerializer();
+            log.info("Long detected, using Long serializer.");
+            inner = (Serializer<T>) new LongSerializer();
+            type = SerializationTypes.Long;
         } else if (data instanceof Float) {
-            inner = new FloatSerializer();
+            log.info("Float detected, using Float serializer.");
+            inner = (Serializer<T>) new FloatSerializer();
+            type = SerializationTypes.Float;
         } else if (data instanceof Double) {
-            inner = new DoubleSerializer();
+            log.info("Double detected, using Double serializer.");
+            inner = (Serializer<T>) new DoubleSerializer();
+            type = SerializationTypes.Double;
         } else if (data instanceof Bytes) {
-            inner = new BytesSerializer();
+            log.info("Bytes detected, using Bytes serializer.");
+            inner = (Serializer<T>) new BytesSerializer();
+            type = SerializationTypes.Bytes;
         } else if (data instanceof UUID) {
-            inner = new UUIDSerializer();
+            log.info("UUID detected, using UUID serializer.");
+            inner = (Serializer<T>) new UUIDSerializer();
+            type = SerializationTypes.UUID;
         } else if (data instanceof Message) {
-            inner = new KafkaProtobufSerializer<>();
+            log.info("Protobuf message detected, using Protobuf serializer.");
+            inner = (Serializer<T>) new KafkaProtobufSerializer<>();
+            type = SerializationTypes.Protobuf;
         } else if (data instanceof IndexedRecord) {
-            inner = new KafkaAvroSerializer();
+            log.info("Avro record detected, using Avro serializer.");
+            inner = (Serializer<T>) new KafkaAvroSerializer();
+            type = SerializationTypes.Avro;
         } else {
             // Check if SR was configured
             if (config.containsKey(SCHEMA_REGISTRY_URL)) {
-                inner = new KafkaJsonSchemaSerializer<T>();
+                log.info("Schema Registry configured, using JSON Schema serializer.");
+                inner = new KafkaJsonSchemaSerializer<>();
+                type = SerializationTypes.JsonSchema;
             } else {
-                inner = new KafkaJsonSerializer<T>();
+                log.warn("Schema Registry not configured, falling back to JSON schemaless serializer. " +
+                        "If you want to use JSON Schema, configure the serializer with the " +
+                        "appropriate key/value serializers and the " + SCHEMA_REGISTRY_URL + " property.");
+                inner = new KafkaJsonSerializer<>();
+                type = SerializationTypes.Json;
             }
         }
 

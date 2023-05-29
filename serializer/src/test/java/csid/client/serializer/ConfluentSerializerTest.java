@@ -1,9 +1,16 @@
 package csid.client.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import csid.client.SerializationTypes;
 import csid.client.serializer.record.OrderRecord;
 import csid.client.serializer.record.OrderSchemaRecord;
+import io.confluent.csid.common.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
+import org.apache.kafka.common.utils.Bytes;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,6 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 class ConfluentSerializerTest {
 
     public static final String TEST_TOPIC_NAME = "test-serializer-topic";
+    public static final byte MAGIC_BYTE = 0x0;
 
     private ObjectMapper MAPPER = new ObjectMapper();
 
@@ -31,7 +39,7 @@ class ConfluentSerializerTest {
         String expected = anyString();
 
         // When
-        byte[] actual = confluentSerializer(props, false, expected);
+        byte[] actual = confluentSerializer(props, false, expected, SerializationTypes.String);
 
         // Then
         assertEquals(expected, new String(actual));
@@ -44,7 +52,7 @@ class ConfluentSerializerTest {
         byte[] expected = {anyByte()};
 
         // When
-        byte[] actual = confluentSerializer(props, false, expected);
+        byte[] actual = confluentSerializer(props, false, expected, SerializationTypes.ByteArray);
 
         // Then
         assertEquals(expected, actual);
@@ -57,7 +65,7 @@ class ConfluentSerializerTest {
         short expected = anyShort();
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.Short);
         ByteBuffer actual = ByteBuffer.wrap(actualBytes);
 
         // Then
@@ -71,7 +79,7 @@ class ConfluentSerializerTest {
         int expected = anyInt();
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.Integer);
         ByteBuffer actual = ByteBuffer.wrap(actualBytes);
 
         // Then
@@ -85,7 +93,7 @@ class ConfluentSerializerTest {
         long expected = anyLong();
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.Long);
         ByteBuffer actual = ByteBuffer.wrap(actualBytes);
 
         // Then
@@ -99,7 +107,7 @@ class ConfluentSerializerTest {
         float expected = anyLong();
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.Float);
         ByteBuffer actual = ByteBuffer.wrap(actualBytes);
 
         // Then
@@ -113,7 +121,7 @@ class ConfluentSerializerTest {
         double expected = anyLong();
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.Double);
 
         // Then
         ByteBuffer actual = ByteBuffer.wrap(actualBytes);
@@ -125,13 +133,14 @@ class ConfluentSerializerTest {
     public void testSerializeBytes() {
         // Given
         Properties props = new Properties();
-        byte[] expected = {anyByte()};
+        byte[] byteArray = {anyByte()};
+        Bytes expected = Bytes.wrap(byteArray);
 
         // When
-        byte[] actual = confluentSerializer(props, false, expected);
+        byte[] actual = confluentSerializer(props, false, expected, SerializationTypes.Bytes);
 
         // Then
-        assertEquals(expected, actual);
+        assertEquals(expected.get(), actual);
     }
 
     @Test
@@ -141,7 +150,7 @@ class ConfluentSerializerTest {
         UUID expected = UUID.fromString("f90ae889-2866-474c-b21b-88c98ea99515");
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.UUID);
         UUID actual = UUID.fromString(new String(actualBytes));
 
         // Then
@@ -151,13 +160,23 @@ class ConfluentSerializerTest {
 
     @Test
     public void testSerializeKafkaJsonSchema() throws RestClientException, IOException {
+        SRUtils.reset();
+
         // Given
         Properties props = new Properties();
+        props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
         OrderSchemaRecord expected = new OrderSchemaRecord("test", "test", "test", "test");
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
-        OrderSchemaRecord actual = MAPPER.readValue(actualBytes, OrderSchemaRecord.class);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.JsonSchema);
+        final ByteBuffer byteBuffer = ByteBuffer.wrap(actualBytes);
+
+        Assertions.assertEquals(MAGIC_BYTE, byteBuffer.get());
+        Assertions.assertEquals(1, byteBuffer.getInt());
+
+        byte[] jsonBytes = new byte[byteBuffer.remaining()];
+        byteBuffer.get(jsonBytes);
+        OrderSchemaRecord actual = MAPPER.readValue(jsonBytes, OrderSchemaRecord.class);
 
         // Then
         assertEquals(expected, actual);
@@ -170,16 +189,20 @@ class ConfluentSerializerTest {
         OrderRecord expected = new OrderRecord("test", "test", "test", "test");
 
         // When
-        byte[] actualBytes = confluentSerializer(props, false, expected);
+        byte[] actualBytes = confluentSerializer(props, false, expected, SerializationTypes.Json);
         OrderRecord actual = MAPPER.readValue(actualBytes, OrderRecord.class);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    private static <T> byte[] confluentSerializer(Properties props, boolean isKey, T expected) {
+    private static <T> byte[] confluentSerializer(Properties props, boolean isKey, T expected, SerializationTypes serializationType) {
         try (ConfluentSerializer<T> confluentSerializer = new ConfluentSerializer<>(props, isKey)) {
-            return confluentSerializer.serialize(TEST_TOPIC_NAME, expected);
+            final Headers headers = new RecordHeaders();
+            final byte[] serialized = confluentSerializer.serialize(TEST_TOPIC_NAME, headers, expected);
+            Assertions.assertNotNull(headers.headers(SerializationTypes.HEADER_KEY));
+            Assertions.assertEquals(serializationType.name(), new String(headers.lastHeader(SerializationTypes.HEADER_KEY).value()));
+            return serialized;
         }
     }
 }
