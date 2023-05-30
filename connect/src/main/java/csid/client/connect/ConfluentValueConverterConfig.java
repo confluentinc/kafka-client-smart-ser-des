@@ -1,5 +1,6 @@
 package csid.client.connect;
 
+import csid.client.SerializationTypes;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 
@@ -13,13 +14,13 @@ public class ConfluentValueConverterConfig extends AbstractConfig {
     public static final String TYPE = "type";
     public static final String TYPE_DOC = "The type of the converter to use. Can be one of: `PROTOBUF`, `JSON`, `AVRO`.";
 
-    private static final ConfigDef configDef = new ConfigDef().define(TYPE, ConfigDef.Type.STRING, ConfluentValueConverterTypes.AVRO.toString(), ConfigDef.Importance.HIGH, TYPE_DOC);
+    private static final ConfigDef configDef = new ConfigDef().define(TYPE, ConfigDef.Type.STRING, SerializationTypes.Avro.toString(), ConfigDef.Importance.HIGH, TYPE_DOC);
 
     public ConfluentValueConverterConfig(Map<?, ?> originals) {
         super(configDef, originals, true);
     }
 
-    public ConfluentValueConverterTypes getType() {
-        return ConfluentValueConverterTypes.fromString(getString(TYPE));
+    public SerializationTypes getType() {
+        return SerializationTypes.fromString(getString(TYPE));
     }
 }

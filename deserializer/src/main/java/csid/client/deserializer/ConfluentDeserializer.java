@@ -17,6 +17,7 @@ import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteBufferDeserializer;
@@ -134,59 +135,60 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
             log.info("No serialization type found in headers. Trying to get it from the schema.");
 
             if (tClass.isAssignableFrom(byte[].class)) {
+                log.info("byte[] deserializer");
                 serializationType = SerializationTypes.ByteArray;
+            } else if (tClass.isAssignableFrom(String.class)) {
+                log.info("String deserializer");
+                serializationType = SerializationTypes.String;
+            } else if (tClass.isAssignableFrom(Bytes.class)) {
+                log.info("Bytes deserializer");
+                serializationType = SerializationTypes.Bytes;
+            } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
+                log.info("ByteBuffer deserializer");
+                serializationType = SerializationTypes.ByteBuffer;
+            } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
+                log.info("ByteBuffer deserializer");
+                serializationType = SerializationTypes.ByteBuffer;
+            } else if (tClass.isAssignableFrom(Float.class)) {
+                log.info("Float deserializer");
+                serializationType = SerializationTypes.Float;
+            } else if (tClass.isAssignableFrom(Double.class)) {
+                log.info("Double deserializer");
+                serializationType = SerializationTypes.Double;
+            } else if (tClass.isAssignableFrom(Integer.class)) {
+                log.info("Integer deserializer");
+                serializationType = SerializationTypes.Integer;
+            } else if (tClass.isAssignableFrom(Long.class)) {
+                log.info("Long deserializer");
+                serializationType = SerializationTypes.Long;
+            } else if (tClass.isAssignableFrom(Short.class)) {
+                log.info("Short deserializer");
+                serializationType = SerializationTypes.Short;
+            } else if (tClass.isAssignableFrom(UUID.class)) {
+                log.info("UUID deserializer");
+                serializationType = SerializationTypes.UUID;
             } else {
-                serializationType = SerializationTypes.ByteArray;
-                // Create inner deserializer based on the type of the object to deserialize.
-                if (tClass.isAssignableFrom(String.class)) {
-                    serializationType = SerializationTypes.String;
-                } else if (tClass.isAssignableFrom(Bytes.class)) {
-                    serializationType = SerializationTypes.Bytes;
-                } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-                    serializationType = SerializationTypes.ByteBuffer;
-                } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-                    serializationType = SerializationTypes.ByteBuffer;
-                } else if (tClass.isAssignableFrom(Float.class)) {
-                    serializationType = SerializationTypes.Float;
-                } else if (tClass.isAssignableFrom(Double.class)) {
-                    serializationType = SerializationTypes.Double;
-                } else if (tClass.isAssignableFrom(Integer.class)) {
-                    serializationType = SerializationTypes.Integer;
-                } else if (tClass.isAssignableFrom(Long.class)) {
-                    serializationType = SerializationTypes.Long;
-                } else if (tClass.isAssignableFrom(Short.class)) {
-                    serializationType = SerializationTypes.Short;
-                } else if (tClass.isAssignableFrom(UUID.class)) {
-                    serializationType = SerializationTypes.UUID;
-                } else {
-                    // Get schema ID
-                    final Integer schemaID = getSchemaID(bytes);
-                    if (schemaID != null) {
-                        if (schemaRegistryClient == null) {
-                            schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configuration);
-                        }
-
-                        // Schema base payload.
-                        ParsedSchema parsedSchema = this.schemaRegistryClient.getSchemaById(schemaID);
-                        switch (parsedSchema.schemaType()) {
-                            case "AVRO":
-                                serializationType = SerializationTypes.Avro;
-                                break;
-                            case "JSON":
-                                serializationType = SerializationTypes.JsonSchema;
-                                break;
-                            case "PROTOBUF":
-                                serializationType = SerializationTypes.Protobuf;
-                                break;
-                        }
-                    } else if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
+                // Get schema type
+                serializationType = SerializationTypes.fromSchema(() -> {
+                    if (schemaRegistryClient == null) {
+                        schemaRegistryClient = getSchemaRegistryClient();
+                    }
+                    return schemaRegistryClient;
+                }, bytes);
+                if (serializationType == null) {
+                    if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
                             (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
                         // Maybe a JSON ?
+                        log.info("Json deserializer");
                         serializationType = SerializationTypes.Json;
+                    } else {
+                        log.info("ByteArray deserializer");
+                        serializationType = SerializationTypes.ByteArray;
                     }
                 }
             }
         }
+
 
         inner = getDeserializer(serializationType);
         inner.configure(configuration, isKey);
@@ -227,17 +229,16 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
     }
 
     /**
-     * Get the schema ID from the payload.
+     * Get the schema registry client.
      *
-     * @param bytes The bytes to deserialize.
-     * @return The schema ID.
+     * @return The schema registry client.
      */
-    private Integer getSchemaID(byte[] bytes) {
-        if (bytes[0] != 0) {
-            return null;
-        } else {
-            ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 1, 4);
-            return byteBuffer.getInt();
+    @Synchronized
+    private SchemaRegistryClient getSchemaRegistryClient() {
+        if (schemaRegistryClient == null) {
+            schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configuration);
         }
+
+        return schemaRegistryClient;
     }
 }
