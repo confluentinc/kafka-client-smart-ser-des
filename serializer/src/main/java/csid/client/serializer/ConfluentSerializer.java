@@ -15,18 +15,10 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.apache.kafka.common.serialization.BytesSerializer;
-import org.apache.kafka.common.serialization.DoubleSerializer;
-import org.apache.kafka.common.serialization.FloatSerializer;
-import org.apache.kafka.common.serialization.IntegerSerializer;
-import org.apache.kafka.common.serialization.LongSerializer;
-import org.apache.kafka.common.serialization.Serializer;
-import org.apache.kafka.common.serialization.ShortSerializer;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.common.serialization.UUIDSerializer;
+import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.common.utils.Bytes;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -128,6 +120,10 @@ public class ConfluentSerializer<T> implements Serializer<T> {
             log.info("UUID detected, using UUID serializer.");
             inner = (Serializer<T>) new UUIDSerializer();
             type = SerializationTypes.UUID;
+        } else if (data instanceof ByteBuffer) {
+            log.info("ByteBuffer detected, using ByteBuffer serializer.");
+            inner = (Serializer<T>) new ByteBufferSerializer();
+            type = SerializationTypes.ByteBuffer;
         } else if (data instanceof Message) {
             log.info("Protobuf message detected, using Protobuf serializer.");
             inner = (Serializer<T>) new KafkaProtobufSerializer<>();

@@ -27,10 +27,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 class ConfluentSerializerTest {
 
-    public static final String TEST_TOPIC_NAME = "test-serializer-topic";
-    public static final byte MAGIC_BYTE = 0x0;
-
-    private ObjectMapper MAPPER = new ObjectMapper();
+    private static final String TEST_TOPIC_NAME = "test-serializer-topic";
+    private static final byte MAGIC_BYTE = 0x0;
+    private final ObjectMapper MAPPER = new ObjectMapper();
 
     @Test
     public void testSerializeString() {

@@ -218,8 +218,8 @@
 
     <modules>
         <module>common</module>
-        <module>deserializer</module>
         <module>serializer</module>
+        <module>deserializer</module>
         <module>connect</module>
     </modules>
 

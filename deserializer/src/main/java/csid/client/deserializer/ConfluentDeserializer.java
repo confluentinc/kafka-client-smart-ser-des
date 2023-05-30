@@ -5,6 +5,7 @@
 
 package csid.client.deserializer;
 
+import csid.client.SerializationTypes;
 import csid.client.deserializer.exception.ConfluentDeserializerException;
 import csid.client.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
@@ -15,6 +16,7 @@ import io.confluent.kafka.serializers.KafkaJsonDeserializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteBufferDeserializer;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> The type of the deserialized object.
  */
+@Slf4j
 public class ConfluentDeserializer<T> implements Deserializer<T> {
     private final Class<T> tClass;
     private Deserializer<?> inner;
@@ -78,7 +81,7 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
     public T deserialize(String s, byte[] bytes) {
         if (inner == null) {
             try {
-                init(bytes);
+                init(bytes, null);
             } catch (RestClientException | IOException e) {
                 throw new ConfluentDeserializerException("Error during inner deserializer initialization.", e);
             }
@@ -92,7 +95,7 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
     public T deserialize(String topic, Headers headers, byte[] bytes) {
         if (inner == null) {
             try {
-                init(bytes);
+                init(bytes, headers);
             } catch (RestClientException | IOException e) {
                 throw new ConfluentDeserializerException("Error during inner deserializer initialization.", e);
             }
@@ -117,66 +120,110 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
      * @throws RestClientException If an error occurs while retrieving the schema.
      */
     @Synchronized
-    private void init(byte[] bytes) throws RestClientException, IOException {
+    private void init(byte[] bytes, final Headers headers) throws RestClientException, IOException {
         if (inner != null) {
             return;
         }
 
-        // Create inner deserializer based on the type of the object to deserialize.
-        if (tClass.isAssignableFrom(String.class)) {
-            inner = new StringDeserializer();
-        } else if (tClass.isAssignableFrom(byte[].class)) {
-            inner = new ByteArrayDeserializer();
-        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-            inner = new ByteBufferDeserializer();
-        } else if (tClass.isAssignableFrom(Float.class)) {
-            inner = new FloatDeserializer();
-        } else if (tClass.isAssignableFrom(Double.class)) {
-            inner = new DoubleDeserializer();
-        } else if (tClass.isAssignableFrom(Integer.class)) {
-            inner = new IntegerDeserializer();
-        } else if (tClass.isAssignableFrom(Long.class)) {
-            inner = new LongDeserializer();
-        } else if (tClass.isAssignableFrom(Short.class)) {
-            inner = new ShortDeserializer();
-        } else if (tClass.isAssignableFrom(Bytes.class)) {
-            inner = new BytesDeserializer();
-        } else if (tClass.isAssignableFrom(UUID.class)) {
-            inner = new UUIDDeserializer();
-        } else {
-            // Get schema ID
-            final Integer schemaID = getSchemaID(bytes);
-            if (schemaID != null) {
-                if (schemaRegistryClient == null) {
-                    schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configuration);
-                }
+        SerializationTypes serializationType = null;
+        if (headers != null) {
+            serializationType = SerializationTypes.fromHeaders(headers);
+        }
 
-                // Schema base payload.
-                ParsedSchema parsedSchema = this.schemaRegistryClient.getSchemaById(schemaID);
-                switch (parsedSchema.schemaType()) {
-                    case "AVRO":
-                        inner = new KafkaAvroDeserializer(schemaRegistryClient);
-                        break;
-                    case "JSON":
-                        inner = new KafkaJsonSchemaDeserializer<>(schemaRegistryClient);
-                        break;
-                    case "PROTOBUF":
-                        inner = new KafkaProtobufDeserializer<>(schemaRegistryClient);
-                        break;
-                    default:
-                        inner = new ByteArrayDeserializer();
-                        break;
-                }
-            } else if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                    (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-                // Maybe a JSON ?
-                inner = new KafkaJsonDeserializer<>();
+        if (serializationType == null) {
+            log.info("No serialization type found in headers. Trying to get it from the schema.");
+
+            if (tClass.isAssignableFrom(byte[].class)) {
+                serializationType = SerializationTypes.ByteArray;
             } else {
-                inner = new ByteArrayDeserializer();
+                serializationType = SerializationTypes.ByteArray;
+                // Create inner deserializer based on the type of the object to deserialize.
+                if (tClass.isAssignableFrom(String.class)) {
+                    serializationType = SerializationTypes.String;
+                } else if (tClass.isAssignableFrom(Bytes.class)) {
+                    serializationType = SerializationTypes.Bytes;
+                } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
+                    serializationType = SerializationTypes.ByteBuffer;
+                } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
+                    serializationType = SerializationTypes.ByteBuffer;
+                } else if (tClass.isAssignableFrom(Float.class)) {
+                    serializationType = SerializationTypes.Float;
+                } else if (tClass.isAssignableFrom(Double.class)) {
+                    serializationType = SerializationTypes.Double;
+                } else if (tClass.isAssignableFrom(Integer.class)) {
+                    serializationType = SerializationTypes.Integer;
+                } else if (tClass.isAssignableFrom(Long.class)) {
+                    serializationType = SerializationTypes.Long;
+                } else if (tClass.isAssignableFrom(Short.class)) {
+                    serializationType = SerializationTypes.Short;
+                } else if (tClass.isAssignableFrom(UUID.class)) {
+                    serializationType = SerializationTypes.UUID;
+                } else {
+                    // Get schema ID
+                    final Integer schemaID = getSchemaID(bytes);
+                    if (schemaID != null) {
+                        if (schemaRegistryClient == null) {
+                            schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configuration);
+                        }
+
+                        // Schema base payload.
+                        ParsedSchema parsedSchema = this.schemaRegistryClient.getSchemaById(schemaID);
+                        switch (parsedSchema.schemaType()) {
+                            case "AVRO":
+                                serializationType = SerializationTypes.Avro;
+                                break;
+                            case "JSON":
+                                serializationType = SerializationTypes.JsonSchema;
+                                break;
+                            case "PROTOBUF":
+                                serializationType = SerializationTypes.Protobuf;
+                                break;
+                        }
+                    } else if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
+                            (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
+                        // Maybe a JSON ?
+                        serializationType = SerializationTypes.Json;
+                    }
+                }
             }
         }
 
+        inner = getDeserializer(serializationType);
         inner.configure(configuration, isKey);
+    }
+
+    private Deserializer<?> getDeserializer(SerializationTypes serializationType) {
+        switch (serializationType) {
+            case Avro:
+                return new KafkaAvroDeserializer(schemaRegistryClient);
+            case Json:
+                return new KafkaJsonDeserializer<>();
+            case JsonSchema:
+                return new KafkaJsonSchemaDeserializer<>(schemaRegistryClient);
+            case Protobuf:
+                return new KafkaProtobufDeserializer<>(schemaRegistryClient);
+            case Long:
+                return new LongDeserializer();
+            case Integer:
+                return new IntegerDeserializer();
+            case Float:
+                return new FloatDeserializer();
+            case Double:
+                return new DoubleDeserializer();
+            case Short:
+                return new ShortDeserializer();
+            case UUID:
+                return new UUIDDeserializer();
+            case String:
+                return new StringDeserializer();
+            case Bytes:
+                return new BytesDeserializer();
+            case ByteBuffer:
+                return new ByteBufferDeserializer();
+            case ByteArray:
+            default:
+                return new ByteArrayDeserializer();
+        }
     }
 
     /**

@@ -7,6 +7,7 @@ public enum SerializationTypes {
     String,
     Bytes,
     ByteArray,
+    ByteBuffer,
     Short,
     Integer,
     Long,
