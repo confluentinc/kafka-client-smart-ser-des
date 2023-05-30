@@ -6,7 +6,6 @@ import csid.client.schema.SchemaRegistryUtils;
 import io.confluent.connect.avro.AvroConverter;
 import io.confluent.connect.json.JsonSchemaConverter;
 import io.confluent.connect.protobuf.ProtobufConverter;
-import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.Synchronized;
@@ -24,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * SmartValueConverter
+ * This class is a wrapper around the Confluent converters.
  */
 @Slf4j
 public class ConfluentValueConverter implements Converter {
@@ -99,9 +98,12 @@ public class ConfluentValueConverter implements Converter {
     }
 
     /**
-     * Initialize converter when converting from kafka to connect data.
+     * Initialize converter when converting from kafka to connect.
      *
-     * @param bytes payload
+     * @param bytes   bytes to convert
+     * @param headers headers to convert
+     * @throws RestClientException if an error occurs while getting the schema
+     * @throws IOException         if an error occurs while getting the schema
      */
     @Synchronized
     private void initToConnectData(byte[] bytes, final Headers headers) throws RestClientException, IOException {
@@ -164,6 +166,11 @@ public class ConfluentValueConverter implements Converter {
         initInnerConverter(type);
     }
 
+    /**
+     * Initialize inner converter.
+     *
+     * @param serializationType serialization type
+     */
     private void initInnerConverter(final SerializationTypes serializationType) {
         switch (serializationType) {
             case Avro:
