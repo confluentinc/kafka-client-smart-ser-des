@@ -1,5 +1,6 @@
 package csid.client.integration.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public class Employee {
     @JsonProperty(value = "Email", index = 5)
     public String Email;
 
+    @JsonIgnore
     public boolean isValid() {
         return StringUtils.isNotEmpty(ID) && StringUtils.isNotEmpty(Name) && StringUtils.isNotEmpty(Email) && Age > 0 && SSN > 0;
     }

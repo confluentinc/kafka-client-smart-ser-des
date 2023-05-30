@@ -1,10 +1,15 @@
 package csid.client.integration;
 
+import csid.client.integration.model.EmployeeProto;
 import io.confluent.csid.common.test.utils.RCSUtils;
 import io.confluent.csid.common.test.utils.SRUtils;
 import io.confluent.csid.common.test.utils.containers.KafkaCluster;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.Tailer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.connect.connector.policy.ConnectorClientConfigOverridePolicy;
@@ -18,6 +23,7 @@ import org.apache.kafka.connect.storage.FileOffsetBackingStore;
 import org.apache.kafka.connect.storage.OffsetBackingStore;
 import org.apache.kafka.connect.util.FutureCallback;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
@@ -25,10 +31,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class TestHardening {
@@ -112,7 +117,7 @@ public abstract class TestHardening {
         return listener;
     }
 
-    protected Thread startConnect() {
+    protected void startConnect() {
         final Thread connectorThread = new Thread(() -> {
             try {
                 startConnectWorker(getConnectArgs());
@@ -124,8 +129,48 @@ public abstract class TestHardening {
             }
         });
         connectorThread.start();
+    }
 
-        return connectorThread;
+    protected <T> List<T> consume(Properties properties) {
+        ArrayList<T> values = new ArrayList<>();
+
+        try (KafkaConsumer<String, T> consumer = new KafkaConsumer<>(properties)) {
+            consumer.subscribe(java.util.Collections.singletonList("datagen_clear"));
+
+            final int timeout = Calendar.getInstance().get(Calendar.SECOND) + 10;
+            int count = 0;
+            do {
+                final ConsumerRecords<String, T> records = consumer.poll(java.time.Duration.ofSeconds(10));
+                records.forEach(record -> {
+                    T value = record.value();
+                    Assertions.assertNotNull(value);
+
+                    values.add(value);
+                });
+
+                count += records.count();
+            } while (count < 10 && Calendar.getInstance().get(Calendar.SECOND) < timeout);
+
+            Assertions.assertEquals(10, count);
+
+            return values;
+        }
+    }
+
+    public interface RecordSupplier<T> {
+        T get(int count);
+    }
+
+    protected <T> void produce(Properties properties, RecordSupplier<T> recordSupplier) {
+        int count = 0;
+        try (KafkaProducer<String, T> producer = new KafkaProducer<>(properties)) {
+            while (count < 10) {
+                count++;
+                producer.send(new ProducerRecord<>("datagen_clear", "key", recordSupplier.get(count)));
+            }
+
+            producer.flush();
+        }
     }
 
     protected abstract String[] getConnectArgs();

@@ -36,7 +36,7 @@ public class ConnectToConsumerTests extends TestHardening {
 
         startConnect();
 
-        List<GenericRecord> objects = consume(getConsumerProperties(), 10);
+        List<GenericRecord> objects = consume(getConsumerProperties());
         Assertions.assertEquals(10, objects.size());
 
         objects.forEach(genericRecord -> {
@@ -58,7 +58,7 @@ public class ConnectToConsumerTests extends TestHardening {
 
         startConnect();
 
-        List<Message> objects = consume(getConsumerProperties(), 10);
+        List<Message> objects = consume(getConsumerProperties());
         Assertions.assertEquals(10, objects.size());
 
         objects.forEach(message -> {
@@ -81,7 +81,7 @@ public class ConnectToConsumerTests extends TestHardening {
 
         startConnect();
 
-        List<Map<String, Object>> objects = consume(getConsumerProperties(), 10);
+        List<Map<String, Object>> objects = consume(getConsumerProperties());
         Assertions.assertEquals(10, objects.size());
 
         objects.forEach(object -> {
@@ -106,38 +106,12 @@ public class ConnectToConsumerTests extends TestHardening {
         Properties properties = getConsumerProperties();
         properties.put(JSON_VALUE_TYPE, Employee.class.getName());
 
-        List<Employee> objects = consume(properties, 10);
+        List<Employee> objects = consume(properties);
         Assertions.assertEquals(10, objects.size());
         objects.forEach(employee -> Assertions.assertTrue(employee.isValid()));
-        
+
         final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
         Assertions.assertEquals("JSON", schema.schemaType());
-    }
-
-    protected <T> List<T> consume(Properties properties, int expectedCount) {
-        ArrayList<T> values = new ArrayList<>();
-
-        try (KafkaConsumer<String, T> consumer = new KafkaConsumer<>(properties)) {
-            consumer.subscribe(java.util.Collections.singletonList("datagen_clear"));
-
-            final int timeout = Calendar.getInstance().get(Calendar.SECOND) + 10;
-            int count = 0;
-            do {
-                final ConsumerRecords<String, T> records = consumer.poll(java.time.Duration.ofSeconds(10));
-                records.forEach(record -> {
-                    T value = record.value();
-                    Assertions.assertNotNull(value);
-
-                    values.add(value);
-                });
-
-                count += records.count();
-            } while (count < expectedCount && Calendar.getInstance().get(Calendar.SECOND) < timeout);
-
-            Assertions.assertEquals(expectedCount, count);
-
-            return values;
-        }
     }
 
     @Override
