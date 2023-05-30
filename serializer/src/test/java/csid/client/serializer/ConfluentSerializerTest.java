@@ -1,7 +1,7 @@
 package csid.client.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import csid.client.SerializationTypes;
+import csid.client.common.SerializationTypes;
 import csid.client.serializer.record.OrderRecord;
 import csid.client.serializer.record.OrderSchemaRecord;
 import io.confluent.csid.common.test.utils.SRUtils;

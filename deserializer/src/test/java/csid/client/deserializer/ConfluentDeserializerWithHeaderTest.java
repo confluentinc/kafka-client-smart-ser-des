@@ -1,6 +1,6 @@
 package csid.client.deserializer;
 
-import csid.client.SerializationTypes;
+import csid.client.common.SerializationTypes;
 import csid.client.deserializer.record.OrderRecord;
 import csid.client.serializer.ConfluentSerializer;
 import io.confluent.csid.common.test.utils.SRUtils;
@@ -223,7 +223,7 @@ public class ConfluentDeserializerWithHeaderTest {
     }
 
     @Test
-    public void testDeserializeKafkaJsonSchema()  {
+    public void testDeserializeKafkaJsonSchema() {
         // Given
         Properties props = new Properties();
         props.put(SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
@@ -266,7 +266,7 @@ public class ConfluentDeserializerWithHeaderTest {
         }
 
         final ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 1, 4);
-        final int schemaId =  byteBuffer.getInt();
+        final int schemaId = byteBuffer.getInt();
         try {
             return SRUtils.getSRClient().getSchemaById(schemaId) != null;
         } catch (IOException | RestClientException e) {

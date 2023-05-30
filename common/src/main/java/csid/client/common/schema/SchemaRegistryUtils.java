@@ -3,9 +3,9 @@
  * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
-package csid.client.schema;
+package csid.client.common.schema;
 
-import csid.client.exception.ConfluentSchemaException;
+import csid.client.common.exception.ConfluentSchemaException;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;

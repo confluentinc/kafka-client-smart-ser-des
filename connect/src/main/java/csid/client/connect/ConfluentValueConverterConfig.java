@@ -1,6 +1,6 @@
 package csid.client.connect;
 
-import csid.client.SerializationTypes;
+import csid.client.common.SerializationTypes;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 

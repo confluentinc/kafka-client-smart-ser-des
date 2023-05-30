@@ -1,8 +1,8 @@
 package csid.client.connect;
 
-import csid.client.SerializationTypes;
+import csid.client.common.SerializationTypes;
 import csid.client.connect.exceptions.ConfluentValueConverterException;
-import csid.client.schema.SchemaRegistryUtils;
+import csid.client.common.schema.SchemaRegistryUtils;
 import io.confluent.connect.avro.AvroConverter;
 import io.confluent.connect.json.JsonSchemaConverter;
 import io.confluent.connect.protobuf.ProtobufConverter;
@@ -119,38 +119,11 @@ public class ConfluentValueConverter implements Converter {
         if (serializationType == null) {
             log.info("No serialization type found in headers. Trying to get it from the schema.");
 
-            serializationType = SerializationTypes.fromSchema(() -> {
-                if (schemaRegistryClient == null) {
-                    schemaRegistryClient = getSchemaRegistryClient();
-                }
-                return schemaRegistryClient;
-            }, bytes);
-            if (serializationType == null) {
-                if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                        (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-                    // Maybe a JSON ?
-                    log.info("JSON detected");
-                    serializationType = SerializationTypes.Json;
-                } else if (bytes.length == 1) {
-                    log.info("Byte detected");
-                    serializationType = SerializationTypes.ByteArray;
-                } else if (bytes.length == 2) {
-                    log.info("Short detected");
-                    serializationType = SerializationTypes.Short;
-                } else if (bytes.length == 4) {
-                    log.info("Integer detected");
-                    serializationType = SerializationTypes.Integer;
-                } else if (bytes.length == 8) {
-                    log.info("Long detected");
-                    serializationType = SerializationTypes.Long;
-                } else {
-                    log.info("String detected");
-                    serializationType = SerializationTypes.String;
-                }
-            }
+            serializationType = SerializationTypes.fromBytes(this::getSchemaRegistryClient, bytes);
+
+            log.info("Serialization type found in schema: {}", serializationType);
         }
-
-
+        
         initInnerConverter(serializationType);
     }
 

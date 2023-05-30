@@ -6,7 +6,7 @@
 package csid.client.serializer;
 
 import com.google.protobuf.Message;
-import csid.client.SerializationTypes;
+import csid.client.common.SerializationTypes;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaJsonSerializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
@@ -65,7 +65,10 @@ public class ConfluentSerializer<T> implements Serializer<T> {
             init(data);
         }
 
-        type.toHeaders(headers);
+        if (headers != null) {
+            type.toHeaders(headers);
+        }
+
         return inner.serialize(topic, headers, data);
     }
 
