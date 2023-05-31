@@ -20,20 +20,21 @@ do this by adding the following Maven dependency to your project's `pom.xml` fil
 <dependency>
     <groupId>io.confluent.csid</groupId>
     <artifactId>csid-confluent-deserializer</artifactId>
-    <version>1.0.0</version>
+    <version>{deserializer-version}</version>
 </dependency>
 <dependency>
     <groupId>org.apache.kafka</groupId>
     <artifactId>kafka-clients</artifactId>
-    <version>3.4.0</version>
+    <version>{kafka-version}</version>
 </dependency>
 ```
-
 Alternatively, if you're using Gradle, you can add the following dependency to your build.gradle file:
 
 ```groovy
-implementation 'io.confluent.csid:csid-confluent-deserializer:1.0.0'
+implementation 'io.confluent.csid:csid-confluent-deserializer:{deserializer-version}'
+implementation 'org.apache.kafka:kafka-clients:{kafka-version}'
 ```
+Replace `{kafka-version}` and `{deserializer-version}` with the version you are using.
 
 ## Usage
 
