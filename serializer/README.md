@@ -50,7 +50,7 @@ import io.confluent.csid.utils.ConfluentSerializer;
 
 ## Usage
 
-1. Create a Kafka consumer properties object:
+1. Create a Kafka producer properties object:
 
 Before creating a Kafka producer instance, you need to configure it with the appropriate settings. Here is an example of how to configure a Kafka producer:
 
