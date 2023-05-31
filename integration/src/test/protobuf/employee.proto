@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package tutorial;
+
+option java_package = "csid.client.integration.model";
+option java_outer_classname = "EmployeeProto";
+
+message Employee {
+  optional string Name = 1;
+  optional string ID = 2;
+  optional string Email = 3;
+  optional int32 SSN = 4;
+  optional int32 Age = 5;
+
+}
+
