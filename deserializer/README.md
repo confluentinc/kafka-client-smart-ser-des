@@ -1,14 +1,15 @@
-# Java Kafka Consumer Documentation
+# Java Kafka Consumer with Confluent Deserializer Documentation
 
 ## Overview
 
 The Java Kafka Consumer is a component that allows you to receive and process messages from Apache Kafka topics. It is
-built using the Kafka client library for Java.
+built using the Kafka client library for Java. Confluent Deserializer is a library that provides a generic deserializer for Kafka messages. It supports Avro, JSON, JSON Schema, Protobuf, and other data formats.
 
 ## Prerequisites
 
 - Java Development Kit (JDK) 8 or higher
 - Apache Kafka cluster running and accessible
+- Optional but recommended: Schema Registry server running and accessible
 
 ## Installation
 
@@ -17,16 +18,21 @@ do this by adding the following Maven dependency to your project's `pom.xml` fil
 
 ```xml
 <dependency>
+    <groupId>io.confluent.csid</groupId>
+    <artifactId>csid-confluent-deserializer</artifactId>
+    <version>1.0.0</version>
+</dependency>
+<dependency>
     <groupId>org.apache.kafka</groupId>
     <artifactId>kafka-clients</artifactId>
-    <version>2.8.0</version>
+    <version>3.4.0</version>
 </dependency>
 ```
 
 Alternatively, if you're using Gradle, you can add the following dependency to your build.gradle file:
 
 ```groovy
-implementation 'org.apache.kafka:kafka-clients:2.8.0'
+implementation 'io.confluent.csid:csid-confluent-deserializer:1.0.0'
 ```
 
 ## Usage
@@ -37,15 +43,19 @@ To use the Java Kafka Consumer, you need to follow these steps:
 
 ```java
 Properties properties=new Properties();
-properties.put("bootstrap.servers","your-kafka-bootstrap-servers");
-properties.put("group.id","your-consumer-group-id");
+properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "your-kafka-bootstrap-servers");
+properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ConfluentDeserializer.class.getName());
+properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "your-consumer-group-id");
+properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+properties.setProperty("schema.registry.url", "your-schema-registry-server-url");
 // Add additional properties as needed
 ```
 
 2. Create a Kafka consumer object using the properties:
 
 ```java
-KafkaConsumer<String, String> consumer=new KafkaConsumer<>(properties);
+KafkaConsumer<String, AnyDataType> consumer=new KafkaConsumer<>(properties);
 ```
 
 3. Subscribe to the Kafka topic(s) you want to consume:
@@ -58,11 +68,11 @@ consumer.subscribe(Arrays.asList("your-topic-name"));
 
 ```java
 while (true) {
-    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-    for (ConsumerRecord<String, String> record : records) {
+    ConsumerRecords<String, AnyDataType> records = consumer.poll(Duration.ofMillis(100));
+    for (ConsumerRecord<String, AnyDataType> record : records) {
         // Process the received message
         String key = record.key();
-        String value = record.value();
+        AnyDataType value = record.value();
         // Add your custom logic here
     }
 }
