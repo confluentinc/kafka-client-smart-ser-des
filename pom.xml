@@ -17,6 +17,24 @@
         <name>Confluent, Inc.</name>
         <url>https://confluent.io</url>
     </organization>
+    
+    <properties>
+        <lombok.version>1.18.22</lombok.version>
+        <kafka-serializer-version>7.3.1</kafka-serializer-version>
+        <reactor-bom.version>2022.0.0</reactor-bom.version>
+        <kafka-clients-version>3.4.0</kafka-clients-version>
+        <slf4j.version>1.7.35</slf4j.version>
+        <logback.version>1.2.11</logback.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
+        <junit-jupiter-version>5.9.0</junit-jupiter-version>
+        <junit-launcher.version>1.9.3</junit-launcher.version>
+        <mockito-core.version>2.10.0</mockito-core.version>
+        <connect.version>3.4.0</connect.version>
+        <confluent.connect.version>7.3.1</confluent.connect.version>
+        <csid.common.version>1.0.12</csid.common.version>
+        <avro.version>1.11.0</avro.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.confluent</groupId>
@@ -75,23 +93,31 @@
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!-- Unfortunately (or not), avro plugin doesn't have an option to skip missing directories, so we have to enable it individually per module -->
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro-maven-plugin</artifactId>
+                    <version>${avro.version}</version>
+                    <configuration>
+                        <stringType>String</stringType>
+                        <enableDecimalLogicalType>true</enableDecimalLogicalType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>schema</goal>
+                                <goal>protocol</goal>
+                                <goal>idl-protocol</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
-    <properties>
-        <lombok.version>1.18.22</lombok.version>
-        <kafka-serializer-version>7.3.1</kafka-serializer-version>
-        <reactor-bom.version>2022.0.0</reactor-bom.version>
-        <kafka-clients-version>3.4.0</kafka-clients-version>
-        <slf4j.version>1.7.35</slf4j.version>
-        <logback.version>1.2.11</logback.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
-        <junit-jupiter-version>5.9.0</junit-jupiter-version>
-        <junit-launcher.version>1.9.3</junit-launcher.version>
-        <mockito-core.version>2.10.0</mockito-core.version>
-        <connect.version>3.4.0</connect.version>
-        <confluent.connect.version>7.3.1</confluent.connect.version>
-        <csid.common.version>1.0.12</csid.common.version>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -218,9 +244,10 @@
 
     <modules>
         <module>common</module>
-        <module>deserializer</module>
         <module>serializer</module>
+        <module>deserializer</module>
         <module>connect</module>
+        <module>integration</module>
     </modules>
 
 </project>

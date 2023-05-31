@@ -1,0 +1,27 @@
+{
+  "type": "record",
+  "name": "EmployeeAvro",
+  "namespace": "csid.client.integration.model",
+  "fields": [
+    {
+      "name": "ID",
+      "type": "string"
+    },
+    {
+      "name": "Name",
+      "type": "string"
+    },
+    {
+      "name": "Email",
+      "type": "string"
+    },
+    {
+      "name": "Age",
+      "type": "int"
+    },
+    {
+      "name": "SSN",
+      "type": "int"
+    }
+  ]
+}

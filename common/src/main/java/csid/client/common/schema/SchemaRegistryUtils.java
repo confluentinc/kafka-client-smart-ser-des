@@ -3,36 +3,42 @@
  * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
-package csid.client.schema;
+package csid.client.common.schema;
 
-import csid.client.exception.ConfluentSchemaException;
+import csid.client.common.exception.ConfluentSchemaException;
+import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.SchemaProvider;
 import io.confluent.kafka.schemaregistry.avro.AvroSchemaProvider;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
+import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
 import org.apache.kafka.common.config.ConfigException;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Utility class for Schema Registry
  */
 public final class SchemaRegistryUtils {
+
     private static final String MOCK_URL_PREFIX = "mock://";
 
     public final static int NO_SCHEMA_ID = -1;
 
     /**
      * Get Schema ID
+     *
      * @param bytes Byte array
      * @return Schema ID
      */
@@ -44,6 +50,27 @@ public final class SchemaRegistryUtils {
         }
 
         return buffer.getInt();
+    }
+
+    /**
+     * Get Schema Type
+     *
+     * @param supplier Schema Registry Client Supplier
+     * @param bytes    Byte array
+     * @return Schema Type
+     * @throws RestClientException Rest Client Exception
+     * @throws IOException         IO Exception
+     */
+    public static String getSchemaType(Supplier<SchemaRegistryClient> supplier, byte[] bytes) throws RestClientException, IOException {
+        final int schemaId = getSchemaId(bytes);
+        if (schemaId == NO_SCHEMA_ID) {
+            return null;
+        }
+
+        final ParsedSchema parsedSchema = supplier.get().getSchemaById(schemaId);
+        return (parsedSchema == null)
+                ? null
+                : parsedSchema.schemaType();
     }
 
     /**

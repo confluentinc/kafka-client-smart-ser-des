@@ -1,21 +1,18 @@
 package csid.client.connect;
 
+import csid.client.common.SerializationTypes;
 import csid.client.connect.exceptions.ConfluentValueConverterException;
-import csid.client.schema.SchemaRegistryUtils;
+import csid.client.common.schema.SchemaRegistryUtils;
 import io.confluent.connect.avro.AvroConverter;
 import io.confluent.connect.json.JsonSchemaConverter;
 import io.confluent.connect.protobuf.ProtobufConverter;
-import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.connect.converters.ByteArrayConverter;
-import org.apache.kafka.connect.converters.IntegerConverter;
-import org.apache.kafka.connect.converters.LongConverter;
-import org.apache.kafka.connect.converters.ShortConverter;
+import org.apache.kafka.connect.converters.*;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
 import org.apache.kafka.connect.json.JsonConverter;
@@ -26,7 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * SmartValueConverter
+ * This class is a wrapper around the Confluent converters.
  */
 @Slf4j
 public class ConfluentValueConverter implements Converter {
@@ -36,7 +33,7 @@ public class ConfluentValueConverter implements Converter {
     private Map<String, ?> configs;
     private boolean isKey;
     private SchemaRegistryClient schemaRegistryClient;
-    private ConfluentValueConverterTypes type;
+    private SerializationTypes type;
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
@@ -62,13 +59,21 @@ public class ConfluentValueConverter implements Converter {
             initFromConnectData();
         }
 
+        if (headers != null) {
+            type.toHeaders(headers);
+        }
+
         return inner.fromConnectData(topic, headers, schema, value);
     }
 
     @Override
     public SchemaAndValue toConnectData(String topic, byte[] value) {
         if (inner == null) {
-            initToConnectData(value);
+            try {
+                initToConnectData(value, null);
+            } catch (RestClientException | IOException e) {
+                throw new ConfluentValueConverterException("Error during inner converter initialization.", e);
+            }
         }
 
         return inner.toConnectData(topic, value);
@@ -77,7 +82,11 @@ public class ConfluentValueConverter implements Converter {
     @Override
     public SchemaAndValue toConnectData(String topic, Headers headers, byte[] value) {
         if (inner == null) {
-            initToConnectData(value);
+            try {
+                initToConnectData(value, headers);
+            } catch (RestClientException | IOException e) {
+                throw new ConfluentValueConverterException("Error during inner converter initialization.", e);
+            }
         }
 
         return inner.toConnectData(topic, headers, value);
@@ -89,72 +98,33 @@ public class ConfluentValueConverter implements Converter {
     }
 
     /**
-     * Initialize converter when converting from kafka to connect data.
+     * Initialize converter when converting from kafka to connect.
      *
-     * @param bytes payload
+     * @param bytes   bytes to convert
+     * @param headers headers to convert
+     * @throws RestClientException if an error occurs while getting the schema
+     * @throws IOException         if an error occurs while getting the schema
      */
     @Synchronized
-    private void initToConnectData(byte[] bytes) {
+    private void initToConnectData(byte[] bytes, final Headers headers) throws RestClientException, IOException {
         if (inner != null) {
             return;
         }
 
-        // Get schema id from payload.
-        final int schemaId = SchemaRegistryUtils.getSchemaId(bytes);
-        if (schemaId != SchemaRegistryUtils.NO_SCHEMA_ID) {
-            if (schemaRegistryClient == null) {
-                schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configs);
-            }
-
-            // Schema base payload.
-            ParsedSchema parsedSchema;
-            try {
-                parsedSchema = this.schemaRegistryClient.getSchemaById(schemaId);
-            } catch (IOException | RestClientException e) {
-                log.error("Failed to get schema by id: {}", schemaId, e);
-                throw new ConfluentValueConverterException(String.format("Failed to get schema by id: %s", schemaId), e);
-            }
-            switch (parsedSchema.schemaType()) {
-                case "AVRO":
-                    log.info("AVRO schema detected");
-                    inner = new AvroConverter(schemaRegistryClient);
-                    break;
-                case "JSON":
-                    log.info("JSON schema detected");
-                    inner = new JsonSchemaConverter(schemaRegistryClient);
-                    break;
-                case "PROTOBUF":
-                    log.info("PROTOBUF schema detected");
-                    inner = new ProtobufConverter(schemaRegistryClient);
-                    break;
-                default:
-                    log.info("Unknown schema type detected");
-                    inner = new ByteArrayConverter();
-                    break;
-            }
-        } else if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-            // Maybe a JSON ?
-            log.info("JSON detected");
-            inner = new JsonConverter();
-        } else if (bytes.length == 1) {
-            log.info("Byte detected");
-            inner = new ByteArrayConverter();
-        } else if (bytes.length == 2) {
-            log.info("Short detected");
-            inner = new ShortConverter();
-        } else if (bytes.length == 4) {
-            log.info("Integer detected");
-            inner = new IntegerConverter();
-        } else if (bytes.length == 8) {
-            log.info("Long detected");
-            inner = new LongConverter();
-        } else {
-            log.info("String detected");
-            inner = new StringConverter();
+        SerializationTypes serializationType = null;
+        if (headers != null) {
+            serializationType = SerializationTypes.fromHeaders(headers);
         }
 
-        inner.configure(configs, isKey);
+        if (serializationType == null) {
+            log.info("No serialization type found in headers. Trying to get it from the schema.");
+
+            serializationType = SerializationTypes.fromBytes(this::getSchemaRegistryClient, bytes);
+
+            log.info("Serialization type found in schema: {}", serializationType);
+        }
+        
+        initInnerConverter(serializationType);
     }
 
     /**
@@ -166,15 +136,45 @@ public class ConfluentValueConverter implements Converter {
             return;
         }
 
-        switch (type) {
-            case AVRO:
+        initInnerConverter(type);
+    }
+
+    /**
+     * Initialize inner converter.
+     *
+     * @param serializationType serialization type
+     */
+    private void initInnerConverter(final SerializationTypes serializationType) {
+        switch (serializationType) {
+            case Avro:
                 inner = new AvroConverter();
                 break;
-            case JSON:
+            case JsonSchema:
                 inner = new JsonSchemaConverter();
                 break;
-            case PROTOBUF:
+            case Protobuf:
                 inner = new ProtobufConverter();
+                break;
+            case String:
+                inner = new StringConverter();
+                break;
+            case Json:
+                inner = new JsonConverter();
+                break;
+            case Short:
+                inner = new ShortConverter();
+                break;
+            case Integer:
+                inner = new IntegerConverter();
+                break;
+            case Long:
+                inner = new LongConverter();
+                break;
+            case Double:
+                inner = new DoubleConverter();
+                break;
+            case Float:
+                inner = new FloatConverter();
                 break;
             default:
                 inner = new ByteArrayConverter();
@@ -182,5 +182,19 @@ public class ConfluentValueConverter implements Converter {
         }
 
         inner.configure(configs, isKey);
+    }
+
+    /**
+     * Get the schema registry client.
+     *
+     * @return The schema registry client.
+     */
+    @Synchronized
+    private SchemaRegistryClient getSchemaRegistryClient() {
+        if (schemaRegistryClient == null) {
+            schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configs);
+        }
+
+        return schemaRegistryClient;
     }
 }

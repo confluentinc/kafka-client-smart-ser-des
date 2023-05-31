@@ -5,9 +5,9 @@
 
 package csid.client.deserializer;
 
+import csid.client.common.SerializationTypes;
 import csid.client.deserializer.exception.ConfluentDeserializerException;
-import csid.client.schema.SchemaRegistryUtils;
-import io.confluent.kafka.schemaregistry.ParsedSchema;
+import csid.client.common.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
@@ -15,6 +15,7 @@ import io.confluent.kafka.serializers.KafkaJsonDeserializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteBufferDeserializer;
@@ -27,13 +28,10 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.ShortDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.UUIDDeserializer;
-import org.apache.kafka.common.utils.Bytes;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -41,12 +39,16 @@ import java.util.stream.Collectors;
  *
  * @param <T> The type of the deserialized object.
  */
+@Slf4j
 public class ConfluentDeserializer<T> implements Deserializer<T> {
-    private final Class<T> tClass;
+    private Class<T> tClass;
     private Deserializer<?> inner;
-    private final Map<String, ?> configuration;
-    private final boolean isKey;
+    private Map<String, ?> configuration;
+    private boolean isKey;
     private SchemaRegistryClient schemaRegistryClient;
+
+    public ConfluentDeserializer() {
+    }
 
     public ConfluentDeserializer(Properties configs, boolean isKey, Class<T> tClass) {
         this.tClass = tClass;
@@ -74,11 +76,19 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
     }
 
     @Override
+    public void configure(Map<String, ?> configs, boolean isKey) {
+        Deserializer.super.configure(configs, isKey);
+
+        configuration = configs;
+        this.isKey = isKey;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public T deserialize(String s, byte[] bytes) {
         if (inner == null) {
             try {
-                init(bytes);
+                init(bytes, null);
             } catch (RestClientException | IOException e) {
                 throw new ConfluentDeserializerException("Error during inner deserializer initialization.", e);
             }
@@ -92,7 +102,7 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
     public T deserialize(String topic, Headers headers, byte[] bytes) {
         if (inner == null) {
             try {
-                init(bytes);
+                init(bytes, headers);
             } catch (RestClientException | IOException e) {
                 throw new ConfluentDeserializerException("Error during inner deserializer initialization.", e);
             }
@@ -117,80 +127,76 @@ public class ConfluentDeserializer<T> implements Deserializer<T> {
      * @throws RestClientException If an error occurs while retrieving the schema.
      */
     @Synchronized
-    private void init(byte[] bytes) throws RestClientException, IOException {
+    private void init(byte[] bytes, final Headers headers) throws RestClientException, IOException {
         if (inner != null) {
             return;
         }
 
-        // Create inner deserializer based on the type of the object to deserialize.
-        if (tClass.isAssignableFrom(String.class)) {
-            inner = new StringDeserializer();
-        } else if (tClass.isAssignableFrom(byte[].class)) {
-            inner = new ByteArrayDeserializer();
-        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-            inner = new ByteBufferDeserializer();
-        } else if (tClass.isAssignableFrom(Float.class)) {
-            inner = new FloatDeserializer();
-        } else if (tClass.isAssignableFrom(Double.class)) {
-            inner = new DoubleDeserializer();
-        } else if (tClass.isAssignableFrom(Integer.class)) {
-            inner = new IntegerDeserializer();
-        } else if (tClass.isAssignableFrom(Long.class)) {
-            inner = new LongDeserializer();
-        } else if (tClass.isAssignableFrom(Short.class)) {
-            inner = new ShortDeserializer();
-        } else if (tClass.isAssignableFrom(Bytes.class)) {
-            inner = new BytesDeserializer();
-        } else if (tClass.isAssignableFrom(UUID.class)) {
-            inner = new UUIDDeserializer();
-        } else {
-            // Get schema ID
-            final Integer schemaID = getSchemaID(bytes);
-            if (schemaID != null) {
-                if (schemaRegistryClient == null) {
-                    schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configuration);
-                }
-
-                // Schema base payload.
-                ParsedSchema parsedSchema = this.schemaRegistryClient.getSchemaById(schemaID);
-                switch (parsedSchema.schemaType()) {
-                    case "AVRO":
-                        inner = new KafkaAvroDeserializer(schemaRegistryClient);
-                        break;
-                    case "JSON":
-                        inner = new KafkaJsonSchemaDeserializer<>(schemaRegistryClient);
-                        break;
-                    case "PROTOBUF":
-                        inner = new KafkaProtobufDeserializer<>(schemaRegistryClient);
-                        break;
-                    default:
-                        inner = new ByteArrayDeserializer();
-                        break;
-                }
-            } else if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                    (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-                // Maybe a JSON ?
-                inner = new KafkaJsonDeserializer<>();
-            } else {
-                inner = new ByteArrayDeserializer();
-            }
+        SerializationTypes serializationType = null;
+        if (headers != null) {
+            serializationType = SerializationTypes.fromHeaders(headers);
         }
 
+        if (serializationType == null) {
+            log.info("No serialization type found in headers. Trying to get it from the schema.");
+
+            serializationType = (tClass == null)
+                    ? SerializationTypes.fromBytes(this::getSchemaRegistryClient, bytes)
+                    : SerializationTypes.fromClass(this::getSchemaRegistryClient, tClass, bytes);
+
+            log.info("Serialization type found: {}", serializationType);
+        }
+
+        inner = getDeserializer(serializationType);
         inner.configure(configuration, isKey);
     }
 
-    /**
-     * Get the schema ID from the payload.
-     *
-     * @param bytes The bytes to deserialize.
-     * @return The schema ID.
-     */
-    private Integer getSchemaID(byte[] bytes) {
-        if (bytes[0] != 0) {
-            return null;
-        } else {
-            ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 1, 4);
-            return byteBuffer.getInt();
+    private Deserializer<?> getDeserializer(SerializationTypes serializationType) {
+        switch (serializationType) {
+            case Avro:
+                return new KafkaAvroDeserializer(schemaRegistryClient);
+            case Json:
+                return new KafkaJsonDeserializer<>();
+            case JsonSchema:
+                return new KafkaJsonSchemaDeserializer<>(schemaRegistryClient);
+            case Protobuf:
+                return new KafkaProtobufDeserializer<>(schemaRegistryClient);
+            case Long:
+                return new LongDeserializer();
+            case Integer:
+                return new IntegerDeserializer();
+            case Float:
+                return new FloatDeserializer();
+            case Double:
+                return new DoubleDeserializer();
+            case Short:
+                return new ShortDeserializer();
+            case UUID:
+                return new UUIDDeserializer();
+            case String:
+                return new StringDeserializer();
+            case Bytes:
+                return new BytesDeserializer();
+            case ByteBuffer:
+                return new ByteBufferDeserializer();
+            case ByteArray:
+            default:
+                return new ByteArrayDeserializer();
         }
     }
+
+    /**
+     * Get the schema registry client.
+     *
+     * @return The schema registry client.
+     */
+    @Synchronized
+    private SchemaRegistryClient getSchemaRegistryClient() {
+        if (schemaRegistryClient == null) {
+            schemaRegistryClient = SchemaRegistryUtils.getSchemaRegistryClient(configuration);
+        }
+
+        return schemaRegistryClient;
+    }
+
 }

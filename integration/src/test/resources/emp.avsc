@@ -1,0 +1,58 @@
+{
+  "type": "record",
+  "namespace": "kafkaTest",
+  "name": "Employee",
+  "fields": [
+    {
+      "name": "ID",
+      "type":
+         {
+            "type": "string",
+            "arg.properties": {
+              "regex": "emp_[0-9]{3}"
+            }
+          }
+
+    },
+    {
+      "name": "Name",
+      "type":
+         {
+            "type": "string",
+            "arg.properties": {
+              "regex": "user_[0-9]{3}"
+            }
+          }
+    },
+    {
+      "name": "Age",
+      "type":
+         {
+            "type": "string",
+            "arg.properties": {
+              "regex": "[2-9]{1}[0-9]{1}"
+            }
+          }
+    },
+    {
+      "name": "SSN",
+      "type":
+         {
+            "type": "string",
+            "arg.properties": {
+              "regex": "[0-9]{7}"
+            }
+          }
+    },
+    {
+      "name": "Email",
+      "type":
+         {
+            "type": "string",
+            "arg.properties": {
+              "regex": "[a-z]{4}[@]mycompany[.]com"
+            }
+          }
+    }
+  ]
+}

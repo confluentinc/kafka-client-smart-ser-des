@@ -3,7 +3,7 @@
  * Copyright (C) 2020-2023 Confluent, Inc.
  */
 
-package csid.client.schema;
+package csid.client.common.schema;
 
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import org.apache.kafka.common.config.ConfigDef;
