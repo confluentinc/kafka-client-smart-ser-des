@@ -30,12 +30,12 @@ Here are some important configuration properties you should be aware of:
 
 - `bootstrap.servers`: Specifies the list of Kafka brokers that Kafka Connect should connect to.
 - `group.id`: The unique identifier for the group of workers running Kafka Connect. Each group should have a unique ID to avoid conflicts.
-- `key.converter` and `value.converter`: Specifies the converter classes for serializing and deserializing data. Should be set to `csid.client.connect.ConfluentValueConverter`.
+- `key.converter` and `value.converter`: Specifies the converter classes for serializing and deserializing data. It should be set to `csid.client.connect.ConfluentValueConverter`.
 - `offset.storage.topic`: The Kafka topic where Kafka Connect stores its offset information. By default, this is set to `__connect-offsets`.
 - `plugin.path`: The directory where connector plugins are located. By default, this is set to `./plugins`.
-- `key.converter.type` and `value.converter.type`: Specifies the type of data format to use for serialization (source connector). Default is set to `Avro`.
+- `key.converter.type` and `value.converter.type`: Specifies the type of data format to use for serialization (source connector). The default is set to `Avro`.
 
-Confluent Value Converter automatically use the proper data format during deserialization (sink connector) and  supports the following data formats:
+Confluent Value Converter automatically uses the proper data format during deserialization (sink connector) and  supports the following data formats:
 * `Avro` - Avro format
 * `Protobuf` - Protobuf format
 * `JsonSchema` - JSON Schema format
@@ -123,4 +123,3 @@ Here are some best practices to consider when working with Kafka Connect:
 - Regularly update Kafka Connect and its connectors to benefit from bug fixes, performance improvements, and new features.
 
 For more detailed information, refer to the Kafka Connect documentation.
-
