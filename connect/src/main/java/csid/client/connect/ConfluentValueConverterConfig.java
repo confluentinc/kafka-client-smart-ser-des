@@ -7,7 +7,7 @@ import org.apache.kafka.common.config.ConfigDef;
 import java.util.Map;
 
 /**
- * SmartValueConverterConfig
+ * Configuration for the ConfluentValueConverter.
  */
 public class ConfluentValueConverterConfig extends AbstractConfig {
 

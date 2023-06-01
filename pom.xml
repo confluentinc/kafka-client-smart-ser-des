@@ -17,7 +17,7 @@
         <name>Confluent, Inc.</name>
         <url>https://confluent.io</url>
     </organization>
-    
+
     <properties>
         <lombok.version>1.18.22</lombok.version>
         <kafka-serializer-version>7.3.1</kafka-serializer-version>
@@ -33,6 +33,9 @@
         <confluent.connect.version>7.3.1</confluent.connect.version>
         <csid.common.version>1.0.12</csid.common.version>
         <avro.version>1.11.0</avro.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <connect-file.version>3.4.0</connect-file.version>
+        <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
     </properties>
 
     <dependencies>
@@ -47,10 +50,6 @@
     </dependencies>
 
     <repositories>
-        <!-- purposely include the public cflt maven repo to get around
-            an issue where some CFLT artifacts aren't properly published to the internal one.
-            Use the id "cflt-pub" instead of confluent so the mirrors set in Settings.xml
-            don't override it. https://confluent.slack.com/archives/C09EP1SS3/p1674054413442359 -->
         <repository>
             <id>cflt-pub</id>
             <url>https://packages.confluent.io/maven/</url>
@@ -82,6 +81,7 @@
             </snapshots>
         </repository>
     </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -121,6 +121,24 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.confluent.kafka.connect</groupId>
+                <artifactId>kafka-connect-datagen</artifactId>
+                <version>${kafka-connect-datagen.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>connect-file</artifactId>
+                <version>${connect-file.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+                <scope>test</scope>
+            </dependency>
             <!-- Confluent -->
             <dependency>
                 <groupId>org.apache.kafka</groupId>

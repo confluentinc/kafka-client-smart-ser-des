@@ -4,16 +4,11 @@ import com.google.protobuf.Message;
 import csid.client.common.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.serializers.KafkaJsonSerializer;
-import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
-import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.common.utils.Bytes;
 
 import java.io.IOException;
@@ -179,42 +174,6 @@ public enum SerializationTypes {
         return JsonSchema;
     }
 
-    public static SerializationTypes fromClass(Supplier<SchemaRegistryClient> clientSupplier, Class<?> tClass, final byte[] bytes) throws RestClientException, IOException {
-        if (tClass.isAssignableFrom(byte[].class)) {
-            return SerializationTypes.ByteArray;
-        } else if (tClass.isAssignableFrom(String.class)) {
-            return SerializationTypes.String;
-        } else if (tClass.isAssignableFrom(Bytes.class)) {
-            return SerializationTypes.Bytes;
-        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-            return SerializationTypes.ByteBuffer;
-        } else if (tClass.isAssignableFrom(Float.class)) {
-            return SerializationTypes.Float;
-        } else if (tClass.isAssignableFrom(Double.class)) {
-            return SerializationTypes.Double;
-        } else if (tClass.isAssignableFrom(Integer.class)) {
-            return SerializationTypes.Integer;
-        } else if (tClass.isAssignableFrom(Long.class)) {
-            return SerializationTypes.Long;
-        } else if (tClass.isAssignableFrom(Short.class)) {
-            return SerializationTypes.Short;
-        } else if (tClass.isAssignableFrom(UUID.class)) {
-            return SerializationTypes.UUID;
-        } else {
-            // Get schema type
-            final SerializationTypes serializationType = SerializationTypes.fromSchema(clientSupplier, bytes);
-            if (serializationType != null) {
-                return serializationType;
-            }
-
-            if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                    (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-                return SerializationTypes.Json;
-            }
-        }
-
-        return SerializationTypes.ByteArray;
-    }
 
     /**
      * This method is used to determine the serialization type of the message.

@@ -24,11 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * ConfluentValueConverterCache is a cache for converters.
+ */
 @Slf4j
 public class ConfluentValueConverterCache {
 
     private final Map<SerializationTypes, Converter> cache = new ConcurrentHashMap<>();
-
     private SerializationTypes defaultType;
     private boolean isKey;
     private SchemaRegistryClient schemaRegistryClient;
@@ -52,6 +54,15 @@ public class ConfluentValueConverterCache {
         this.isKey = isKey;
     }
 
+    /**
+     * Get the inner converter.
+     *
+     * @param bytes   The bytes to be converted.
+     * @param headers The headers of the message.
+     * @return The inner converter.
+     * @throws RestClientException If the schema registry client fails.
+     * @throws IOException         If the schema registry client fails.
+     */
     public Converter getFromBytes(byte[] bytes, final Headers headers) throws RestClientException, IOException {
         SerializationTypes serializationType = null;
         if (headers != null) {
@@ -73,6 +84,13 @@ public class ConfluentValueConverterCache {
         return cache.get(serializationType);
     }
 
+    /**
+     * Get the inner converter.
+     *
+     * @param data   The data to be converted.
+     * @param schema The schema of the data.
+     * @return The inner converter.
+     */
     public Converter getFromObject(Object data, Schema schema) {
         final SerializationTypes serializationTypes = (schema.type().isPrimitive())
                 ? SerializationTypes.fromClass(data.getClass())

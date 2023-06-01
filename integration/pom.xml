@@ -12,54 +12,12 @@
     <artifactId>csid-confluent-ser-des-integration</artifactId>
 
     <properties>
-        <connect-file.version>3.4.0</connect-file.version>
-        <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
-        <commons-io.version>2.11.0</commons-io.version>
         <maven-compiler-plugin.version>8</maven-compiler-plugin.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.avro</groupId>
-                <artifactId>avro-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.github.os72</groupId>
-                <artifactId>protoc-jar-maven-plugin</artifactId>
-                <version>3.1.0.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <protocVersion>3.1.0</protocVersion>
-                            <inputDirectories>
-                                <include>src/test/protobuf</include>
-                            </inputDirectories>
-                            <outputTargets>
-                                <outputTarget>
-                                    <type>java</type>
-                                    <outputDirectory>src/test/java</outputDirectory>
-                                </outputTarget>
-                            </outputTargets>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${maven-compiler-plugin.version}</source>
-                    <target>${maven-compiler-plugin.version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.confluent.csid</groupId>
@@ -110,21 +68,18 @@
         <dependency>
             <groupId>io.confluent.kafka.connect</groupId>
             <artifactId>kafka-connect-datagen</artifactId>
-            <version>${kafka-connect-datagen.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/connect-file -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>connect-file</artifactId>
-            <version>${connect-file.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-server-common -->
