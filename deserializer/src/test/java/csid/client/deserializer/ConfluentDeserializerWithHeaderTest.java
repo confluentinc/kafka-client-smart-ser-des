@@ -1,5 +1,6 @@
 package csid.client.deserializer;
 
+import com.google.common.collect.Maps;
 import csid.client.common.SerializationTypes;
 import csid.client.deserializer.record.OrderRecord;
 import csid.client.serializer.ConfluentSerializer;
@@ -43,7 +44,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        final Object actual = confluentDeserializer(props, expectedBytes, headers, Integer.class, SerializationTypes.String);
+        final Object actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.String);
 
         // Then
         assertEquals(String.class, actual.getClass());
@@ -60,7 +61,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        final String actual = confluentDeserializer(props, expectedBytes, headers, String.class, SerializationTypes.String);
+        final String actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.String);
 
         // Then
         assertEquals(expected, actual);
@@ -75,7 +76,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        byte[] actual = confluentDeserializer(props, expectedBytes, headers, byte[].class, SerializationTypes.ByteArray);
+        byte[] actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.ByteArray);
 
         // Then
         assertEquals(expected, actual);
@@ -90,7 +91,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        ByteBuffer actual = confluentDeserializer(props, expectedBytes, headers, ByteBuffer.class, SerializationTypes.ByteBuffer);
+        ByteBuffer actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.ByteBuffer);
 
         // Then
         assertEquals(expected, actual);
@@ -106,7 +107,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        Float actual = confluentDeserializer(props, expectedBytes, headers, Float.class, SerializationTypes.Float);
+        Float actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Float);
 
         // Then
         assertEquals(expected, actual);
@@ -121,7 +122,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        Double actual = confluentDeserializer(props, expectedBytes, headers, Double.class, SerializationTypes.Double);
+        Double actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Double);
 
         // Then
         assertEquals(expected, actual);
@@ -136,7 +137,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        int actual = confluentDeserializer(props, expectedBytes, headers, Integer.class, SerializationTypes.Integer);
+        int actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Integer);
 
         // Then
         assertEquals(expected, actual);
@@ -151,7 +152,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        Long actual = confluentDeserializer(props, expectedBytes, headers, Long.class, SerializationTypes.Long);
+        Long actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Long);
 
         // Then
         assertEquals(expected, actual);
@@ -166,7 +167,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        short actual = confluentDeserializer(props, expectedBytes, headers, Short.class, SerializationTypes.Short);
+        short actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Short);
 
         // Then
         assertEquals(expected, actual);
@@ -181,7 +182,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        Bytes actual = confluentDeserializer(props, expectedBytes, headers, Bytes.class, SerializationTypes.Bytes);
+        Bytes actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Bytes);
 
         // Then
         assertEquals(expected, actual);
@@ -196,7 +197,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        UUID actual = confluentDeserializer(props, expectedBytes, headers, UUID.class, SerializationTypes.UUID);
+        UUID actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.UUID);
 
         // Then
         assertEquals(expected, actual);
@@ -215,7 +216,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        GenericRecord actual = confluentDeserializer(props, expectedBytes, headers, GenericRecord.class, SerializationTypes.Avro);
+        GenericRecord actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Avro);
 
         // Then
         assertTrue(hasSchema(expectedBytes));
@@ -234,7 +235,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        OrderRecord actual = confluentDeserializer(props, expectedBytes, headers, OrderRecord.class, SerializationTypes.JsonSchema);
+        OrderRecord actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.JsonSchema);
 
         // Then
         assertTrue(hasSchema(expectedBytes));
@@ -253,7 +254,7 @@ public class ConfluentDeserializerWithHeaderTest {
         byte[] expectedBytes = confluentSerializer(props, expected, headers);
 
         // When
-        OrderRecord actual = confluentDeserializer(props, expectedBytes, headers, OrderRecord.class, SerializationTypes.Json);
+        OrderRecord actual = confluentDeserializer(props, expectedBytes, headers, SerializationTypes.Json);
 
         // Then
         Assertions.assertFalse(hasSchema(expectedBytes));
@@ -274,17 +275,20 @@ public class ConfluentDeserializerWithHeaderTest {
         }
     }
 
-    private static <T> T confluentDeserializer(Properties props, byte[] expected, Headers headers, Class<T> clazz, SerializationTypes serializationType) {
-        try (ConfluentDeserializer<T> confluentDeserializer = new ConfluentDeserializer<>(props, false, clazz)) {
-            Assertions.assertNotNull(headers.headers(SerializationTypes.HEADER_KEY));
-            Assertions.assertEquals(serializationType.name(), new String(headers.lastHeader(SerializationTypes.HEADER_KEY).value()));
+    private static <T> T confluentDeserializer(Properties props, byte[] expected, Headers headers, SerializationTypes serializationType) {
+        try (ConfluentDeserializer confluentDeserializer = new ConfluentDeserializer()) {
+            confluentDeserializer.configure(Maps.fromProperties(props), false);
 
-            return confluentDeserializer.deserialize(TEST_TOPIC_NAME, headers, expected);
+            Assertions.assertNotNull(headers.headers(SerializationTypes.VALUE_HEADER_KEY));
+            Assertions.assertEquals(serializationType.name(), new String(headers.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+            return (T) confluentDeserializer.deserialize(TEST_TOPIC_NAME, headers, expected);
         }
     }
 
     private static <T> byte[] confluentSerializer(Properties props, T expected, Headers headers) {
-        try (ConfluentSerializer<T> confluentSerializer = new ConfluentSerializer<>(props, false)) {
+        try (ConfluentSerializer confluentSerializer = new ConfluentSerializer()) {
+            confluentSerializer.configure(Maps.fromProperties(props), false);
             return confluentSerializer.serialize(TEST_TOPIC_NAME, headers, expected);
         }
     }

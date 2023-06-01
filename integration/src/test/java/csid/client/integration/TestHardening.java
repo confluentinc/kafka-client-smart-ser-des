@@ -1,6 +1,5 @@
 package csid.client.integration;
 
-import csid.client.integration.model.EmployeeProto;
 import io.confluent.csid.common.test.utils.RCSUtils;
 import io.confluent.csid.common.test.utils.SRUtils;
 import io.confluent.csid.common.test.utils.containers.KafkaCluster;
