@@ -4,6 +4,7 @@
 
 The Java Kafka Consumer is a component that allows you to receive and process messages from Apache Kafka topics. It is
 built using the Kafka client library for Java. Confluent Deserializer is a library that provides a generic deserializer for Kafka messages. It supports Avro, JSON, JSON Schema, Protobuf, and other data formats.
+It is also possible to consume multiple data formats in the same Kafka topic. For example, you can consume a JSON message from the same Kafka topic as an Avro message.
 
 ## Prerequisites
 
@@ -59,6 +60,8 @@ properties.setProperty("schema.registry.url", "your-schema-registry-server-url")
 KafkaConsumer<String, AnyDataType> consumer=new KafkaConsumer<>(properties);
 ```
 
+> To consume multiple data type from the same Kafka topic, set `AnyDataType` to Object.
+
 3. Subscribe to the Kafka topic(s) you want to consume:
 
 ```java
@@ -78,6 +81,8 @@ while (true) {
     }
 }
 ```
+
+> To consume multiple data type from the same Kafka topic, set `AnyDataType` to Object.
 
 5. Close the consumer when you're done:
 
