@@ -3,16 +3,13 @@ package csid.client.connect;
 import csid.client.common.SerializationTypes;
 import csid.client.common.caching.ConfluentSerdeCache;
 import csid.client.common.schema.SchemaRegistryUtils;
-import csid.client.connect.exceptions.ConfluentValueConverterException;
 import csid.client.connect.internal.ConfluentValueConverterInternal;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
 import org.apache.kafka.connect.storage.Converter;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
