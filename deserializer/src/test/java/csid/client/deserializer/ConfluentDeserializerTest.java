@@ -1,19 +1,15 @@
 package csid.client.deserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import csid.client.deserializer.record.OrderRecord;
-import io.confluent.kafka.schemaregistry.avro.AvroSchema;
-import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.schemaregistry.client.rest.entities.SchemaReference;
+import io.confluent.csid.common.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
-import io.confluent.kafka.schemaregistry.json.JsonSchema;
-import io.confluent.kafka.schemaregistry.json.JsonSchemaUtils;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.confluent.kafka.serializers.KafkaJsonSerializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
+import io.confluent.kafka.serializers.subject.TopicRecordNameStrategy;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -25,12 +21,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
+import static io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializerConfig.JSON_VALUE_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyDouble;
@@ -45,8 +41,6 @@ public class ConfluentDeserializerTest {
     public static final String TEST_TOPIC_NAME = "test-deserializer-topic";
 
     public static final String ORDERS_AVRO_SCHEMA = "schema/orders-avro.avsc";
-
-    public final String TEST_URL = "mock://test";
 
     public static final int SHORT_TYPE_LENGTH = 2;
     public static final int FLOAT_TYPE_LENGTH = 4;
@@ -201,18 +195,19 @@ public class ConfluentDeserializerTest {
     public void testDeserializeKafkaAvro() throws IOException, RestClientException {
         // Given
         Properties props = new Properties();
-        SchemaRegistryClient schemaRegistry = new MockSchemaRegistryClient();
-        KafkaAvroSerializer avroSerializer = new KafkaAvroSerializer(schemaRegistry, ImmutableMap.of(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL));
+        props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
+
         Schema schema = new Schema.Parser().parse(getClass().getClassLoader().getResourceAsStream(ORDERS_AVRO_SCHEMA));
-
-        props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL);
-
         IndexedRecord expected = generateOrderGenericRecord(schema, 1);
-        byte[] bytes = avroSerializer.serialize(TEST_TOPIC_NAME, expected);
-        schemaRegistry.register("test-subject", new AvroSchema(expected.getSchema()));
+
+        byte[] bytes;
+        try (KafkaAvroSerializer avroSerializer = new KafkaAvroSerializer()) {
+            avroSerializer.configure(Maps.fromProperties(props), false);
+            bytes = avroSerializer.serialize(TEST_TOPIC_NAME, expected);
+        }
 
         // When
-        Object actual = confluentDeserializer(props, false, bytes, IndexedRecord.class, schemaRegistry);
+        Object actual = confluentDeserializer(props, false, bytes, IndexedRecord.class);
 
         // Then
         assertEquals(expected.toString(), actual.toString());
@@ -221,38 +216,21 @@ public class ConfluentDeserializerTest {
     @Test
     public void testDeserializeKafkaJsonSchema() throws RestClientException, IOException {
         // Given
-        String schema = "{\n"
-                + "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n"
-                + "  \"title\": \"Schema references\",\n"
-                + "  \"description\": \"List of schema references for multiple types in a single topic\",\n"
-                + "  \"oneOf\": [\n"
-                + "    { \"$ref\": \"order.json\"}\n"
-                + "  ]\n"
-                + "}";
-
         Properties props = new Properties();
-        SchemaRegistryClient schemaRegistry = new MockSchemaRegistryClient();
-        KafkaJsonSchemaSerializer jsonSchemaSerializer = new KafkaJsonSchemaSerializer(schemaRegistry, ImmutableMap.of(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL));
-
-
-        props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, TEST_URL);
+        props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
+        props.setProperty(AbstractKafkaSchemaSerDeConfig.VALUE_SUBJECT_NAME_STRATEGY, TopicRecordNameStrategy.class.getName());
+        props.setProperty(JSON_VALUE_TYPE, OrderRecord.class.getName());
 
         OrderRecord expected = new OrderRecord("test", "test", "test", "test");
+        byte[] bytes;
+        try (KafkaJsonSchemaSerializer<OrderRecord> jsonSchemaSerializer = new KafkaJsonSchemaSerializer<>()) {
+            jsonSchemaSerializer.configure(Maps.fromProperties(props), false);
 
-        JsonSchema userSchema = JsonSchemaUtils.getSchema(expected);
-        schemaRegistry.register("order", userSchema);
-        List<SchemaReference> refs = ImmutableList.of(
-                new io.confluent.kafka.schemaregistry.client.rest.entities.SchemaReference(
-                        "order.json", "order", 1));
-        Map<String, String> resolvedRefs = ImmutableMap.of("order.json", userSchema.canonicalString());
-        JsonSchema jsonSchema = new JsonSchema(schema, refs, resolvedRefs, null);
-        schemaRegistry.register(TEST_TOPIC_NAME, jsonSchema);
-
-        byte[] bytes = jsonSchemaSerializer.serialize(TEST_TOPIC_NAME, expected);
+            bytes = jsonSchemaSerializer.serialize(TEST_TOPIC_NAME, expected);
+        }
 
         // When
-        Object actualObject = confluentDeserializer(props, false, bytes, OrderRecord.class, schemaRegistry);
-        OrderRecord actual = MAPPER.convertValue(actualObject, OrderRecord.class);
+        OrderRecord actual = (OrderRecord) confluentDeserializer(props, false, bytes, OrderRecord.class);
 
         // Then
         assertEquals(expected.toString(), actual.toString());
@@ -279,13 +257,8 @@ public class ConfluentDeserializerTest {
     }
 
     private static Object confluentDeserializer(Properties props, boolean isKey, byte[] expected, Class<?> clazz) {
-        try (ConfluentDeserializer<?> confluentDeserializer = new ConfluentDeserializer<>(props, isKey, clazz)) {
-            return confluentDeserializer.deserialize(TEST_TOPIC_NAME, expected);
-        }
-    }
-
-    private static Object confluentDeserializer(Properties props, boolean isKey, byte[] expected, Class<?> clazz, SchemaRegistryClient schemaRegistryClient) {
-        try (ConfluentDeserializer<?> confluentDeserializer = new ConfluentDeserializer<>(props, isKey, clazz, schemaRegistryClient)) {
+        try (ConfluentDeserializer confluentDeserializer = new ConfluentDeserializer(clazz)) {
+            confluentDeserializer.configure(Maps.fromProperties(props), isKey);
             return confluentDeserializer.deserialize(TEST_TOPIC_NAME, expected);
         }
     }

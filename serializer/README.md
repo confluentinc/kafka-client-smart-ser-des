@@ -2,7 +2,7 @@
 
 This documentation provides a guide on how to use the Java Kafka Producer to send messages to Kafka topics.
 Confluent Serializer is a library that provides a generic serializer for Kafka messages. 
-It supports Avro, JSON, JSON Schema, Protobuf, and other data formats.
+It supports Avro, JSON, JSON Schema, Protobuf, and other data formats. It is also possible to produce multiple data types to the same Kafka topic. For example, you can send a JSON message to the same Kafka topic as an Avro message.
 
 ## Prerequisites
 
@@ -63,21 +63,23 @@ properties.setProperty("schema.registry.url",  "your-schema-registry-server-url"
 // Additional configuration options
 ```
 
-Replace `your-kafka-bootstrap-servers` and `your-schema-registry-server-url` with the URLs of your Kafka bootstrap servers and Schema Registry server.
+> Replace `your-kafka-bootstrap-servers` and `your-schema-registry-server-url` with the URLs of your Kafka bootstrap servers and Schema Registry server.
 
 2. Create a Kafka producer object using the properties:
 
 ```java
 KafkaProducer<String, AnyDataType> producer = new KafkaProducer<>(properties);
 ```
-Replace `AnyDataType` with the data type you want to send to Kafka.
+> 1. Replace `AnyDataType` with the data type you want to send to Kafka.
+> 2. To produce multiple data type to the same Kafka topic, set `AnyDataType` to Object.
 
 3. Create a Kafka record with a topic name and a message:
 
 ```java
-ProducerRecord<String, AnyDataType> record = new ProducerRecord<>("your-topic-name",any-data-type-instance);
+ProducerRecord<String, AnyDataType> record = new ProducerRecord<>("your-topic-name", any-data-type-instance);
 ```
-Replace `your-topic-name` with the name of the Kafka topic you want to send messages to and replace `AnyDataType` and `any-data-type-instance` with the data type and the instance of the data type you want to send to Kafka.
+> 1. Replace `your-topic-name` with the name of the Kafka topic you want to send messages to and replace `AnyDataType` and `any-data-type-instance` with the data type and the instance of the data type you want to send to Kafka.
+> 2. To produce multiple data type to the same Kafka topic, set `AnyDataType` to Object. 
 
 ## Sending Messages
 

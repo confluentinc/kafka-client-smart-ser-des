@@ -9,8 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 public class OrderRecord {
-
-
+    
     @JsonProperty
     public String name;
     @JsonProperty

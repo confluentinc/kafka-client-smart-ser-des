@@ -1,9 +1,11 @@
 package csid.client.common;
 
+import com.google.protobuf.Message;
 import csid.client.common.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.generic.IndexedRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
@@ -34,15 +36,16 @@ public enum SerializationTypes {
     JsonSchema,
     Json;
 
-    public static final String HEADER_KEY = "serialization.type";
+    public static final String VALUE_HEADER_KEY = "value.serialization.type";
+    public static final String KEY_HEADER_KEY = "key.serialization.type";
 
     /**
      * Set the serialization type in the headers.
      *
      * @param headers The headers
      */
-    public void toHeaders(final Headers headers) {
-        headers.add(HEADER_KEY, this.name().getBytes());
+    public void toHeaders(final Headers headers, boolean isKey) {
+        headers.add((isKey) ? KEY_HEADER_KEY : VALUE_HEADER_KEY, this.name().getBytes());
     }
 
     /**
@@ -51,8 +54,12 @@ public enum SerializationTypes {
      * @param headers The headers
      * @return The serialization type
      */
-    public static SerializationTypes fromHeaders(final Headers headers) {
-        final Header header = headers.lastHeader(HEADER_KEY);
+    public static SerializationTypes fromHeaders(final Headers headers, boolean isKey) {
+        if (headers == null) {
+            return null;
+        }
+
+        final Header header = headers.lastHeader((isKey) ? KEY_HEADER_KEY : VALUE_HEADER_KEY);
         return (header != null)
                 ? SerializationTypes.valueOf(new String(header.value()))
                 : null;
@@ -136,42 +143,74 @@ public enum SerializationTypes {
         return SerializationTypes.String;
     }
 
-    public static SerializationTypes fromClass(Supplier<SchemaRegistryClient> clientSupplier, Class<?> tClass, final byte[] bytes) throws RestClientException, IOException {
-        if (tClass.isAssignableFrom(byte[].class)) {
-            return SerializationTypes.ByteArray;
-        } else if (tClass.isAssignableFrom(String.class)) {
-            return SerializationTypes.String;
-        } else if (tClass.isAssignableFrom(org.apache.kafka.common.utils.Bytes.class)) {
-            return SerializationTypes.Bytes;
-        } else if (tClass.isAssignableFrom(java.nio.ByteBuffer.class)) {
-            return SerializationTypes.ByteBuffer;
-        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-            return SerializationTypes.ByteBuffer;
-        } else if (tClass.isAssignableFrom(Float.class)) {
-            return SerializationTypes.Float;
-        } else if (tClass.isAssignableFrom(Double.class)) {
-            return SerializationTypes.Double;
-        } else if (tClass.isAssignableFrom(Integer.class)) {
-            return SerializationTypes.Integer;
-        } else if (tClass.isAssignableFrom(Long.class)) {
-            return SerializationTypes.Long;
-        } else if (tClass.isAssignableFrom(Short.class)) {
-            return SerializationTypes.Short;
-        } else if (tClass.isAssignableFrom(java.util.UUID.class)) {
-            return SerializationTypes.UUID;
-        } else {
-            // Get schema type
-            final SerializationTypes serializationType = SerializationTypes.fromSchema(clientSupplier, bytes);
-            if (serializationType != null) {
-                return serializationType;
-            }
 
-            if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                    (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-                return SerializationTypes.Json;
-            }
+    public static SerializationTypes fromClass(Class<?> tClass) {
+        if (tClass.isAssignableFrom(byte[].class)) {
+            return ByteArray;
+        } else if (tClass.isAssignableFrom(String.class)) {
+            return String;
+        } else if (tClass.isAssignableFrom(Bytes.class)) {
+            return Bytes;
+        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
+            return ByteBuffer;
+        } else if (tClass.isAssignableFrom(Float.class)) {
+            return Float;
+        } else if (tClass.isAssignableFrom(Double.class)) {
+            return Double;
+        } else if (tClass.isAssignableFrom(Integer.class)) {
+            return Integer;
+        } else if (tClass.isAssignableFrom(Long.class)) {
+            return Long;
+        } else if (tClass.isAssignableFrom(Short.class)) {
+            return Short;
+        } else if (tClass.isAssignableFrom(UUID.class)) {
+            return UUID;
+        } else if (tClass.isAssignableFrom(IndexedRecord.class)) {
+            return Avro;
+        } else if (tClass.isAssignableFrom(Message.class)) {
+            return Protobuf;
         }
 
-        return SerializationTypes.ByteArray;
+        return JsonSchema;
+    }
+
+
+    /**
+     * This method is used to determine the serialization type of the message.
+     *
+     * @param data         The message data
+     * @param srConfigured If the Schema Registry is configured
+     * @return The serialization type
+     */
+    public static SerializationTypes fromClass(Object data, boolean srConfigured) {
+        if (data instanceof String) {
+            return SerializationTypes.String;
+        } else if (data instanceof byte[]) {
+            return SerializationTypes.ByteArray;
+        } else if (data instanceof Short) {
+            return SerializationTypes.Short;
+        } else if (data instanceof Integer) {
+            return SerializationTypes.Integer;
+        } else if (data instanceof Long) {
+            return SerializationTypes.Long;
+        } else if (data instanceof Float) {
+            return SerializationTypes.Float;
+        } else if (data instanceof Double) {
+            return SerializationTypes.Double;
+        } else if (data instanceof Bytes) {
+            return SerializationTypes.Bytes;
+        } else if (data instanceof UUID) {
+            return SerializationTypes.UUID;
+        } else if (data instanceof ByteBuffer) {
+            return SerializationTypes.ByteBuffer;
+        } else if (data instanceof Message) {
+            return SerializationTypes.Protobuf;
+        } else if (data instanceof IndexedRecord) {
+            return SerializationTypes.Avro;
+        } else if (srConfigured) {
+            return SerializationTypes.JsonSchema;
+        } else {
+            return SerializationTypes.Json;
+        }
     }
 }

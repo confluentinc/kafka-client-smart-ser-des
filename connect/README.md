@@ -4,6 +4,7 @@
 
 Kafka Connect is a framework in Apache Kafka that allows you to easily integrate external systems with Kafka. It provides a scalable and reliable way to stream data between Kafka topics and external data sources or sinks.
 Confluent Value Converter is a Kafka Connect converter that allows you to serialize and deserialize data in Avro, JSON, and Protobuf formats. It provides a flexible and efficient way to convert data between different formats.
+It is also possible to consume multiple data formats in the same Kafka topic. For example, you can consume a JSON message from the same Kafka topic as an Avro message.
 
 This documentation will guide you through the setup and configuration of Kafka Connect with Confluent Value Converter, as well as provide examples of common use cases and best practices.
 

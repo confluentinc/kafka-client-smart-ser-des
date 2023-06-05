@@ -1,9 +1,10 @@
 package csid.client.serializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 import csid.client.common.SerializationTypes;
-import csid.client.serializer.record.OrderRecord;
-import csid.client.serializer.record.OrderSchemaRecord;
+import csid.client.common.schema.SchemaRegistryUtils;
+import csid.client.serializer.record.*;
 import io.confluent.csid.common.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -195,12 +198,96 @@ class ConfluentSerializerTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testPrimarySerialization() throws RestClientException, IOException {
+        ConfluentSerializer serializer = getSerializer(new HashMap<String, String>() {{
+            put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
+        }}, false);
+
+        // Given
+        String stringExpected = "Sample String";
+        byte[] bytesExpected = stringExpected.getBytes();
+        int intExpected = 123;
+        Employee employeeJsonExpected = new Employee("John", "Doe", 25, 1, "john@doe.com");
+        EmployeeProto.Employee employeeProtoExpected = EmployeeProto.Employee.newBuilder()
+                .setID("John")
+                .setName("Doe")
+                .setAge(25)
+                .setSSN(1)
+                .setEmail("john@doe.com")
+                .build();
+        EmployeeAvro employeeAvroExpected = EmployeeAvro.newBuilder()
+                .setID("John")
+                .setName("Doe")
+                .setAge(25)
+                .setSSN(1)
+                .setEmail("john@doe.com")
+                .build();
+        OrderRecord orderJsonExpected = new OrderRecord("test", "test", "test", "test");
+
+        // When
+        Headers stringHeaders = new RecordHeaders();
+        byte[] stringActual = serializer.serialize(TEST_TOPIC_NAME, stringHeaders, stringExpected);
+        Assertions.assertNotNull(stringHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.String.name(), new String(stringHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+
+        Headers bytesHeaders = new RecordHeaders();
+        byte[] bytesActual = serializer.serialize(TEST_TOPIC_NAME, bytesHeaders, bytesExpected);
+        Assertions.assertNotNull(bytesHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.ByteArray.name(), new String(bytesHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+        Headers intHeaders = new RecordHeaders();
+        byte[] intActual = serializer.serialize(TEST_TOPIC_NAME, intHeaders, intExpected);
+        Assertions.assertNotNull(intHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.Integer.name(), new String(intHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+        Headers jsonSchemaHeaders = new RecordHeaders();
+        byte[] jsonSchemaActual = serializer.serialize(TEST_TOPIC_NAME, jsonSchemaHeaders, employeeJsonExpected);
+        Assertions.assertNotNull(jsonSchemaHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.JsonSchema.name(), new String(jsonSchemaHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+        Headers avroSchemaHeaders = new RecordHeaders();
+        byte[] avroSchemaActual = serializer.serialize(TEST_TOPIC_NAME, avroSchemaHeaders, employeeAvroExpected);
+        Assertions.assertNotNull(avroSchemaHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.Avro.name(), new String(avroSchemaHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+        Headers protoSchemaHeaders = new RecordHeaders();
+        byte[] protoSchemaActual = serializer.serialize(TEST_TOPIC_NAME, protoSchemaHeaders, employeeProtoExpected);
+        Assertions.assertNotNull(protoSchemaHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.Protobuf.name(), new String(protoSchemaHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+        Headers orderJsonSchemaHeaders = new RecordHeaders();
+        byte[] orderJsonSchemaActual = serializer.serialize(TEST_TOPIC_NAME, orderJsonSchemaHeaders, orderJsonExpected);
+        Assertions.assertNotNull(orderJsonSchemaHeaders.headers(SerializationTypes.VALUE_HEADER_KEY));
+        Assertions.assertEquals(SerializationTypes.JsonSchema.name(), new String(orderJsonSchemaHeaders.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
+
+        // Then
+        Assertions.assertEquals("AVRO", SchemaRegistryUtils.getSchemaType(SRUtils::getSRClient, avroSchemaActual));
+        Assertions.assertEquals("PROTOBUF", SchemaRegistryUtils.getSchemaType(SRUtils::getSRClient, protoSchemaActual));
+        Assertions.assertEquals("JSON", SchemaRegistryUtils.getSchemaType(SRUtils::getSRClient, jsonSchemaActual));
+        Assertions.assertEquals("JSON", SchemaRegistryUtils.getSchemaType(SRUtils::getSRClient, orderJsonSchemaActual));
+        Assertions.assertEquals(stringExpected, new String(stringActual));
+        Assertions.assertEquals(bytesExpected, bytesActual);
+        Assertions.assertEquals(intExpected, ByteBuffer.wrap(intActual).getInt());
+    }
+
+
+    private static ConfluentSerializer getSerializer(Map<String, ?> props, boolean isKey) {
+        ConfluentSerializer confluentSerializer = new ConfluentSerializer();
+        confluentSerializer.configure(props, isKey);
+
+        return confluentSerializer;
+    }
+
     private static <T> byte[] confluentSerializer(Properties props, boolean isKey, T expected, SerializationTypes serializationType) {
-        try (ConfluentSerializer<T> confluentSerializer = new ConfluentSerializer<>(props, isKey)) {
+        try (ConfluentSerializer confluentSerializer = new ConfluentSerializer()) {
+            confluentSerializer.configure(Maps.fromProperties(props), isKey);
+
             final Headers headers = new RecordHeaders();
             final byte[] serialized = confluentSerializer.serialize(TEST_TOPIC_NAME, headers, expected);
-            Assertions.assertNotNull(headers.headers(SerializationTypes.HEADER_KEY));
-            Assertions.assertEquals(serializationType.name(), new String(headers.lastHeader(SerializationTypes.HEADER_KEY).value()));
+            Assertions.assertNotNull(headers.headers(SerializationTypes.VALUE_HEADER_KEY));
+            Assertions.assertEquals(serializationType.name(), new String(headers.lastHeader(SerializationTypes.VALUE_HEADER_KEY).value()));
             return serialized;
         }
     }

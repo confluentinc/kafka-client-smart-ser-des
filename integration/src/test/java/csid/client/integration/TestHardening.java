@@ -1,6 +1,5 @@
 package csid.client.integration;
 
-import csid.client.integration.model.EmployeeProto;
 import io.confluent.csid.common.test.utils.RCSUtils;
 import io.confluent.csid.common.test.utils.SRUtils;
 import io.confluent.csid.common.test.utils.containers.KafkaCluster;
@@ -108,7 +107,11 @@ public abstract class TestHardening {
     }
 
     protected SinkTailListener startListener() {
-        SinkTailListener listener = new SinkTailListener(10);
+        return startListener(10);
+    }
+
+    protected SinkTailListener startListener(int maxLines) {
+        SinkTailListener listener = new SinkTailListener(maxLines);
         Tailer tailer = new Tailer(new File("/tmp/test.sink.txt"), listener, 1000);
         Thread thread = new Thread(tailer);
         thread.setDaemon(true); // optional
@@ -162,9 +165,13 @@ public abstract class TestHardening {
     }
 
     protected <T> void produce(Properties properties, RecordSupplier<T> recordSupplier) {
+        produce(properties, recordSupplier, 10);
+    }
+
+    protected <T> void produce(Properties properties, RecordSupplier<T> recordSupplier, int maxCount) {
         int count = 0;
         try (KafkaProducer<String, T> producer = new KafkaProducer<>(properties)) {
-            while (count < 10) {
+            while (count < maxCount) {
                 count++;
                 producer.send(new ProducerRecord<>("datagen_clear", "key", recordSupplier.get(count)));
             }

@@ -67,6 +67,11 @@ public final class SchemaRegistryUtils {
             return null;
         }
 
+        final SchemaRegistryClient schemaRegistryClient = supplier.get();
+        if (schemaRegistryClient == null) {
+            return null;
+        }
+
         final ParsedSchema parsedSchema = supplier.get().getSchemaById(schemaId);
         return (parsedSchema == null)
                 ? null
