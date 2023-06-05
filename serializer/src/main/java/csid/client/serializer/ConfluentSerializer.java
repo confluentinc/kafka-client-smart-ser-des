@@ -5,7 +5,12 @@
 
 package csid.client.serializer;
 
-import csid.client.serializer.internal.ConfluentSerializerCache;
+import csid.client.common.Lazy;
+import csid.client.common.SerializationTypes;
+import csid.client.common.caching.ConfluentSerdeCache;
+import csid.client.common.schema.SchemaRegistryUtils;
+import csid.client.serializer.internal.ConfluentSerializerInternal;
+import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.*;
@@ -18,25 +23,33 @@ import java.util.Map;
  */
 @Slf4j
 public class ConfluentSerializer implements Serializer<Object> {
-    private final ConfluentSerializerCache cache = new ConfluentSerializerCache();
+
+    private ConfluentSerdeCache<Serializer<Object>> cacheInstance;
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        cache.configure(configs, isKey);
+        Lazy<SchemaRegistryClient> srSupplier = new Lazy<>(() -> SchemaRegistryUtils.getSchemaRegistryClient(configs));
+        cacheInstance = new ConfluentSerdeCache<>(this::getSerializer, srSupplier, configs, isKey);
     }
 
     @Override
     public byte[] serialize(String topic, Object data) {
-        return cache.get(data).serialize(topic, data);
+        return cacheInstance.get(data).serialize(topic, data);
     }
 
     @Override
     public byte[] serialize(String topic, Headers headers, Object data) {
-        return cache.get(data).serialize(topic, headers, data);
+        return cacheInstance.get(data).serialize(topic, headers, data);
     }
 
     @Override
     public void close() {
-        cache.close();
+        cacheInstance.close();
+    }
+
+    private Serializer<Object> getSerializer(SerializationTypes serializationTypes, Map<String, ?> cfg, boolean key) {
+        final ConfluentSerializerInternal<Object> serializer = new ConfluentSerializerInternal<>(serializationTypes);
+        serializer.configure(cfg, key);
+        return serializer;
     }
 }
