@@ -54,12 +54,12 @@ public class ConfluentDeserializer implements Deserializer<Object> {
 
     @Override
     public Object deserialize(String topic, byte[] bytes) {
-        return cacheInstance.get(bytes, null).deserialize(topic, bytes);
+        return cacheInstance.getOrCreate(bytes, null).deserialize(topic, bytes);
     }
 
     @Override
     public Object deserialize(String topic, Headers headers, byte[] bytes) {
-        return cacheInstance.get(bytes, headers).deserialize(topic, headers, bytes);
+        return cacheInstance.getOrCreate(bytes, headers).deserialize(topic, headers, bytes);
     }
 
     @Override

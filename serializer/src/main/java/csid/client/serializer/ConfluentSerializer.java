@@ -34,12 +34,12 @@ public class ConfluentSerializer implements Serializer<Object> {
 
     @Override
     public byte[] serialize(String topic, Object data) {
-        return cacheInstance.get(data).serialize(topic, data);
+        return cacheInstance.getOrCreate(data).serialize(topic, data);
     }
 
     @Override
     public byte[] serialize(String topic, Headers headers, Object data) {
-        return cacheInstance.get(data).serialize(topic, headers, data);
+        return cacheInstance.getOrCreate(data).serialize(topic, headers, data);
     }
 
     @Override

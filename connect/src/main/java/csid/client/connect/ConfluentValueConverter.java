@@ -36,24 +36,24 @@ public class ConfluentValueConverter implements Converter {
 
     @Override
     public byte[] fromConnectData(String topic, Schema schema, Object value) {
-        return cacheInstance.get(value, schema.type().isPrimitive())
+        return cacheInstance.getOrCreate(value, schema.type().isPrimitive())
                 .fromConnectData(topic, schema, value);
     }
 
     @Override
     public byte[] fromConnectData(String topic, Headers headers, Schema schema, Object value) {
-        return cacheInstance.get(value, schema.type().isPrimitive())
+        return cacheInstance.getOrCreate(value, schema.type().isPrimitive())
                 .fromConnectData(topic, headers, schema, value);
     }
 
     @Override
     public SchemaAndValue toConnectData(String topic, byte[] value) {
-        return cacheInstance.get(value, null).toConnectData(topic, value);
+        return cacheInstance.getOrCreate(value, null).toConnectData(topic, value);
     }
 
     @Override
     public SchemaAndValue toConnectData(String topic, Headers headers, byte[] value) {
-        return cacheInstance.get(value, headers).toConnectData(topic, value);
+        return cacheInstance.getOrCreate(value, headers).toConnectData(topic, value);
     }
 
     private Converter getConverter(SerializationTypes serializationTypes, Map<String, ?> cfg, boolean isKey) {

@@ -15,8 +15,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+/**
+ * ConfluentSerdeCache is a wrapper around the Confluent serializers.
+ *
+ * @param <T> The type of object that is being lazily initialized.
+ */
 public class ConfluentSerdeCache<T> {
 
+    /**
+     * SerdeFactory is a factory for creating serializers.
+     *
+     * @param <T> The type of object that is being lazily initialized.
+     */
     public interface SerdeFactory<T> {
         T create(SerializationTypes serializationTypes, Map<String, ?> configs, boolean isKey);
     }
@@ -48,12 +58,18 @@ public class ConfluentSerdeCache<T> {
         }
     }
 
-
     public ConfluentSerdeCache(SerdeFactory<T> factory, Supplier<SchemaRegistryClient> srSupplier, Map<String, ?> configs, boolean isKey) {
         this(factory, srSupplier, configs, isKey, null);
     }
 
-    public T get(final byte[] data, final Headers headers) {
+    /**
+     * Get the serde for the given serialization type.
+     *
+     * @param data    The data to be serialized.
+     * @param headers The headers to be used for determining the serialization type.
+     * @return The serde for the given serialization type.
+     */
+    public T getOrCreate(final byte[] data, final Headers headers) {
         SerializationTypes serializationType = SerializationTypes.fromHeaders(headers, isKey);
         if (serializationType == null) {
             try {
@@ -71,38 +87,39 @@ public class ConfluentSerdeCache<T> {
             return null;
         }
 
-        return get(serializationType);
+        return getOrCreate(serializationType);
     }
 
-    public T get(Object data) {
+    /**
+     * Get the serde for the given serialization type.
+     *
+     * @param data The data to be serialized.
+     * @return The serde for the given serialization type.
+     */
+    public T getOrCreate(Object data) {
         final SerializationTypes serializationType = SerializationTypes.fromClass(data, srConfigured);
         return (serializationType == null)
-                ? get(defaultType)
-                : get(serializationType);
+                ? getOrCreate(defaultType)
+                : getOrCreate(serializationType);
     }
-
-    public T get(byte[] bytes) throws RestClientException, IOException {
-        final SerializationTypes serializationType = SerializationTypes.fromBytes(srSupplier, bytes);
-        return (serializationType == null)
-                ? get(defaultType)
-                : get(serializationType);
-    }
-
-    public T get(Class<?> tClass) {
-        final SerializationTypes serializationType = SerializationTypes.fromClass(tClass, srConfigured);
-        return (serializationType == null)
-                ? get(defaultType)
-                : get(serializationType);
-    }
-
-    public T get(Object data, boolean isPrimitive) {
+    
+    /**
+     * Get the serde for the given serialization type.
+     *
+     * @param data        The data to be serialized.
+     * @param isPrimitive Whether the data is a primitive type.
+     * @return The serde for the given serialization type.
+     */
+    public T getOrCreate(Object data, boolean isPrimitive) {
         final SerializationTypes serializationTypes = isPrimitive
                 ? SerializationTypes.fromClass(data.getClass())
                 : defaultType;
-        return get(serializationTypes);
+        return getOrCreate(serializationTypes);
     }
 
-
+    /**
+     * Close all of the cached serializers.
+     */
     public void close() {
         cache.values().forEach(serde -> {
             if (serde instanceof Closeable) {
@@ -115,7 +132,13 @@ public class ConfluentSerdeCache<T> {
         });
     }
 
-    private T get(SerializationTypes serializationType) {
+    /**
+     * Get the serde from the cache or create a new one.
+     *
+     * @param serializationType The serialization type.
+     * @return The serde for the given serialization type.
+     */
+    private T getOrCreate(SerializationTypes serializationType) {
         return cache.computeIfAbsent(serializationType, type -> factory.create(type, configs, isKey));
     }
 }
