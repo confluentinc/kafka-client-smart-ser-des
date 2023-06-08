@@ -1,6 +1,5 @@
-/*
- * -
- * Copyright (C) 2020-2023 Confluent, Inc.
+/*-
+ * Copyright (C) 2022-2023 Confluent, Inc.
  */
 
 package csid.client.deserializer.internal;
@@ -16,6 +15,7 @@ import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.*;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * KafkaSmartDeserializer is a wrapper around the Confluent Kafka Deserializers.
@@ -26,8 +26,8 @@ import java.util.Map;
 public class ConfluentDeserializerInternal<T> implements Deserializer<T> {
     private final Deserializer<?> inner;
 
-    public ConfluentDeserializerInternal(final SerializationTypes serializationTypes, final SchemaRegistryClient schemaRegistryClient) {
-        this.inner = getDeserializer(serializationTypes, schemaRegistryClient);
+    public ConfluentDeserializerInternal(final SerializationTypes serializationTypes, final Supplier<SchemaRegistryClient> srSupplier) {
+        this.inner = getDeserializer(serializationTypes, srSupplier);
     }
 
     @Override
@@ -62,16 +62,16 @@ public class ConfluentDeserializerInternal<T> implements Deserializer<T> {
      * @param serializationType The serialization type.
      * @return The deserializer.
      */
-    private Deserializer<?> getDeserializer(SerializationTypes serializationType, SchemaRegistryClient schemaRegistryClient) {
+    private Deserializer<?> getDeserializer(SerializationTypes serializationType, Supplier<SchemaRegistryClient> supplier) {
         switch (serializationType) {
             case Avro:
-                return new KafkaAvroDeserializer(schemaRegistryClient);
+                return new KafkaAvroDeserializer(supplier.get());
             case Json:
                 return new KafkaJsonDeserializer<>();
             case JsonSchema:
-                return new KafkaJsonSchemaDeserializer<>(schemaRegistryClient);
+                return new KafkaJsonSchemaDeserializer<>(supplier.get());
             case Protobuf:
-                return new KafkaProtobufDeserializer<>(schemaRegistryClient);
+                return new KafkaProtobufDeserializer<>(supplier.get());
             case Long:
                 return new LongDeserializer();
             case Integer:

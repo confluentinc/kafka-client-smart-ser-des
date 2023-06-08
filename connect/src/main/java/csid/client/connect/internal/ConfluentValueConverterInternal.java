@@ -1,12 +1,22 @@
+/*-
+ * Copyright (C) 2022-2023 Confluent, Inc.
+ */
+
 package csid.client.connect.internal;
 
 import csid.client.common.SerializationTypes;
+import io.confluent.connect.avro.AvroConverter;
+import io.confluent.connect.json.JsonSchemaConverter;
+import io.confluent.connect.protobuf.ProtobufConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.connect.converters.*;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
+import org.apache.kafka.connect.json.JsonConverter;
 import org.apache.kafka.connect.storage.Converter;
+import org.apache.kafka.connect.storage.StringConverter;
 
 import java.util.Map;
 
@@ -16,18 +26,53 @@ import java.util.Map;
 @Slf4j
 public class ConfluentValueConverterInternal implements Converter {
 
-    private final Converter inner;
+    private Converter inner;
     private final SerializationTypes type;
     private final boolean isKey;
 
-    public ConfluentValueConverterInternal(Converter inner, SerializationTypes type, boolean isKey) {
-        this.inner = inner;
+    public ConfluentValueConverterInternal(SerializationTypes type, boolean isKey) {
         this.type = type;
         this.isKey = isKey;
     }
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
+        switch (type) {
+            case Avro:
+                this.inner = new AvroConverter();
+                break;
+            case JsonSchema:
+                this.inner = new JsonSchemaConverter();
+                break;
+            case Protobuf:
+                this.inner = new ProtobufConverter();
+                break;
+            case String:
+                this.inner = new StringConverter();
+                break;
+            case Json:
+                this.inner = new JsonConverter();
+                break;
+            case Short:
+                this.inner = new ShortConverter();
+                break;
+            case Integer:
+                this.inner = new IntegerConverter();
+                break;
+            case Long:
+                this.inner = new LongConverter();
+                break;
+            case Double:
+                this.inner = new DoubleConverter();
+                break;
+            case Float:
+                this.inner = new FloatConverter();
+                break;
+            default:
+                this.inner = new ByteArrayConverter();
+                break;
+        }
+
         this.inner.configure(configs, isKey);
     }
 
@@ -41,7 +86,7 @@ public class ConfluentValueConverterInternal implements Converter {
         if (headers != null) {
             type.toHeaders(headers, isKey);
         }
-        
+
         return inner.fromConnectData(topic, headers, schema, value);
     }
 
@@ -59,5 +104,4 @@ public class ConfluentValueConverterInternal implements Converter {
     public ConfigDef config() {
         return Converter.super.config();
     }
-
 }

@@ -1,6 +1,5 @@
-/*
- * -
- * Copyright (C) 2020-2023 Confluent, Inc.
+/*-
+ * Copyright (C) 2022-2023 Confluent, Inc.
  */
 
 package csid.client.common.schema;
@@ -15,6 +14,7 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import io.confluent.kafka.schemaregistry.json.JsonSchemaProvider;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchemaProvider;
 import io.confluent.kafka.schemaregistry.testutil.MockSchemaRegistry;
+import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import org.apache.kafka.common.config.ConfigException;
 
 import java.io.IOException;
@@ -50,6 +50,10 @@ public final class SchemaRegistryUtils {
         }
 
         return buffer.getInt();
+    }
+
+    public static boolean isSchemaRegistryConfigured(Map<String, ?> configs) {
+        return configs.containsKey(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
     }
 
     /**

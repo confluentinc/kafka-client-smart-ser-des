@@ -1,15 +1,19 @@
+/*-
+ * Copyright (C) 2022-2023 Confluent, Inc.
+ */
+
 package csid.client.connect;
 
-import csid.client.connect.exceptions.ConfluentValueConverterException;
-import csid.client.connect.internal.ConfluentValueConverterCache;
-import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
+import csid.client.common.SerializationTypes;
+import csid.client.common.caching.ConfluentSerdeCache;
+import csid.client.common.schema.SchemaRegistryUtils;
+import csid.client.connect.internal.ConfluentValueConverterInternal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.data.SchemaAndValue;
 import org.apache.kafka.connect.storage.Converter;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -18,38 +22,47 @@ import java.util.Map;
 @Slf4j
 public class ConfluentValueConverter implements Converter {
 
-    private final ConfluentValueConverterCache cache = new ConfluentValueConverterCache();
+    private ConfluentSerdeCache<Converter> cacheInstance;
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        cache.configure(configs, isKey);
+        final ConfluentValueConverterConfig config = new ConfluentValueConverterConfig(configs);
+
+        final SerializationTypes serializationTypes = config.getType();
+
+        cacheInstance = new ConfluentSerdeCache<>(
+                this::getConverter,
+                () -> SchemaRegistryUtils.getSchemaRegistryClient(configs),
+                configs,
+                isKey,
+                serializationTypes);
     }
 
     @Override
     public byte[] fromConnectData(String topic, Schema schema, Object value) {
-        return cache.getFromObject(value, schema).fromConnectData(topic, schema, value);
+        return cacheInstance.getOrCreate(value, schema.type().isPrimitive())
+                .fromConnectData(topic, schema, value);
     }
 
     @Override
     public byte[] fromConnectData(String topic, Headers headers, Schema schema, Object value) {
-        return cache.getFromObject(value, schema).fromConnectData(topic, headers, schema, value);
+        return cacheInstance.getOrCreate(value, schema.type().isPrimitive())
+                .fromConnectData(topic, headers, schema, value);
     }
 
     @Override
     public SchemaAndValue toConnectData(String topic, byte[] value) {
-        try {
-            return cache.getFromBytes(value, null).toConnectData(topic, value);
-        } catch (RestClientException | IOException e) {
-            throw new ConfluentValueConverterException("Error during inner converter initialization.", e);
-        }
+        return cacheInstance.getOrCreate(value, null).toConnectData(topic, value);
     }
 
     @Override
     public SchemaAndValue toConnectData(String topic, Headers headers, byte[] value) {
-        try {
-            return cache.getFromBytes(value, headers).toConnectData(topic, value);
-        } catch (RestClientException | IOException e) {
-            throw new ConfluentValueConverterException("Error during inner converter initialization.", e);
-        }
+        return cacheInstance.getOrCreate(value, headers).toConnectData(topic, value);
+    }
+
+    private Converter getConverter(SerializationTypes serializationTypes, Map<String, ?> cfg, boolean isKey) {
+        ConfluentValueConverterInternal converter = new ConfluentValueConverterInternal(serializationTypes, isKey);
+        converter.configure(cfg, isKey);
+        return converter;
     }
 }
