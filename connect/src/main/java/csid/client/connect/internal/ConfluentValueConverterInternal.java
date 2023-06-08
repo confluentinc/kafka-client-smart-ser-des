@@ -1,3 +1,7 @@
+/*-
+ * Copyright (C) 2022-2023 Confluent, Inc.
+ */
+
 package csid.client.connect.internal;
 
 import csid.client.common.SerializationTypes;

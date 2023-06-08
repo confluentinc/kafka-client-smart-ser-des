@@ -1,3 +1,7 @@
+/*-
+ * Copyright (C) 2022-2023 Confluent, Inc.
+ */
+
 package csid.client.common.caching;
 
 import csid.client.common.SerializationTypes;
@@ -6,6 +10,7 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.subject.TopicRecordNameStrategy;
+import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.header.Headers;
 
 import java.io.Closeable;
@@ -84,7 +89,7 @@ public class ConfluentSerdeCache<T> {
         }
 
         if (serializationType == null) {
-            return null;
+            throw new SerializationException("Could not determine the serialization type.");
         }
 
         return getOrCreate(serializationType);
@@ -102,7 +107,7 @@ public class ConfluentSerdeCache<T> {
                 ? getOrCreate(defaultType)
                 : getOrCreate(serializationType);
     }
-    
+
     /**
      * Get the serde for the given serialization type.
      *

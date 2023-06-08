@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2022-2023 Confluent, Inc.
+
+-->
+<additionalHeaders>
+    <!-- Customisation to get copyright before package-->
+    <!-- https://github.com/mathieucarbou/license-maven-plugin/pull/115#issuecomment-965097523-->
+    <JAVAPKG_STYLE_BEFORE>
+        <!-- Don't insert blank line first -->
+        <firstLine><![CDATA[/*-]]></firstLine>
+        <beforeEachLine><![CDATA[ * ]]></beforeEachLine>
+        <endLine><![CDATA[ */EOL]]></endLine>
+        <!-- don't skip any lines -->
+        <!-- <skipLine><![CDATA[^package [a-z]+(\.[a-z][a-z0-9]*)*;$]]></skipLine>-->
+        <firstLineDetectionPattern><![CDATA[(EOL)*(\s|\t)*/\*.*$]]></firstLineDetectionPattern>
+        <lastLineDetectionPattern><![CDATA[.*\*/(\s|\t)*$]]></lastLineDetectionPattern>
+        <allowBlankLines>false</allowBlankLines>
+        <isMultiline>true</isMultiline>
+        <padLines>false</padLines>
+    </JAVAPKG_STYLE_BEFORE>
+</additionalHeaders>

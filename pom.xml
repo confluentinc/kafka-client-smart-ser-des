@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2022-2023 Confluent, Inc.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -36,6 +41,9 @@
         <commons-io.version>2.11.0</commons-io.version>
         <connect-file.version>3.4.0</connect-file.version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
+
+        <license.mode>format</license.mode>
+        <mycila.version>4.2.rc3</mycila.version>
     </properties>
 
     <dependencies>
@@ -91,6 +99,76 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <!-- -Dlicense.skip to skip -->
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <!-- only have parent run this - as it covers all sub dirs -->
+                <inherited>false</inherited>
+                <!-- To apply the license run: -->
+                <!-- ↪ mvn com.mycila:license-maven-plugin:format -->
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <licenseSets>
+                        <licenseSet>
+                            <inlineHeader>Copyright (C) ${license.git.copyrightYears} ${project.organization.name}
+                            </inlineHeader>
+                            <excludes>
+                                <exclude>docs/**</exclude>
+                                <exclude>docs_src/**</exclude>
+                                <exclude>libs/**</exclude>
+                                <exclude>**/resources/defiance_dps/**</exclude>
+                                <exclude>**/resources/client_keystore/**</exclude>
+                                <exclude>**/*.hcl</exclude>
+                                <exclude>**/*.avsc</exclude>
+                                <exclude>**/*.proto</exclude>
+                                <exclude>**/*.txt</exclude>
+                                <exclued>.run/**</exclued>
+                                <exclude>Jenkinsfile</exclude>
+                                <exclude>mk-include/**</exclude>
+                                <!-- is present when run in CI -->
+                                <exclude>.m2/**</exclude>
+                                <exclude>.semaphore/**</exclude>
+                                <exclude>.ci/**</exclude>
+                                <exclude>**/*.key</exclude>
+                                <exclude>**/*.next</exclude>
+                                <exclude>**/*.tag</exclude>
+                                <exclude>**/maven-global-settings.xml</exclude>
+                                <exclude>**/*.go</exclude>
+                                <exclude>**/*.sum</exclude>
+                                <exclude>**/*.mod</exclude>
+                                <exclude>**/*.rego</exclude>
+                                <exclude>**/*.csv</exclude>
+                                <exclude>**/.buildinfo</exclude>
+                                <exclude>**/*.env</exclude>
+                                <exclude>Makefile</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
+                    <mapping>
+                        <java>JAVAPKG_STYLE_BEFORE</java>
+                    </mapping>
+                    <headerDefinitions>
+                        <headerDefinition>${maven.multiModuleProjectDirectory}/src/build/myc-javapkg.xml
+                        </headerDefinition>
+                    </headerDefinitions>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin-git</artifactId>
+                        <version>${mycila.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>${license.mode}</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <pluginManagement>
