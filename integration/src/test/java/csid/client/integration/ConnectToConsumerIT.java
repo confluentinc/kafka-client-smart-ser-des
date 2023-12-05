@@ -15,8 +15,6 @@ import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientExcept
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +29,7 @@ import static io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializerCon
 @Testcontainers
 @Slf4j
 @DisplayName("Connect to Consumer Tests")
-public class ConnectToConsumerTests extends TestHardening {
+public class ConnectToConsumerIT extends TestHardening {
 
     @Test
     public void testAvro() throws IOException, RestClientException {

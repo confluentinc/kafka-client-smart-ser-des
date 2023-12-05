@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutionException;
 
 @Testcontainers
 @Slf4j
-public class ValueConverterTests {
+public class ValueConverterIT {
 
     protected KafkaCluster cluster;
     private Connect connect;
@@ -116,7 +116,7 @@ public class ValueConverterTests {
     }
 
     private void createConfigFile() throws IOException {
-        String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ValueConverterTests.class);
+        String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ValueConverterIT.class);
         config = config.replace("{{bootstrap.servers}}", cluster.getBootstrapServers());
 
         File configFile = new File("/tmp/connect-standalone.properties");
@@ -130,8 +130,8 @@ public class ValueConverterTests {
     }
 
     private void createConnectorConfig(String srcFilename, String targetFilename) throws IOException {
-        final Path schema = RCSUtils.getResourcePath("/emp.avsc", ValueConverterTests.class);
-        String config = RCSUtils.getResourceAsString("/" + srcFilename, ValueConverterTests.class);
+        final Path schema = RCSUtils.getResourcePath("/emp.avsc", ValueConverterIT.class);
+        String config = RCSUtils.getResourceAsString("/" + srcFilename, ValueConverterIT.class);
         config = config.replace("{{schema}}", schema.toString());
 
         FileWriter myWriter = new FileWriter("/tmp/" + targetFilename);

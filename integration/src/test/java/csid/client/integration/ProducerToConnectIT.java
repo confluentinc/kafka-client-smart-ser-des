@@ -25,7 +25,7 @@ import java.util.Properties;
 @Testcontainers
 @Slf4j
 @DisplayName("Producer to Connect Tests")
-public class ProducerToConnectTests extends TestHardening {
+public class ProducerToConnectIT extends TestHardening {
 
     @Test
     public void testJson() throws IOException, RestClientException, InterruptedException {
