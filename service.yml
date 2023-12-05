@@ -4,7 +4,10 @@
 
 name: csid-smart-ser-des
 lang: java
+lang_version: unknown
 git:
   enable: true
 github:
+  enable: true
+semaphore:
   enable: true
