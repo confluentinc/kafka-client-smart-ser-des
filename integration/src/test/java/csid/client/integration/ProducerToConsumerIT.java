@@ -32,7 +32,7 @@ import static io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializerCon
 @Testcontainers
 @Slf4j
 @DisplayName("Producer to Consumer Tests")
-public class ProducerToConsumerTests extends TestHardening {
+public class ProducerToConsumerIT extends TestHardening {
 
     @Test
     public void testJson() throws IOException, RestClientException {

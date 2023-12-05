@@ -18,7 +18,7 @@ import java.io.IOException;
 @Testcontainers
 @Slf4j
 @DisplayName("Connect to Connect Tests")
-public class ConnectToConnectTests extends TestHardening {
+public class ConnectToConnectIT extends TestHardening {
 
     @ParameterizedTest
     @ValueSource(strings = {"AVRO", "JSON", "PROTOBUF"})

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-public class MultiTypeToConnectTests extends TestHardening {
+public class MultiTypeToConnectIT extends TestHardening {
 
     @Test
     public void testJson() throws IOException, RestClientException, InterruptedException {
