@@ -363,7 +363,6 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${maven-surefire-plugin.version}</version>
                         <configuration>
-                            <xmlFile>${project.build.directory}/surefire-reports/unit-test-results.xml</xmlFile>
                             <excludes>
                                 <exclude>**/*IT</exclude>
                             </excludes>
@@ -382,9 +381,6 @@
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${maven-failsafe-plugin.version}</version>
-                        <configuration>
-                            <xmlFile>${project.build.directory}/failsafe-reports/integration-test-results.xml</xmlFile>
-                        </configuration>
                         <executions>
                             <execution>
                                 <goals>
