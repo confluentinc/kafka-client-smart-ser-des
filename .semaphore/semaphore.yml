@@ -66,13 +66,15 @@ blocks:
       epilogue:
         always:
           commands:
-            - test-results publish ./target/**-reports/*.xml
+            - test-results publish **/target/surefire-reports/*.xml
+
 after_pipeline:
   task:
     jobs:
       - name: Publish Results
         commands:
           - test-results gen-pipeline-report
+
 promotions:
   - name: Publish to Internal Maven
     pipeline_file: publish_to_codeartifact.yml
