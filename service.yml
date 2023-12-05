@@ -3,7 +3,7 @@
 #
 
 name: csid-smart-ser-des
-lang: unknown
+lang: java
 git:
   enable: true
 github:
