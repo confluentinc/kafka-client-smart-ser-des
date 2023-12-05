@@ -59,15 +59,15 @@ blocks:
         - name: Unit Tests
           commands:
             - ./mvnw -Punit test
-          post:
-            commands:
-              - test-results publish **/target/surefire-reports/unit-test-results.xml
+
         - name: Integration Tests
           commands:
             - ./mvnw verify -Pintegration
-          post:
-            commands:
-              - test-results publish **/target/failsafe-reports/integration-test-results.xml
+
+      epilogue:
+        always:
+          commands:
+            - test-results publish ./target/**-reports/*.xml
 
 after_pipeline:
   task:
