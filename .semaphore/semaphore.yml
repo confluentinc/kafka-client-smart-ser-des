@@ -73,3 +73,8 @@ after_pipeline:
       - name: Publish Results
         commands:
           - test-results gen-pipeline-report
+promotions:
+  - name: Publish to Internal Maven
+    pipeline_file: publish_to_codeartifact.yml
+    auto_promote:
+      when: "result = 'passed' and tag =~ '.*'"
