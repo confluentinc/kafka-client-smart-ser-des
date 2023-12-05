@@ -1,7 +1,6 @@
 #
 # Copyright (C) 2022-2023 Confluent, Inc.
 #
-
 name: csid-smart-ser-des
 lang: java
 lang_version: unknown
@@ -11,3 +10,19 @@ github:
   enable: true
 semaphore:
   enable: true
+  pipeline_enable: false
+  tasks:
+    - name: release
+      branch: master
+      pipeline_file: ".semaphore/release.yml"
+      parameters:
+        - name: PROJECT_VERSION
+          required: true
+          default_value: "X.Y.Z"
+        - name: NEXT_PROJECT_VERSION
+          required: true
+          default_value: "X.Y.Z-SNAPSHOT"
+make:
+  enable: true
+  enable_updates: true
+  update_makefile: false
