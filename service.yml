@@ -1,7 +1,6 @@
 #
 # Copyright (C) 2022-2023 Confluent, Inc.
 #
-
 name: csid-smart-ser-des
 lang: java
 lang_version: unknown
@@ -11,3 +10,7 @@ github:
   enable: true
 semaphore:
   enable: true
+make:
+  enable: true
+  enable_updates: true
+  update_makefile: false
