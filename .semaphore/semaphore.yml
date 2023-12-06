@@ -67,7 +67,9 @@ blocks:
       epilogue:
         always:
           commands:
-            - test-results publish ./target/**-reports/*.xml
+            - test-results publish **/target/surefire-reports/*.xml
+            - test-results publish **/target/failsafe-reports/*.xml
+
 after_pipeline:
   task:
     jobs:
