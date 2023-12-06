@@ -122,7 +122,7 @@ public class ConfluentDeserializerTest {
         Object actual = confluentDeserializer(props, false, expectedBytes, Double.class);
 
         // Then
-        assertEquals(null, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
