@@ -68,7 +68,7 @@ blocks:
         always:
           commands:
             - test-results publish **/target/surefire-reports/*.xml
-            - test-results publish **/target/failsafe-reports/*.xml
+            - ls **/target/
 
 after_pipeline:
   task:
