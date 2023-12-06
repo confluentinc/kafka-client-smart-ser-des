@@ -4,14 +4,12 @@
     Copyright (C) 2022-2023 Confluent, Inc.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.confluent.csid</groupId>
     <artifactId>csid-smart-ser-des</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <packaging>pom</packaging>
 
@@ -55,7 +53,7 @@
         <connection>scm:git:git://github.com:confluentinc/csid-smart-ser-des.git</connection>
         <developerConnection>scm:git:git@github.com:confluentinc/csid-smart-ser-des.git</developerConnection>
         <url>https://github.com/confluentinc/csid-smart-ser-des.git</url>
-        <tag>HEAD</tag>
+        <tag>1.0.0</tag>
     </scm>
 
     <dependencies>
