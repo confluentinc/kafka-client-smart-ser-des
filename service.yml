@@ -14,7 +14,7 @@ semaphore:
   pipeline_enable: false
   tasks:
     - name: release
-      branch: master
+      branch: main
       pipeline_file: ".semaphore/release.yml"
       parameters:
         - name: PROJECT_VERSION
