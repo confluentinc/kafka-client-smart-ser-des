@@ -3,7 +3,8 @@ run:
   timeout: 10m
   # don't fail the CI
   issues-exit-code: 0
-  skip-dirs: mk-includes
+  skip-dirs:
+  - mk-include
 
 linters:
   disable-all: true

@@ -7,7 +7,10 @@ DB_SCHEMA_FILE ?= ./db/schema.sql
 DB_SEED_FILE ?= ./db/seeds.sql
 ADMIN_DB_URL ?= postgres://
 
-INIT_CI_TARGETS += install-migrate db-local-reset
+# Only need to reset db before CI runs tests
+ifeq ($(CI),true)
+PRE_TEST_TARGETS += install-migrate db-local-reset
+endif
 
 .PHONY: install-migrate
 install-migrate:
@@ -35,7 +38,7 @@ psql: _db-vars
 
 .PHONY: db-migrate-create
 ## Create a new DB migration. Usage: make db-migrate-create NAME=migration_name_here
-db-migrate-create: _db-vars
+db-migrate-create: _db-vars install-migrate
 ifndef NAME
 	$(error NAME is not set. Usage: make db-migrate-create NAME=migration_name_here)
 endif
@@ -110,7 +113,7 @@ endif
 	$(MAKE) db-migrate-up db-seed
 
 .PHONY: _db-migrate-with-dump
-_db-migrate-with-dump: _db-vars
+_db-migrate-with-dump: _db-vars install-migrate
 ifndef COMMAND
 	$(error COMMAND is not set. Usage: _db-migrate-with-dump COMMAND="up $$(N)")
 endif
@@ -125,7 +128,7 @@ endif
     	fi; \
 
 .PHONY: _db-migrate-with-nodump
-_db-migrate-with-nodump: _db-vars
+_db-migrate-with-nodump: _db-vars install-migrate
 ifndef COMMAND
 	$(error COMMAND is not set. Usage: _db-migrate-with-nodump COMMAND="force $$(VER)")
 endif

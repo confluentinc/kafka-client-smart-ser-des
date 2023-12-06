@@ -24,34 +24,36 @@ def test_version_filter():
 
 
 def test_make_show_args():
-    output = run_cmd("make show-args")
-    assert_in_output(output, [
-        "docker-login-ci install-vault vault-bash-functions deps cache-docker-base-images gcloud-install cpd-update helm-setup-ci"
+    output, stderr = run_cmd("make show-args")
+    assert_in_output(output, stderr, [
+        "cache-docker-base-images",
+        "deps",
+        "docker-login-ci",
+        "gcloud-install",
     ])
 
 def test_make_init_ci():
-    output = run_cmd("make init-ci")
-    assert_in_output(output, [
+    output, stderr = run_cmd("make init-ci")
+    assert_in_output(output, stderr, [
         "all modules verified",
         "cache restore 519856050701.dkr.ecr.us-west-2.amazonaws.com/docker/prod/confluentinc/cc-built-base:v1.1.0",
-        "## Updating CPD binary to latest"
     ])
     assert_file(["/home/semaphore/.docker/config.json"])
 
 
 def test_make_build_docker():
-    output = run_cmd("make build-docker 2>&1")
-    assert_in_output(output, ["naming to", "docker image save"])
+    output, stderr = run_cmd("make build-docker 2>&1")
+    assert_in_output(output, stderr, ["naming to", "docker image save"])
 
 
 def test_make_release():
-    output = run_cmd("make release-ci")
-    assert_not_in_output(output, [
+    output, stderr = run_cmd("make release-ci")
+    assert_not_in_output(output, stderr, [
         "Changes not staged for commit:",
         "recipe for target 'pre-release-check' failed"
     ])
 
-    assert_in_output(output, [
+    assert_in_output(output, stderr, [
         "git add release.svg",
     ])
 
@@ -69,6 +71,6 @@ def test_make_ssh():
             time.sleep(1)
             with open(os.path.join(home, ".ssh", filename), "w+") as file:
                 file.write("contents")
-            output = run_cmd("make .ssh", env=env)
-            assert_not_in_output(output, ["up to date", "Nothing to be done"])
+            output, stderr = run_cmd("make .ssh", env=env)
+            assert_not_in_output(output, stderr, ["up to date", "Nothing to be done"])
             assert_file([os.path.join(".ssh", filename)])

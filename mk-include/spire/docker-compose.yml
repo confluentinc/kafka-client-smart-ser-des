@@ -2,6 +2,8 @@ version: '3'
 services:
   spire-server:
     container_name: spire-server
+    ports:
+      - '31524:8081'
     image: ghcr.io/spiffe/spire-server:1.6.0
     hostname: spire-server
     healthcheck:
@@ -19,7 +21,7 @@ services:
     ports:
       - '31523:8081'
     pid: "host"
-    image: us-docker.pkg.dev/devprod-nonprod-052022/docker/dev/confluentinc/cc-local-testing-spire-agent:v0.5.0
+    image: 519856050701.dkr.ecr.us-west-2.amazonaws.com/docker/prod/confluentinc/cc-local-testing-spire-agent:v0.17.0
     depends_on:
       spire-server:
         condition: service_healthy
