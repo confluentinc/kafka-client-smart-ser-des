@@ -67,7 +67,10 @@ blocks:
       epilogue:
         always:
           commands:
+            - ls ./target/site/
             - test-results publish ./target/site/*.xml
+            - test-results publish ./target/**-reports/*.xml
+
 
 after_pipeline:
   task:
