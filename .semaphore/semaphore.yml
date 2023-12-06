@@ -68,11 +68,7 @@ blocks:
         always:
           commands:
             - ls ./target/site/
-            - ls ./target/surefire-reports/
-            - ls ./target/failsafe-reports/
             - test-results publish ./target/site/*.html
-            - test-results publish ./target/**-reports/*.xml
-
 
 after_pipeline:
   task:
