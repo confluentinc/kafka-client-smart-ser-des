@@ -51,6 +51,13 @@
         <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
+    <scm>
+        <connection>scm:git:git://github.com:confluentinc/csid-smart-ser-des.git</connection>
+        <developerConnection>scm:git:git@github.com:confluentinc/csid-smart-ser-des.git</developerConnection>
+        <url>https://github.com/confluentinc/csid-smart-ser-des.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>io.confluent</groupId>
