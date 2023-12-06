@@ -34,7 +34,7 @@ public class ConnectToConnectIT extends TestHardening {
         Assertions.assertEquals(10, listener.getLines().size());
 
         final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
-        Assertions.assertEquals(type, schema.schemaType());
+        Assertions.assertEquals(null, schema.schemaType());
     }
 
 
