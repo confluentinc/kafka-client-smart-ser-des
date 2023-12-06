@@ -58,7 +58,7 @@ blocks:
       jobs:
         - name: Unit Tests
           commands:
-            - ./mvnw -Punit test
+            - ./mvnw verify -Punit
 
         - name: Integration Tests
           commands:
