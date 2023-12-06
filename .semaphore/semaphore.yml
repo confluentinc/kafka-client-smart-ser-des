@@ -59,16 +59,23 @@ blocks:
         - name: Unit Tests
           commands:
             - ./mvnw verify -Punit
-
+          artifacts:
+            # Upload HTML report as an artifact
+            - ./target/site/*-report.html
+            # Display HTML report in Test Tab
+          test-results:
+            format: junit
+            path: ./target/site/*-report.html
         - name: Integration Tests
           commands:
             - ./mvnw verify -Pintegration
-
-      epilogue:
-        always:
-          commands:
-            - ls ./target/site/
-            - test-results publish ./target/site/*-report.html
+          artifacts:
+            # Upload HTML report as an artifact
+            - ./target/site/*-report.html
+            # Display HTML report in Test Tab
+          test-results:
+            format: junit
+            path: ./target/site/*-report.html
 
 after_pipeline:
   task:
