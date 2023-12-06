@@ -393,7 +393,6 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <outputDirectory>${project.reporting.outputDirectory}/surefire-report</outputDirectory>
                             <aggregate>true</aggregate>
                             <showSuccess>true</showSuccess>
                             <showTimings>true</showTimings>
