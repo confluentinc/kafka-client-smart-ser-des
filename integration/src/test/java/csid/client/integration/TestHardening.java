@@ -36,7 +36,6 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 
 @Slf4j
 public abstract class TestHardening {
@@ -80,7 +79,7 @@ public abstract class TestHardening {
     }
 
     protected void createConfigFile() throws IOException {
-        String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ConnectToConnectTests.class);
+        String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ConnectToConnectIT.class);
         config = config.replace("{{bootstrap.servers}}", cluster.getBootstrapServers());
 
         File configFile = new File("/tmp/connect-standalone.properties");
@@ -94,8 +93,8 @@ public abstract class TestHardening {
     }
 
     protected void createConnectorConfig(String srcFilename, String targetFilename) throws IOException {
-        final Path schema = RCSUtils.getResourcePath("/emp.avsc", ConnectToConnectTests.class);
-        String config = RCSUtils.getResourceAsString("/" + srcFilename, ConnectToConnectTests.class);
+        final Path schema = RCSUtils.getResourcePath("/emp.avsc", ConnectToConnectIT.class);
+        String config = RCSUtils.getResourceAsString("/" + srcFilename, ConnectToConnectIT.class);
         config = config.replace("{{schema}}", schema.toString());
 
         FileWriter myWriter = new FileWriter("/tmp/" + targetFilename);
