@@ -24,26 +24,30 @@
     </organization>
 
     <properties>
-        <lombok.version>1.18.22</lombok.version>
-        <kafka-serializer-version>7.3.1</kafka-serializer-version>
-        <reactor-bom.version>2022.0.0</reactor-bom.version>
-        <kafka-clients-version>3.4.0</kafka-clients-version>
-        <slf4j.version>1.7.35</slf4j.version>
-        <logback.version>1.2.11</logback.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
-        <junit-jupiter-version>5.9.0</junit-jupiter-version>
-        <junit-launcher.version>1.9.3</junit-launcher.version>
-        <mockito-core.version>2.10.0</mockito-core.version>
-        <connect.version>3.4.0</connect.version>
+        <!--        Confluent Dependencies-->
         <confluent.connect.version>7.3.1</confluent.connect.version>
         <csid.common.version>1.0.12</csid.common.version>
+
+        <!--        External Dependencies-->
         <avro.version>1.11.0</avro.version>
         <commons-io.version>2.11.0</commons-io.version>
+        <connect.version>3.4.0</connect.version>
         <connect-file.version>3.4.0</connect-file.version>
-        <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
-
+        <junit-jupiter-version>5.9.0</junit-jupiter-version>
+        <junit-launcher.version>1.9.3</junit-launcher.version>
         <license.mode>format</license.mode>
+        <logback.version>1.2.11</logback.version>
+        <lombok.version>1.18.22</lombok.version>
+        <kafka-clients-version>3.4.0</kafka-clients-version>
+        <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
+        <kafka-serializer-version>7.3.1</kafka-serializer-version>
+        <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
+        <mockito-core.version>2.10.0</mockito-core.version>
         <mycila.version>4.2.rc3</mycila.version>
+        <reactor-bom.version>2022.0.0</reactor-bom.version>
+        <slf4j.version>1.7.35</slf4j.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -346,4 +350,51 @@
         <module>integration</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>unit</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire-plugin.version}</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*Test.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*IT</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>integration</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
