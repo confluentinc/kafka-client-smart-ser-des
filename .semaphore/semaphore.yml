@@ -67,10 +67,7 @@ blocks:
       epilogue:
         always:
           commands:
-            - ls ./target/
-            - ls ./target/surefire-reports/
-            - ls ./target/failsafe-reports/
-            - test-results publish ./target/**-reports/*.xml
+            - test-results publish ./target/site/*.xml
 
 after_pipeline:
   task:
