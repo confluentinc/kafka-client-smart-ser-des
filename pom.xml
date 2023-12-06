@@ -370,33 +370,6 @@
                                 <exclude>**/*IT</exclude>
                             </excludes>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <id>test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-report-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>surefire-report</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>report-only</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <aggregate>true</aggregate>
-                            <showSuccess>true</showSuccess>
-                            <showTimings>true</showTimings>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -409,7 +382,6 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${maven-failsafe-plugin.version}</version>
                         <executions>
@@ -421,32 +393,8 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-report-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>failsafe-report</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>failsafe-report-only</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <aggregate>true</aggregate>
-                            <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
-                            <reportsDirectories>
-                                <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
-                            </reportsDirectories>
-                        </configuration>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
     </profiles>
-
-
-
-
 </project>
