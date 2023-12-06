@@ -68,7 +68,7 @@ blocks:
         always:
           commands:
             - ls ./target/site/
-            - test-results publish ./target/site/*.html
+            - test-results publish ./target/site/*-report.html
 
 after_pipeline:
   task:
