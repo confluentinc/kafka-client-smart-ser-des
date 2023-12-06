@@ -1,3 +1,15 @@
+# IMPORTANT
+
+**Changes to this repository are propagated out across hundreds of internal repos within a day or two.
+It's very easy to break large parts of the organization by pushing poorly tested changes to
+`cc-mk-include`.**
+
+**Before you merge any PR to `cc-mk-include`, test it very carefully!  And if your change ends up
+breaking several repos, before fixing the issue, strongly consider improving the canary tasks in the
+`cc-mk-include` semaphore release pipeline in a way that would have prevented the original from being
+promoted and propagated.**
+
+
 # Confluent Cloud Makefile Includes
 This is a set of Makefile include targets that are used in cloud applications.
 
@@ -23,17 +35,56 @@ make epilogue-ci
 ```
 
 ## Install
-Add this repo to your repo with the command:
-```shell
-git subtree add --prefix mk-include git@github.com:confluentinc/cc-mk-include.git master --squash
+Use of mk-include makefile fragments from your own repo is no longer managed by checking in a copy
+of your favorite old version of cc-mk-include, but is managed by service-bot.
+
+Configure the service-bot `make` plugin by adding the following to `service.yml` in the top level
+directory of your repository:
+```yaml
+make:
+  enable: true
+  enable_updates: true
+  update_makefile: false
 ```
 
-To exclude these makefiles from your project language summary on GitHub, add this to your `.gitattributes`:
-```
-mk-include/** linguist-vendored
+`make.enable_updates` will prepend a block of rules to your `Makefile` for fetching and unpacking
+a validated release tarball from github at build time, which is entirely transparent to the rest of
+your build process which can behave as if the `mk-include/` directory is always populated.
+
+`make.update_makefile` determines whether service-bot will manage the `include` lines and other
+assorted setup in your `Makefile` too, independently of managing build time mk-include fetch and
+unpack.
+
+If you are making a new `service.yml` just to integrate cc-mk-include into your project, you'll
+also need to include the following settings:
+
+```yaml
+name: $NAME_OF_YOUR_REPOSITORY
+lang: unknown
+lang-version: unknown
+git:
+  enable: true
 ```
 
-Then update your makefile like so:
+Once these changes have been committed to the default branch of your repository, the next nightly
+run of service-bot will generate a PR that contains (possibly among others, depending on the content
+of `service.yml`) a changeset that adds the necessary managed section to `Makefile` for fetching
+a recent validated mk-include directory at build time.  If you don't want to wait for the nightly
+run, you can generate the PR by clicking the **Build with Parameters** button on the
+[run service-bot autotask](https://jenkins.confluent.io/job/tools-autotasks/job/tools-autotasks/job/run-service-bot/)
+jenkins job and entering your repository name in the form.
+
+When the service-bot PR has been filed, and passed the necessary GitHub checks, you'll need to merge
+it to the default branch to complete the integration of cc-mk-include into your repository.  Every
+night, assuming a new cc-mk-include release has built all the canary projects successfully and
+shipped a new release, you'll get another PR from service-bot that includes a bump of the
+`MK_INCLUDE_VERSION` setting of your `Makefile` -- you should merge these if they pass all GitHub
+checks, otherwise make the necessary changes to your repo for them to pass, or else file a ticket
+for anything else from cc-mk-include that breaks your builds so that the bad release can be yanked,
+the canary process expanded, and the issue fixed.
+
+Later on, you should consider leveraging other service-bot features. But at first you might prefer
+to update your makefile like so:
 
 ### Go + Docker + Helm Service
 ```make
@@ -134,51 +185,6 @@ You must also configure your project's `pom.xml` to skip the `dockerfile-maven-p
     </profile>
   </profiles>
 ```
-
-## Updating
-Once you have the make targets installed, you can update at any time by running
-
-```shell
-make update-mk-include
-```
-### Update to a specific version
-
-Add
-```shell
-MK_INCLUDE_UPDATE_VERSION := v<version>
-```
-to you Makefile and commit the change. Then run 
-```shell
-make update-mk-include
-```
-It will update to that specific tag version of mk-include.
-
-## Auto Update
-The cc-mk-include by default auto-sync your repo with the newest or pinned version of cc-mk-include. It will *auto open* a PR if your master branch is not at the same version with newest or pinned version. And it will *auto merged* if the CI passed. 
-The default sync version will be master branch, you can pin whatever version you want to by enable
-```shell
-MK_INCLUDE_UPDATE_VERSION := <tag>
-```
-if you do not want to auto merge the change once CI passed, and get hand on reviews. In your toplevel Makefile, you can set
-```shell
-UPDATE_MK_INCLUDE_AUTO_MERGE := false
-```
-If you want to turn off auto update competely
-```shell
-UPDATE_MK_INCLUDE := false
-```
-
-GITHUB token is required for gh cli, so you might need to get the right credentials to export github token.
-```
-. vault-sem-get-secret semaphore-secrets-global
-```
-
-### Auto Merge
-Leverage gh cli, cc-mk-include now support auto merge, add
-```shell
-make auto-merge
-```
-in the end semaphore.yml, once all CI passed
 
 ## Passing Credentials Into A Docker Build
 
@@ -284,17 +290,17 @@ migrations, and seed data in your service repo (instead of cc-dbmigrate and cc-m
 
 4. Now you have access to some great `db` and `db-migrate` make targets:
 
-        % make help | grep -E '\x1b\[36mdb-'                                                              
-        db-dump-schema      Dump the current DB schema and migration version to $(DB_SCHEMA_FILE) 
-        db-local-reset      Reset the local database from the schema, migrations, and seeds 
-        db-migrate-create   Create a new DB migration. Usage: make db-migrate-create NAME=migration_name_here 
-        db-migrate-down     Rollback DB migrations. Usage: make db-migrate-down [N=1, default 1] 
-        db-migrate-force    Force override the DB migration version in the DB to a specific version 
-        db-migrate-goto     Go to a specific DB migration version 
-        db-migrate-up       Apply DB migrations. Usage: make db-migrate-up [N=1, default all] 
-        db-migrate-version  Show current DB migration version 
-        db-seed             Seed the database from $(DB_SEED_FILE) 
-        db-seed-dump        Overwrite the $(DB_SEED_FILE) from the current database 
+        % make help | grep -E '\x1b\[36mdb-'
+        db-dump-schema      Dump the current DB schema and migration version to $(DB_SCHEMA_FILE)
+        db-local-reset      Reset the local database from the schema, migrations, and seeds
+        db-migrate-create   Create a new DB migration. Usage: make db-migrate-create NAME=migration_name_here
+        db-migrate-down     Rollback DB migrations. Usage: make db-migrate-down [N=1, default 1]
+        db-migrate-force    Force override the DB migration version in the DB to a specific version
+        db-migrate-goto     Go to a specific DB migration version
+        db-migrate-up       Apply DB migrations. Usage: make db-migrate-up [N=1, default all]
+        db-migrate-version  Show current DB migration version
+        db-seed             Seed the database from $(DB_SEED_FILE)
+        db-seed-dump        Overwrite the $(DB_SEED_FILE) from the current database
 
 5. Not strictly a requirement, but these make targets are designed primarily for local development.
    While it's possible to build a release strategy using this, the designed approach is to use
@@ -396,10 +402,9 @@ remote debugger.
                          assumed to contain the dlv executable at a certain
                          subpath - `./lib/dlv/mac/dlv`)
 
-For a normal Goland installation, neither of these need to be changed. 
+For a normal Goland installation, neither of these need to be changed.
 For IntelliJ Ultimate with the Go plugin, then `GOLAND_PLUGIN_PATH` will
-need to be set to something 
+need to be set to something
 `~/Library/Application\ Support/JetBrains/IntelliJIdea2021.3/plugins/go`
 
 See [go/goland](https://go/goland) for more information.
-

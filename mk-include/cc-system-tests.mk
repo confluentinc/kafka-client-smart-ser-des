@@ -9,6 +9,12 @@ ENV_TO_RUN_TESTS_ON_FOR_PR_BRANCH ?= devel
 RUN_TEST_COUNT ?= 1
 GO_COVERAGE_PROFILE ?= coverage.txt
 
+ifeq ($(KEEP_SUBTESTS),Y)
+KEEP_SUBTESTS_FLAG = --keep_subtests
+else
+KEEP_SUBTESTS_FLAG =
+endif
+
 GO_TEST_ARGS = -timeout=$(TESTS_TIMEOUT) -count=$(RUN_TEST_COUNT)
 GO_TEST_BUILD_ARGS ?=
 ifeq ($(ENABLE_PARALLELISM),true)
@@ -30,7 +36,7 @@ endif
 check-not-prod:
 ifeq ($(ENV),prod)
 	@echo "Error: Attempted to run unsafe target in production environment"
-	@echo "If you are trying to run synthetic tests in production, please use make test-go-synthetic" && exit 1
+	@echo "If you are trying to run synthetic tests in production, please use make go-test-synthetic" && exit 1
 endif
 
 # This can't be part of the normal init-ci setup because it's called from the bastion, via run_tests.sh, not from CI
@@ -76,19 +82,19 @@ test-go: check-not-prod vet
 ifeq ($(ENABLE_PARALLELISM),true)
 	@echo "ENABLE_PARALLELISM set to true, system tests packages running in parallel..."
 endif
-	set -o pipefail && $(GO_TEST_SETUP_CMD) && $(GO) test -v -coverprofile=$(GO_COVERAGE_PROFILE) $(GO_TEST_ARGS) $(GO_TEST_PACKAGE_ARGS) -json | $(MK_INCLUDE_BIN)/decode_test2json.py
+	set -o pipefail && $(GO_TEST_SETUP_CMD) && $(GO) test -v -coverprofile=$(GO_COVERAGE_PROFILE) $(GO_TEST_ARGS) $(GO_TEST_PACKAGE_ARGS) -json | $(MK_INCLUDE_BIN)/decode_test2json.py $(KEEP_SUBTESTS_FLAG)
 
-.PHONY: test-go-synthetic
+.PHONY: go-test-synthetic
 # Run Synthetic Go Tests and Vet code
 # Can run tests in PROD, DO NOT use to run system tests
-test-go-synthetic: vet
+go-test-synthetic: vet
 ifeq (,$(findstring synthetic,$(GO_TEST_REPO_NAME) $(GO_TEST_PACKAGE_ARGS)))
 	@echo "Error: Keyword 'synthetic' not found in either GO_TEST_REPO_NAME or GO_TEST_PACKAGE_ARGS"
-	@echo "make test-go-synthetic can only be used to run synthetic tests, please make sure GO_TEST env vars are set \
+	@echo "make go-test-synthetic can only be used to run synthetic tests, please make sure GO_TEST env vars are set \
 	properly or that your synthetic test repo/package is named correctly" && exit 1
 endif
-	@echo "Running make test-go-synthetic in $(ENV)"
-	set -o pipefail && $(GO_TEST_SETUP_CMD) && $(GO) test -v -coverprofile=$(GO_COVERAGE_PROFILE) $(GO_TEST_ARGS) $(GO_TEST_PACKAGE_ARGS) -json | $(MK_INCLUDE_BIN)/decode_test2json.py
+	@echo "Running make go-test-synthetic in $(ENV)"
+	set -o pipefail && $(GO_TEST_SETUP_CMD) && $(GO) test -v -coverprofile=$(GO_COVERAGE_PROFILE) $(GO_TEST_ARGS) $(GO_TEST_PACKAGE_ARGS) -json | $(MK_INCLUDE_BIN)/decode_test2json.py $(KEEP_SUBTESTS_FLAG)
 
 .PHONY: test-go-kafka-synthetic
 # Run Kakfa Synthetic Go Tests and Vet code
