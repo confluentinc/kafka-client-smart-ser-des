@@ -68,7 +68,9 @@ blocks:
         always:
           commands:
             - ls ./target/site/
-            - test-results publish ./target/site/*.xml
+            - ls ./target/surefire-reports/
+            - ls ./target/failsafe-reports/
+            - test-results publish ./target/site/*.html
             - test-results publish ./target/**-reports/*.xml
 
 
