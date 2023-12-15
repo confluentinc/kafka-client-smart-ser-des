@@ -29,14 +29,14 @@
         <!--        External Dependencies-->
         <avro.version>1.11.3</avro.version>
         <commons-io.version>2.15.1</commons-io.version>
-        <connect.version>3.4.1</connect.version>
+        <connect.version>3.6.1</connect.version>
         <connect-file.version>3.4.0</connect-file.version>
         <junit-jupiter-version>5.9.0</junit-jupiter-version>
         <junit-launcher.version>1.9.3</junit-launcher.version>
         <license.mode>format</license.mode>
         <logback.version>1.4.12</logback.version>
         <lombok.version>1.18.30</lombok.version>
-        <kafka-clients-version>3.4.1</kafka-clients-version>
+        <kafka-clients-version>3.6.1</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.5.2</kafka-serializer-version>
         <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
