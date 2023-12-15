@@ -68,7 +68,7 @@ MK_INCLUDE_VERSION ?= v0.954.0
 MASTER_BRANCH ?= main
 UPDATE_MK_INCLUDE := true
 UPDATE_MK_INCLUDE_AUTO_MERGE := true
-SERVICE_NAME := csid-smart-ser-des
+SERVICE_NAME := confluent-client-ser-des
 IMAGE_NAME := $(SERVICE_NAME)
 
 include ./mk-include/cc-begin.mk

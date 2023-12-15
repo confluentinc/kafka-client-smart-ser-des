@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.confluent.csid</groupId>
-    <artifactId>csid-smart-ser-des</artifactId>
+    <artifactId>confluent-client-ser-des</artifactId>
     <version>1.0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
@@ -50,9 +50,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com:confluentinc/csid-smart-ser-des.git</connection>
-        <developerConnection>scm:git:git@github.com:confluentinc/csid-smart-ser-des.git</developerConnection>
-        <url>https://github.com/confluentinc/csid-smart-ser-des.git</url>
+        <connection>scm:git:git://github.com:confluentinc/confluent-client-ser-des.git</connection>
+        <developerConnection>scm:git:git@github.com:confluentinc/confluent-client-ser-des.git</developerConnection>
+        <url>https://github.com/confluentinc/confluent-client-ser-des.git</url>
         <tag>HEAD</tag>
     </scm>
 
