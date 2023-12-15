@@ -2,7 +2,7 @@
 # Copyright (C) 2022-2023 Confluent, Inc.
 #
 
-name: csid-smart-ser-des
+name: confluent-client-ser-des
 lang: java
 lang_version: unknown
 git:
