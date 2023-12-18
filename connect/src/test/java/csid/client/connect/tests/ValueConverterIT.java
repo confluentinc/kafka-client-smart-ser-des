@@ -231,8 +231,10 @@ public class ValueConverterIT {
         }
     }
 
-    public static Herder createHerder(StandaloneConfig config, String workerId, Plugins plugins,
-                                  ConnectorClientConfigOverridePolicy connectorClientConfigOverridePolicy) {
+    private Herder createHerder(StandaloneConfig config,
+                                String workerId,
+                                Plugins plugins,
+                                ConnectorClientConfigOverridePolicy connectorClientConfigOverridePolicy) {
 
         OffsetBackingStore offsetBackingStore = new FileOffsetBackingStore(plugins.newInternalConverter(
                 true, JsonConverter.class.getName(), Collections.singletonMap(JsonConverterConfig.SCHEMAS_ENABLE_CONFIG, "false")));
@@ -243,5 +245,4 @@ public class ValueConverterIT {
 
         return new StandaloneHerder(worker, config.kafkaClusterId(), connectorClientConfigOverridePolicy);
     }
-
 }
