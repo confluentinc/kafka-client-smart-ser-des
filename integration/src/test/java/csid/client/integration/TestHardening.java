@@ -16,9 +16,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
 import org.apache.kafka.connect.connector.policy.ConnectorClientConfigOverridePolicy;
+import org.apache.kafka.connect.json.JsonConverter;
+import org.apache.kafka.connect.json.JsonConverterConfig;
 import org.apache.kafka.connect.runtime.*;
 import org.apache.kafka.connect.runtime.isolation.Plugins;
-import org.apache.kafka.connect.runtime.rest.RestServer;
+import org.apache.kafka.connect.runtime.rest.ConnectRestServer;
+import org.apache.kafka.connect.runtime.rest.RestClient;
 import org.apache.kafka.connect.runtime.rest.entities.ConnectorInfo;
 import org.apache.kafka.connect.runtime.standalone.StandaloneConfig;
 import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
@@ -203,24 +206,20 @@ public abstract class TestHardening {
 
         String kafkaClusterId = config.kafkaClusterId();
         log.debug("Kafka cluster ID: {}", kafkaClusterId);
+        RestClient client = new RestClient(config);
 
         // Do not initialize a RestClient because the ConnectorsResource will not use it in standalone mode.
-        RestServer rest = new RestServer(config, null);
+        ConnectRestServer rest = new ConnectRestServer(config.rebalanceTimeout(), client, workerProps);
         rest.initializeServer();
 
         URI advertisedUrl = rest.advertisedUrl();
         String workerId = advertisedUrl.getHost() + ":" + advertisedUrl.getPort();
 
-        OffsetBackingStore offsetBackingStore = new FileOffsetBackingStore();
-        offsetBackingStore.configure(config);
-
         ConnectorClientConfigOverridePolicy connectorClientConfigOverridePolicy = plugins.newPlugin(
                 config.getString(WorkerConfig.CONNECTOR_CLIENT_POLICY_CLASS_CONFIG),
                 config, ConnectorClientConfigOverridePolicy.class);
-        Worker worker = new Worker(workerId, time, plugins, config, offsetBackingStore,
-                connectorClientConfigOverridePolicy);
 
-        Herder herder = new StandaloneHerder(worker, kafkaClusterId, connectorClientConfigOverridePolicy);
+        Herder herder = createHerder(config, workerId, plugins, connectorClientConfigOverridePolicy);
         connect = new Connect(herder, rest);
         log.info("Kafka Connect standalone worker initialization took {}ms", time.hiResClockMs() - initStart);
 
@@ -240,4 +239,18 @@ public abstract class TestHardening {
         }
     }
 
+    private Herder createHerder(StandaloneConfig config,
+                                String workerId,
+                                Plugins plugins,
+                                ConnectorClientConfigOverridePolicy connectorClientConfigOverridePolicy) {
+
+        OffsetBackingStore offsetBackingStore = new FileOffsetBackingStore(plugins.newInternalConverter(
+                true, JsonConverter.class.getName(), Collections.singletonMap(JsonConverterConfig.SCHEMAS_ENABLE_CONFIG, "false")));
+        offsetBackingStore.configure(config);
+
+        Worker worker = new Worker(workerId, Time.SYSTEM, plugins, config, offsetBackingStore,
+                connectorClientConfigOverridePolicy);
+
+        return new StandaloneHerder(worker, config.kafkaClusterId(), connectorClientConfigOverridePolicy);
+    }
 }

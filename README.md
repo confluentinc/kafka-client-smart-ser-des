@@ -6,6 +6,7 @@ This repository contains the smart serializer and deserializer for kafka connect
 The smart serializer and deserializer allows for engineers to create consumers and producers without knowing the
 underlying stream contents.
 
+If a low dependency model is required is it recommended to review usage of required serializer and deserializer libraries as outlined [here](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html); as this repository includes all serializers and deserializers by default.
 
 ## Table Of Content
 
