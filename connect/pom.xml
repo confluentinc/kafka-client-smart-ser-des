@@ -18,7 +18,6 @@
         <connect-file.version>3.4.0</connect-file.version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <commons-io.version>2.11.0</commons-io.version>
-        <maven-compiler-plugin.version>8</maven-compiler-plugin.version>
     </properties>
 
     <dependencies>
@@ -105,6 +104,12 @@
             <version>3.4.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.confluent.csid</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -112,9 +117,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${maven-compiler-plugin.version}</source>
-                    <target>${maven-compiler-plugin.version}</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

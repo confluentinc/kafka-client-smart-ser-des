@@ -47,7 +47,6 @@ import java.util.concurrent.ExecutionException;
 @Testcontainers
 @Slf4j
 public class ValueConverterIT {
-
     protected KafkaCluster cluster;
     private Connect connect;
     @Test

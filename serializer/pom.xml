@@ -38,11 +38,6 @@
             <groupId>io.confluent</groupId>
             <artifactId>kafka-json-serializer</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>test-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!-- External -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -91,6 +86,11 @@
             <artifactId>csid-confluent-ser-des-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent.csid</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
