@@ -1,7 +1,6 @@
 /*-
- * Copyright (C) 2022-2023 Confluent, Inc.
+ * Copyright (C) 2022-2024 Confluent, Inc.
  */
-
 
 package confluent.client.common.exception;
 
