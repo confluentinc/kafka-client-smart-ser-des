@@ -21,22 +21,10 @@ blocks:
       env_vars:
         - name: MAVEN_OPTS
           value: "-Dmaven.repo.local=.m2"
-      secrets:
-        - name: vault_sem2_approle
       prologue:
         commands:
-          - chmod 400 ~/.ssh/id_rsa
           - checkout
-          - make install-vault
-          - . mk-include/bin/vault-setup
-          - . vault-sem-get-secret semaphore-secrets-global
-          - . vault-sem-get-secret aws_credentials
-          - . vault-sem-get-secret dockerhub-semaphore-cred-ro
-          - . vault-sem-get-secret ssh_id_rsa
-          - . vault-sem-get-secret netrc
-          - . vault-sem-get-secret ssh_config
-          - . vault-sem-get-secret gitconfig
-          - . vault-sem-get-secret maven-settings
+          - . vault-setup
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
@@ -49,8 +37,6 @@ blocks:
   - name: Test
     dependencies: [Build]
     task:
-      secrets:
-        - name: vault_sem2_approle
       prologue:
         commands:
           - checkout
