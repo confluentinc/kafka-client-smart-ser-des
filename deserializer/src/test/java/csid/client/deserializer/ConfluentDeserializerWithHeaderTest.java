@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2023 Confluent, Inc.
+ * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
 package csid.client.deserializer;
@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 import csid.client.common.SerializationTypes;
 import csid.client.deserializer.record.OrderRecord;
 import csid.client.serializer.ConfluentSerializer;
-import io.confluent.csid.common.test.utils.SRUtils;
+import io.confluent.common.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;

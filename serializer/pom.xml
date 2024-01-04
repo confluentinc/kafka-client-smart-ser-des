@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2022-2023 Confluent, Inc.
+    Copyright (C) 2022-2024 Confluent, Inc.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -37,6 +37,11 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-json-serializer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent.csid</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- External -->
         <dependency>
@@ -86,11 +91,6 @@
             <artifactId>csid-confluent-ser-des-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent.csid.common</groupId>
-            <artifactId>test-utils</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
