@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2022-2023 Confluent, Inc.
+    Copyright (C) 2022-2024 Confluent, Inc.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.confluent.csid</groupId>
+        <groupId>io.confluent</groupId>
         <artifactId>confluent-client-ser-des</artifactId>
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>csid-confluent-deserializer</artifactId>
+    <artifactId>confluent-client-deserializer</artifactId>
 
     <properties>
         <lombok.version>1.18.22</lombok.version>
@@ -24,8 +24,8 @@
     <dependencies>
         <!-- Confluent -->
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>csid-confluent-ser-des-common</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>confluent-client-ser-des-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -88,8 +88,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>csid-confluent-serializer</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>confluent-client-serializer</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
