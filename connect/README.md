@@ -31,7 +31,7 @@ Here are some important configuration properties you should be aware of:
 
 - `bootstrap.servers`: Specifies the list of Kafka brokers that Kafka Connect should connect to.
 - `group.id`: The unique identifier for the group of workers running Kafka Connect. Each group should have a unique ID to avoid conflicts.
-- `key.converter` and `value.converter`: Specifies the converter classes for serializing and deserializing data. It should be set to `csid.client.connect.ConfluentValueConverter`.
+- `key.converter` and `value.converter`: Specifies the converter classes for serializing and deserializing data. It should be set to `confluent.client.connect.ConfluentValueConverter`.
 - `offset.storage.topic`: The Kafka topic where Kafka Connect stores its offset information. By default, this is set to `__connect-offsets`.
 - `plugin.path`: The directory where connector plugins are located. By default, this is set to `./plugins`.
 - `key.converter.type` and `value.converter.type`: Specifies the type of data format to use for serialization (source connector). The default is set to `Avro`.
@@ -73,7 +73,7 @@ connection.url=jdbc:mysql://localhost:3306/mydatabase
 connection.user=myuser
 connection.password=mypassword
 topic.prefix=mysql-
-value.converter=csid.client.connect.ConfluentValueConverter
+value.converter=confluent.client.connect.ConfluentValueConverter
 ```
 
 3. Start Kafka Connect in distributed mode using the `connect-distributed.sh` script.
@@ -99,7 +99,7 @@ tasks.max=1
 hdfs.url=hdfs://localhost:9000
 hdfs.output=/data/kafka
 topics=mytopic
-value.converter=csid.client.connect.ConfluentValueConverter
+value.converter=confluent.client.connect.ConfluentValueConverter
 ```
 3. Start Kafka Connect in distributed mode using the `connect-distributed.sh` script.
 
