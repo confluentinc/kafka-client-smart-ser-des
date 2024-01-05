@@ -113,14 +113,6 @@
             <artifactId>log4j-over-slf4j</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
