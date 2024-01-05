@@ -62,7 +62,6 @@
             <version>${kafka.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-tools</artifactId>
@@ -74,7 +73,6 @@
                     <artifactId>slf4j-reload4j</artifactId>
                </exclusion>
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
