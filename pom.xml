@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2022-2023 Confluent, Inc.
+    Copyright (C) 2022-2024 Confluent, Inc.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -24,7 +24,6 @@
     <properties>
         <!--        Confluent Dependencies-->
         <confluent.connect.version>7.5.2</confluent.connect.version>
-        <csid.common.version>1.0.12</csid.common.version>
 
         <!--        External Dependencies-->
         <avro.version>1.11.3</avro.version>
@@ -39,6 +38,7 @@
         <kafka-clients-version>3.6.1</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.5.2</kafka-serializer-version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
@@ -47,6 +47,7 @@
         <reactor-bom.version>2023.0.1</reactor-bom.version>
         <slf4j.version>1.7.36</slf4j.version>
         <testcontainers.version>1.19.3</testcontainers.version>
+        <license-maven-plugin.version>4.3</license-maven-plugin.version>
     </properties>
 
     <scm>
@@ -117,6 +118,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
@@ -126,6 +128,7 @@
                 <!-- -Dlicense.skip to skip -->
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
                 <!-- only have parent run this - as it covers all sub dirs -->
                 <inherited>false</inherited>
                 <!-- To apply the license run: -->
@@ -351,12 +354,6 @@
                 <version>${mockito-core.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>io.confluent.csid.common</groupId>
-                <artifactId>test-utils</artifactId>
-                <version>${csid.common.version}</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -366,6 +363,7 @@
         <module>deserializer</module>
         <module>connect</module>
         <module>integration</module>
+        <module>test-utils</module>
     </modules>
 
     <profiles>
@@ -415,6 +413,7 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${maven-failsafe-plugin.version}</version>
                         <executions>

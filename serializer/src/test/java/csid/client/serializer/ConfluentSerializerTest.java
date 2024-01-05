@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2023 Confluent, Inc.
+ * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
 package csid.client.serializer;
@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 import csid.client.common.SerializationTypes;
 import csid.client.common.schema.SchemaRegistryUtils;
 import csid.client.serializer.record.*;
-import io.confluent.csid.common.test.utils.SRUtils;
+import io.confluent.common.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import org.apache.kafka.common.header.Headers;
@@ -165,7 +165,7 @@ class ConfluentSerializerTest {
 
 
     @Test
-    public void testSerializeKafkaJsonSchema() throws RestClientException, IOException {
+    public void testSerializeKafkaJsonSchema() throws IOException {
         SRUtils.reset();
 
         // Given
