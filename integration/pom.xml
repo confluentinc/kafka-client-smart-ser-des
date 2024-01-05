@@ -37,8 +37,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>test-utils</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>confluent-client-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
