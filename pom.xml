@@ -347,12 +347,12 @@
     </dependencyManagement>
 
     <modules>
+        <module>test-utils</module>
         <module>common</module>
         <module>serializer</module>
         <module>deserializer</module>
         <module>connect</module>
         <module>integration</module>
-        <module>test-utils</module>
     </modules>
 
     <profiles>
