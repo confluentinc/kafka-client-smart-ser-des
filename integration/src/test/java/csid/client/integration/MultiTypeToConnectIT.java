@@ -1,12 +1,12 @@
 /*-
- * Copyright (C) 2022-2023 Confluent, Inc.
+ * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
 package csid.client.integration;
 
 import csid.client.integration.model.Employee;
 import csid.client.serializer.ConfluentSerializer;
-import io.confluent.csid.common.test.utils.SRUtils;
+import io.confluent.common.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.kafka.clients.producer.KafkaProducer;

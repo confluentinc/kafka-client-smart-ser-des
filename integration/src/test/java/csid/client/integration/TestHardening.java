@@ -1,12 +1,12 @@
 /*-
- * Copyright (C) 2022-2023 Confluent, Inc.
+ * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
 package csid.client.integration;
 
-import io.confluent.csid.common.test.utils.RCSUtils;
-import io.confluent.csid.common.test.utils.SRUtils;
-import io.confluent.csid.common.test.utils.containers.KafkaCluster;
+import io.confluent.common.test.utils.RCSUtils;
+import io.confluent.common.test.utils.SRUtils;
+import io.confluent.common.test.utils.containers.KafkaCluster;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.Tailer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
