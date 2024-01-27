@@ -45,12 +45,12 @@ spec:
   tasks:
   - name: release
     scheduled: False
-    branch: main
+    branch: "main"
     pipeline_file: .semaphore/release.yml
     parameters:
     - name: PROJECT_VERSION
       required: True
-      default_value: X.Y.Z
+      default_value: "X.Y.Z"
     - name: NEXT_PROJECT_VERSION
       required: True
-      default_value: X.Y.Z-SNAPSHOT
+      default_value: "X.Y.Z-SNAPSHOT"
