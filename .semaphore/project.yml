@@ -6,12 +6,12 @@
 apiVersion: v1alpha
 kind: Project
 metadata:
-  name: confluent-client-ser-des
+  name: data-stream-composer-ser-des
   description: ""
 spec:
   visibility: private
   repository:
-    url: git@github.com:confluentinc/confluent-client-ser-des.git
+    url: git@github.com:confluentinc/data-stream-composer-ser-des.git
     run_on:
     - branches
     - tags
