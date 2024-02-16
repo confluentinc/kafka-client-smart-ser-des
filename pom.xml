@@ -9,7 +9,7 @@
 
     <groupId>io.confluent.csid</groupId>
     <artifactId>data-stream-composer-ser-des</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
 
     <packaging>pom</packaging>
 
@@ -54,7 +54,7 @@
         <connection>scm:git:git://github.com:confluentinc/data-stream-composer-ser-des.git</connection>
         <developerConnection>scm:git:git@github.com:confluentinc/data-stream-composer-ser-des.git</developerConnection>
         <url>https://github.com/confluentinc/data-stream-composer-ser-des.git</url>
-        <tag>HEAD</tag>
+        <tag>1.0.1</tag>
     </scm>
 
     <dependencies>
