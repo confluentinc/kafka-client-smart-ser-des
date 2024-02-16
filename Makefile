@@ -68,7 +68,7 @@ MK_INCLUDE_VERSION ?= v0.1000.0
 MASTER_BRANCH ?= main
 UPDATE_MK_INCLUDE := true
 UPDATE_MK_INCLUDE_AUTO_MERGE := true
-SERVICE_NAME := confluent-client-ser-des
+SERVICE_NAME := data-stream-composer-ser-des
 IMAGE_NAME := $(SERVICE_NAME)
 
 include ./mk-include/cc-begin.mk
