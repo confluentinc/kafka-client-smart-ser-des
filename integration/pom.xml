@@ -12,7 +12,7 @@
         <version>1.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>confluent-client-ser-des-integration</artifactId>
+    <artifactId>data-stream-composer-ser-des-integration</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -23,22 +23,22 @@
     <dependencies>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>confluent-client-connect</artifactId>
+            <artifactId>data-stream-composer-connect</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>confluent-client-serializer</artifactId>
+            <artifactId>data-stream-composer-serializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>confluent-client-deserializer</artifactId>
+            <artifactId>data-stream-composer-deserializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>confluent-client-test-utils</artifactId>
+            <artifactId>data-stream-composer-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

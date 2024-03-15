@@ -12,7 +12,7 @@
         <version>1.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>confluent-client-ser-des-common</artifactId>
+    <artifactId>data-stream-composer-ser-des-common</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

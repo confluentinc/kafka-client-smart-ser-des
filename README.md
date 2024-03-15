@@ -1,4 +1,4 @@
-# Confluent Client Smart Serializer / Deserializer
+# Data Stream Smart Serializer / Deserializer
 
 ## Overview
 This repository contains the smart serializer and deserializer for kafka connectors.
@@ -30,7 +30,7 @@ Serializer
 ```xml
 <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>confluent-client-serializer</artifactId>
+    <artifactId>data-stream-composer-serializer</artifactId>
     <version>${confluent-confluent-ser-des.version}</version>
 </dependency>
 ```
@@ -39,7 +39,7 @@ Common (Schema Registry Client Config and Utils)
 ```xml
  <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>confluent-client-ser-des-common</artifactId>
+    <artifactId>data-stream-composer-ser-des-common</artifactId>
     <version>${confluent-confluent-ser-des.version}</version>
 </dependency>
 ```
