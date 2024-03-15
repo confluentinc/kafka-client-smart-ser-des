@@ -7,12 +7,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.confluent.csid</groupId>
+        <groupId>io.confluent</groupId>
         <artifactId>data-stream-composer-ser-des</artifactId>
         <version>1.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>csid-confluent-serializer</artifactId>
+    <artifactId>confluent-client-serializer</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -82,14 +82,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>csid-confluent-ser-des-common</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>confluent-client-ser-des-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>test-utils</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>confluent-client-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
