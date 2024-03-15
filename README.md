@@ -21,8 +21,8 @@ Deserializer
 ```xml
 <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>confluent-confluent-deserializer</artifactId>
-    <version>${confluent-confluent-ser-des.version}</version>
+    <artifactId>data-stream-composer-deserializer</artifactId>
+    <version>${data-stream-composer-ser-des.version}</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ Serializer
 <dependency>
     <groupId>io.confluent</groupId>
     <artifactId>data-stream-composer-serializer</artifactId>
-    <version>${confluent-confluent-ser-des.version}</version>
+    <version>${data-stream-composer-ser-des.version}</version>
 </dependency>
 ```
 
@@ -40,7 +40,7 @@ Common (Schema Registry Client Config and Utils)
  <dependency>
     <groupId>io.confluent</groupId>
     <artifactId>data-stream-composer-ser-des-common</artifactId>
-    <version>${confluent-confluent-ser-des.version}</version>
+    <version>${data-stream-composer-ser-des.version}</version>
 </dependency>
 ```
 ### Producer
