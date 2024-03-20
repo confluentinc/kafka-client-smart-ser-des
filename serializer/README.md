@@ -20,8 +20,8 @@ To set up the Java Kafka Producer in your Java project, follow these steps:
 
 ```xml
 <dependency>
-    <groupId>io.confluent.csid</groupId>
-    <artifactId>csid-confluent-serializer</artifactId>
+    <groupId>io.confluent</groupId>
+    <artifactId>data-stream-composer-serializer</artifactId>
     <version>{serializer-version}</version>
 </dependency>
 <dependency>
@@ -34,7 +34,7 @@ To set up the Java Kafka Producer in your Java project, follow these steps:
 Alternatively, if you're using Gradle, you can add the following dependency to your build.gradle file:
 
 ```groovy
-implementation 'io.confluent.csid:csid-confluent-serializer:{serializer-version}'
+implementation 'io.confluent.confluent:data-stream-composer-serializer:{serializer-version}'
 implementation 'org.apache.kafka:kafka-clients:{kafka-version}'
 ```
 
@@ -45,7 +45,7 @@ Replace `{kafka-version}` and `{serializer-version}` with the version you are us
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import io.confluent.csid.utils.ConfluentSerializer;
+import io.confluent.confluent.utils.ConfluentSerializer;
 ```
 
 ## Usage

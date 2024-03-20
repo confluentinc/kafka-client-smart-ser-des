@@ -1,4 +1,4 @@
-# CSID Smart Serializer / Deserializer
+# Data Stream Smart Serializer / Deserializer
 
 ## Overview
 This repository contains the smart serializer and deserializer for kafka connectors.
@@ -20,27 +20,27 @@ If a low dependency model is required is it recommended to review usage of requi
 Deserializer
 ```xml
 <dependency>
-    <groupId>io.confluent.csid</groupId>
-    <artifactId>csid-confluent-deserializer</artifactId>
-    <version>${csid-confluent-ser-des.version}</version>
+    <groupId>io.confluent</groupId>
+    <artifactId>data-stream-composer-deserializer</artifactId>
+    <version>${data-stream-composer-ser-des.version}</version>
 </dependency>
 ```
 
 Serializer
 ```xml
 <dependency>
-    <groupId>io.confluent.csid</groupId>
-    <artifactId>csid-confluent-serializer</artifactId>
-    <version>${csid-confluent-ser-des.version}</version>
+    <groupId>io.confluent</groupId>
+    <artifactId>data-stream-composer-serializer</artifactId>
+    <version>${data-stream-composer-ser-des.version}</version>
 </dependency>
 ```
 
 Common (Schema Registry Client Config and Utils)
 ```xml
  <dependency>
-    <groupId>io.confluent.csid</groupId>
-    <artifactId>csid-confluent-ser-des-common</artifactId>
-    <version>${csid-confluent-ser-des.version}</version>
+    <groupId>io.confluent</groupId>
+    <artifactId>data-stream-composer-ser-des-common</artifactId>
+    <version>${data-stream-composer-ser-des.version}</version>
 </dependency>
 ```
 ### Producer
