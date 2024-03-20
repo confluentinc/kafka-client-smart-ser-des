@@ -7,7 +7,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.confluent.csid</groupId>
+    <groupId>io.confluent</groupId>
     <artifactId>data-stream-composer-ser-des</artifactId>
     <version>1.0.2-SNAPSHOT</version>
 
@@ -57,17 +57,6 @@
         <url>https://github.com/confluentinc/data-stream-composer-ser-des.git</url>
         <tag>HEAD</tag>
     </scm>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
-        </dependency>
-    </dependencies>
 
     <repositories>
         <repository>
@@ -365,12 +354,12 @@
     </dependencyManagement>
 
     <modules>
+        <module>test-utils</module>
         <module>common</module>
         <module>serializer</module>
         <module>deserializer</module>
         <module>connect</module>
         <module>integration</module>
-        <module>test-utils</module>
     </modules>
 
     <profiles>

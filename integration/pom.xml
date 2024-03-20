@@ -7,12 +7,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.confluent.csid</groupId>
+        <groupId>io.confluent</groupId>
         <artifactId>data-stream-composer-ser-des</artifactId>
         <version>1.0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>csid-confluent-ser-des-integration</artifactId>
+    <artifactId>data-stream-composer-ser-des-integration</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -22,23 +22,23 @@
     
     <dependencies>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>csid-confluent-connect</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>data-stream-composer-connect</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>csid-confluent-serializer</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>data-stream-composer-serializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>csid-confluent-deserializer</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>data-stream-composer-deserializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.confluent.csid</groupId>
-            <artifactId>test-utils</artifactId>
+            <groupId>io.confluent</groupId>
+            <artifactId>data-stream-composer-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
