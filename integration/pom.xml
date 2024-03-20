@@ -9,7 +9,7 @@
     <parent>
         <groupId>io.confluent</groupId>
         <artifactId>data-stream-composer-ser-des</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
     </parent>
 
     <artifactId>data-stream-composer-ser-des-integration</artifactId>
