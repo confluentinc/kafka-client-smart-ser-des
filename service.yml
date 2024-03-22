@@ -27,3 +27,13 @@ make:
   enable: true
   enable_updates: true
   update_makefile: false
+code_artifact:
+  enable: true
+  package_paths:
+    - maven-releases/maven/io.confluent/data-stream-composer-ser-des-integration
+    - maven-releases/maven/io.confluent/data-stream-composer-connect
+    - maven-releases/maven/io.confluent/data-stream-composer-deserializer
+    - maven-releases/maven/io.confluent/data-stream-composer-serializer
+    - maven-releases/maven/io.confluent/data-stream-composer-ser-des-common
+    - maven-releases/maven/io.confluent/data-stream-composer-test-utils
+    - maven-releases/maven/io.confluent/data-stream-composer-ser-des
