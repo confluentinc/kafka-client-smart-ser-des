@@ -47,7 +47,7 @@
         <mycila.version>4.2.rc3</mycila.version>
         <reactor-bom.version>2023.0.1</reactor-bom.version>
         <slf4j.version>1.7.36</slf4j.version>
-        <testcontainers.version>1.19.3</testcontainers.version>
+        <testcontainers.version>1.19.7</testcontainers.version>
         <license-maven-plugin.version>4.3</license-maven-plugin.version>
     </properties>
 
