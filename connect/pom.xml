@@ -17,7 +17,7 @@
     <properties>
         <connect-file.version>3.4.0</connect-file.version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-io.version>2.16.1</commons-io.version>
     </properties>
 
     <dependencies>
