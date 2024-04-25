@@ -27,7 +27,7 @@
 
         <!--        External Dependencies-->
         <avro.version>1.11.3</avro.version>
-        <commons-io.version>2.15.1</commons-io.version>
+        <commons-io.version>2.16.1</commons-io.version>
         <commons-codec.version>1.16.1</commons-codec.version>
         <connect.version>3.6.1</connect.version>
         <connect-file.version>3.6.1</connect-file.version>
