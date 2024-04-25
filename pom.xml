@@ -32,7 +32,7 @@
         <connect.version>3.6.1</connect.version>
         <connect-file.version>3.6.1</connect-file.version>
         <junit-jupiter-version>5.9.0</junit-jupiter-version>
-        <junit-launcher.version>1.9.3</junit-launcher.version>
+        <junit-launcher.version>1.10.2</junit-launcher.version>
         <license.mode>format</license.mode>
         <logback.version>1.4.12</logback.version>
         <lombok.version>1.18.30</lombok.version>
