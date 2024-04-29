@@ -27,26 +27,26 @@
 
         <!--        External Dependencies-->
         <avro.version>1.11.3</avro.version>
-        <commons-io.version>2.15.1</commons-io.version>
+        <commons-io.version>2.16.1</commons-io.version>
         <commons-codec.version>1.16.1</commons-codec.version>
         <connect.version>3.6.1</connect.version>
         <connect-file.version>3.6.1</connect-file.version>
-        <junit-jupiter-version>5.9.0</junit-jupiter-version>
-        <junit-launcher.version>1.9.3</junit-launcher.version>
+        <junit-jupiter-version>5.10.2</junit-jupiter-version>
+        <junit-launcher.version>1.10.2</junit-launcher.version>
         <license.mode>format</license.mode>
-        <logback.version>1.4.12</logback.version>
+        <logback.version>1.5.6</logback.version>
         <lombok.version>1.18.30</lombok.version>
         <kafka-clients-version>3.6.1</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
-        <kafka-serializer-version>7.5.2</kafka-serializer-version>
+        <kafka-serializer-version>7.6.1</kafka-serializer-version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.2.2</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-        <maven-surefire-plugin.version>3.2.2</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <mockito-core.version>2.10.0</mockito-core.version>
-        <mycila.version>4.2.rc3</mycila.version>
-        <reactor-bom.version>2023.0.1</reactor-bom.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <mycila.version>4.3</mycila.version>
+        <reactor-bom.version>2023.0.5</reactor-bom.version>
+        <slf4j.version>2.0.13</slf4j.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <license-maven-plugin.version>4.3</license-maven-plugin.version>
     </properties>
