@@ -15,7 +15,7 @@
     <artifactId>data-stream-composer-connect</artifactId>
 
     <properties>
-        <connect-file.version>3.4.0</connect-file.version>
+        <connect-file.version>7.6.1-ce</connect-file.version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <commons-io.version>2.11.0</commons-io.version>
     </properties>
