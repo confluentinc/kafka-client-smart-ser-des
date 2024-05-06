@@ -39,7 +39,7 @@
         <kafka-clients-version>3.6.1</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.6.1</kafka-serializer-version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
