@@ -5,23 +5,11 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "maven"
-    directory: "/common/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "maven"
     directory: "/connect/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "maven"
-    directory: "/deserializer/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "maven"
     directory: "/integration/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "maven"
-    directory: "/serializer/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "maven"
