@@ -36,7 +36,7 @@
         <license.mode>format</license.mode>
         <logback.version>1.5.6</logback.version>
         <lombok.version>1.18.32</lombok.version>
-        <kafka-clients-version>3.6.1</kafka-clients-version>
+        <kafka-clients-version>3.7.0</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.6.1</kafka-serializer-version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
