@@ -15,7 +15,7 @@
     <artifactId>data-stream-composer-connect</artifactId>
 
     <properties>
-        <connect-file.version>3.4.0</connect-file.version>
+        <connect-file.version>3.7.0</connect-file.version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <commons-io.version>2.16.1</commons-io.version>
     </properties>
@@ -95,6 +95,13 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-server-common -->
