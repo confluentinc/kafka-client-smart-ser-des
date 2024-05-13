@@ -23,7 +23,7 @@
 
     <properties>
         <!--        Confluent Dependencies-->
-        <confluent.connect.version>7.5.2</confluent.connect.version>
+        <confluent.connect.version>7.6.1</confluent.connect.version>
 
         <!--        External Dependencies-->
         <avro.version>1.11.3</avro.version>
