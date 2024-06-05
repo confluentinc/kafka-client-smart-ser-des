@@ -39,6 +39,7 @@
         <kafka-clients-version>7.6.1-ce</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.6.1</kafka-serializer-version>
+        <kafka-server-common-version>7.6.1-ce</kafka-server-common-version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
@@ -348,6 +349,13 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito-core.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-server-common -->
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-server-common</artifactId>
+                <version>${kafka-server-common-version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
