@@ -125,16 +125,7 @@ public enum SerializationTypes {
      * @throws IOException         If the Schema Registry Client fails
      */
     public static SerializationTypes fromBytes(Supplier<SchemaRegistryClient> clientSupplier, final byte[] bytes) throws RestClientException, IOException {
-        SerializationTypes serializationType = SerializationTypes.fromSchema(clientSupplier, bytes);
-        if (serializationType != null) {
-            return serializationType;
-        }
-
-        if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
-                (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
-            // Maybe a JSON ?
-            return SerializationTypes.Json;
-        } else if (bytes.length == 1) {
+        if (bytes.length == 1) {
             return SerializationTypes.ByteArray;
         } else if (bytes.length == 2) {
             return SerializationTypes.Short;
@@ -142,6 +133,19 @@ public enum SerializationTypes {
             return SerializationTypes.Integer;
         } else if (bytes.length == 8) {
             return SerializationTypes.Long;
+        } else if (bytes.length == 0) {
+            // edge case when passing in the empty string ""
+            return SerializationTypes.String;
+        }
+
+        SerializationTypes serializationType = SerializationTypes.fromSchema(clientSupplier, bytes);
+        if (serializationType != null) {
+            return serializationType;
+        }
+        if ((bytes[0] == '{' && bytes[bytes.length - 1] == '}') ||
+            (bytes[0] == '[' && bytes[bytes.length - 1] == ']')) {
+            // Maybe a JSON ?
+            return SerializationTypes.Json;
         }
 
         return SerializationTypes.String;

@@ -20,6 +20,9 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.kafka.common.utils.Bytes;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -55,148 +58,165 @@ public class ConfluentDeserializerTest {
 
     public ObjectMapper MAPPER = new ObjectMapper();
 
-    @Test
-    public void testDeserializeString() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {String.class})
+    public void testDeserializeString(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         String expected = anyString();
         byte[] expectedBytes = expected.getBytes(StandardCharsets.UTF_8);
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, String.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeByteArray() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {byte[].class})
+    public void testDeserializeByteArray(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         byte[] expected = {anyByte()};
 
         // When
-        Object actual = confluentDeserializer(props, false, expected, byte[].class);
+        Object actual = confluentDeserializer(props, false, expected, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeByteBuffer() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @ValueSource(classes = {ByteBuffer.class})
+    public void testDeserializeByteBuffer(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         ByteBuffer expected = ByteBuffer.allocate(BYTEBUFFER_CAPACITY);
         byte[] expectedBytes = expected.array();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, ByteBuffer.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
 
     }
 
-    @Test
-    public void testDeserializeFloat() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @ValueSource(classes = {Float.class})
+    public void testDeserializeFloat(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         float expected = anyFloat();
         byte[] expectedBytes = ByteBuffer.allocate(FLOAT_TYPE_LENGTH).putFloat(expected).array();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, Float.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeDouble() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @ValueSource(classes = {Double.class})
+    public void testDeserializeDouble(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         double expected = anyDouble();
         byte[] expectedBytes = ByteBuffer.allocate(DOUBLE_TYPE_LENGTH).putDouble(expected).array();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, Double.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeInt() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {Integer.class})
+    public void testDeserializeInt(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         int expected = anyInt();
         byte[] expectedBytes = ByteBuffer.allocate(INT_TYPE_LENGTH).putInt(expected).array();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, Integer.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeLong() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {Long.class})
+    public void testDeserializeLong(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         long expected = anyLong();
         byte[] expectedBytes = ByteBuffer.allocate(LONG_TYPE_LENGTH).putLong(expected).array();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, Long.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeShort() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {Short.class})
+    public void testDeserializeShort(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         short expected = anyShort();
         byte[] expectedBytes = ByteBuffer.allocate(SHORT_TYPE_LENGTH).putShort(expected).array();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, Short.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeBytes() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @ValueSource(classes = {Bytes.class})
+    public void testDeserializeBytes(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         Bytes expected = Bytes.wrap(new byte[]{anyByte()});
         byte[] expectedBytes = expected.get();
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, Bytes.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeUuid() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @ValueSource(classes = {UUID.class})
+    public void testDeserializeUuid(Class<?> clazz) {
         // Given
         Properties props = new Properties();
         UUID expected = UUID.fromString("f90ae889-2866-474c-b21b-88c98ea99515");
         byte[] expectedBytes = expected.toString().getBytes(StandardCharsets.UTF_8);
 
         // When
-        Object actual = confluentDeserializer(props, false, expectedBytes, UUID.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
 
         // Then
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void testDeserializeKafkaAvro() throws IOException, RestClientException {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {IndexedRecord.class})
+    public void testDeserializeKafkaAvro(Class<?> clazz) throws IOException, RestClientException {
         // Given
         Properties props = new Properties();
         props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
@@ -211,14 +231,16 @@ public class ConfluentDeserializerTest {
         }
 
         // When
-        Object actual = confluentDeserializer(props, false, bytes, IndexedRecord.class);
+        Object actual = confluentDeserializer(props, false, bytes, clazz);
 
         // Then
         assertEquals(expected.toString(), actual.toString());
     }
 
-    @Test
-    public void testDeserializeKafkaJsonSchema() throws RestClientException, IOException {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {OrderRecord.class})
+    public void testDeserializeKafkaJsonSchema(Class<?> clazz) throws RestClientException, IOException {
         // Given
         Properties props = new Properties();
         props.setProperty(SCHEMA_REGISTRY_URL_CONFIG, SRUtils.getSRClientURL());
@@ -234,14 +256,16 @@ public class ConfluentDeserializerTest {
         }
 
         // When
-        OrderRecord actual = (OrderRecord) confluentDeserializer(props, false, bytes, OrderRecord.class);
+        OrderRecord actual = (OrderRecord) confluentDeserializer(props, false, bytes, clazz);
 
         // Then
         assertEquals(expected.toString(), actual.toString());
     }
 
-    @Test
-    public void testDeserializeKafkaJson() {
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @NullSource
+    @ValueSource(classes = {OrderRecord.class})
+    public void testDeserializeKafkaJson(Class<OrderRecord> clazz) {
         // Given
         Properties props = new Properties();
 
@@ -253,7 +277,7 @@ public class ConfluentDeserializerTest {
         byte[] bytes = serializer.serialize(TEST_TOPIC_NAME, expected);
 
         // When
-        Object deserializeActual = confluentDeserializer(props, false, bytes, OrderRecord.class);
+        Object deserializeActual = confluentDeserializer(props, false, bytes, clazz);
         OrderRecord actual = MAPPER.convertValue(deserializeActual, OrderRecord.class);
 
         // Then
