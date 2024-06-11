@@ -90,7 +90,6 @@ public class ConfluentDeserializerTest {
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")
-    @NullSource
     @ValueSource(classes = {ByteBuffer.class})
     public void testDeserializeByteBuffer(Class<?> clazz) {
         // Given
@@ -107,7 +106,6 @@ public class ConfluentDeserializerTest {
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")
-    @NullSource
     @ValueSource(classes = {Float.class})
     public void testDeserializeFloat(Class<?> clazz) {
         // Given
@@ -123,7 +121,6 @@ public class ConfluentDeserializerTest {
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")
-    @NullSource
     @ValueSource(classes = {Double.class})
     public void testDeserializeDouble(Class<?> clazz) {
         // Given
@@ -187,7 +184,6 @@ public class ConfluentDeserializerTest {
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")
-    @NullSource
     @ValueSource(classes = {Bytes.class})
     public void testDeserializeBytes(Class<?> clazz) {
         // Given
@@ -203,7 +199,6 @@ public class ConfluentDeserializerTest {
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")
-    @NullSource
     @ValueSource(classes = {UUID.class})
     public void testDeserializeUuid(Class<?> clazz) {
         // Given
