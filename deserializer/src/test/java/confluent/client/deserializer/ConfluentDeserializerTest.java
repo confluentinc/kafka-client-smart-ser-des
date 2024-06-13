@@ -35,6 +35,7 @@ import java.util.UUID;
 import static io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG;
 import static io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializerConfig.JSON_VALUE_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -69,6 +70,20 @@ public class ConfluentDeserializerTest {
 
         // When
         Object actual = confluentDeserializer(props, false, expectedBytes, clazz);
+
+        // Then
+        assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest(name = "#{index} - Run test with args={0}")
+    @ValueSource(classes = {Boolean.class})
+    public void testDeserializeBoolean(Class<?> clazz) {
+        // Given
+        Properties props = new Properties();
+        byte[] expected = new byte[]{(byte) (anyBoolean() ? 1 : 0)};
+
+        // When
+        Object actual = confluentDeserializer(props, false, expected, Boolean.class);
 
         // Then
         assertEquals(expected, actual);
