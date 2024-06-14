@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -49,6 +50,20 @@ class ConfluentSerializerTest {
 
         // Then
         assertEquals(expected, new String(actual));
+    }
+
+    @Test
+    public void testSerializeBoolean() {
+        // Given
+        Properties props = new Properties();
+        boolean expected = anyBoolean();
+
+        // When
+        byte[] actual = confluentSerializer(props, false, expected, SerializationTypes.Boolean);
+
+        // Then
+        boolean actualBoolean = actual[0] != 0; // The serializer uses 0x00 for false and 0x01 for true
+        assertEquals(expected, actualBoolean);
     }
 
     @Test

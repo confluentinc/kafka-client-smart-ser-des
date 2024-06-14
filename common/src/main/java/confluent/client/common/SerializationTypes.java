@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 @Slf4j
 public enum SerializationTypes {
     String,
+    Boolean,
     Bytes,
     ByteArray,
     ByteBuffer,
@@ -126,7 +127,12 @@ public enum SerializationTypes {
      */
     public static SerializationTypes fromBytes(Supplier<SchemaRegistryClient> clientSupplier, final byte[] bytes) throws RestClientException, IOException {
         if (bytes.length == 1) {
-            return SerializationTypes.ByteArray;
+            // Check if the single byte is 0x00 or 0x01, indicating a Boolean value
+            if (bytes[0] == 0x00 || bytes[0] == 0x01) {
+                return SerializationTypes.Boolean;
+            } else {
+                return SerializationTypes.ByteArray;
+            }
         } else if (bytes.length == 2) {
             return SerializationTypes.Short;
         } else if (bytes.length == 4) {
@@ -155,6 +161,8 @@ public enum SerializationTypes {
     public static SerializationTypes fromClass(Class<?> tClass) {
         if (tClass.isAssignableFrom(byte[].class)) {
             return ByteArray;
+        } else if (tClass.isAssignableFrom(Boolean.class)) {
+          return  Boolean;
         } else if (tClass.isAssignableFrom(String.class)) {
             return String;
         } else if (tClass.isAssignableFrom(Bytes.class)) {
@@ -193,6 +201,8 @@ public enum SerializationTypes {
     public static SerializationTypes fromClass(Object data, boolean srConfigured) {
         if (data instanceof String) {
             return SerializationTypes.String;
+        } else if (data instanceof Boolean) {
+            return SerializationTypes.Boolean;
         } else if (data instanceof byte[]) {
             return SerializationTypes.ByteArray;
         } else if (data instanceof Short) {

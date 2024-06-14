@@ -84,6 +84,8 @@ public class ConfluentSerializerInternal<T> implements Serializer<T> {
 
         if (data instanceof String) {
             type = SerializationTypes.String;
+        } else if (data instanceof Boolean) {
+            type = SerializationTypes.Boolean;
         } else if (data instanceof byte[]) {
             type = SerializationTypes.ByteArray;
         } else if (data instanceof Short) {
@@ -125,6 +127,9 @@ public class ConfluentSerializerInternal<T> implements Serializer<T> {
             case String:
                 log.info("String detected, using String serializer.");
                 return (Serializer<T>) new StringSerializer();
+            case Boolean:
+                log.info("Boolean detected, using Boolean serializer");
+                return (Serializer<T>) new BooleanSerializer();
             case Bytes:
                 log.info("Bytes detected, using Bytes serializer.");
                 return (Serializer<T>) new BytesSerializer();
