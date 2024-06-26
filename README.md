@@ -61,50 +61,91 @@ Kafka Producer Initialization
         new ConfluentDeserializer<V>(properties,false,vClass))){
  ```
 
-#### Supported data types
+## Supported data types
 
-- String - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/StringSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/StringDeserializer.html)
+| Primitive Types | Serializer Docs                                                                                                                                   | Deserializer Docs                                                                                                                                     |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| String          | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/StringSerializer.html)     | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/StringDeserializer.html)     |
+| Boolean         | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BooleanSerializer.html)    | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BooleanDeserializer.html)    |
+| Float           | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/FloatSerializer.html)      | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/FloatDeserializer.html)      |
+| Double          | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/DoubleSerializer.html)     | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/DoubleDeserializer.html)     |
+| Integer         | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/IntegerSerializer.html)    | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/IntegerDeserializer.html)    |
+| Long            | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/LongSerializer.html)       | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/LongDeserializer.html)       |
+| Short           | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ShortSerializer.html)      | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ShortDeserializer.html)      |
+| Bytes           | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BytesSerializer.html)      | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BytesDeserializer.html)      |
+| ByteArray       | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteArraySerializer.html)  | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteArrayDeserializer.html)  |
+| ByteBuffer      | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteBufferSerializer.html) | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteBufferDeserializer.html) |
+| UUID            | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/UUIDSerializer.html)       | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/UUIDDeserializer.html)       |
 
-- Boolean - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BooleanSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BooleanDeserializer.html)
+| Schema Types   | Serializer Docs | Deserializer Docs |
+|----------------|------------|--------------|
+| KafkaAvro      | [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html#avro-serializer)        | [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html#avro-deserializer)    |
+| KafkaJSONSchema| [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer) | [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-deserializer) |
+| KafkaJSON      | [Serializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonSerializer.java) | [Deserializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonDeserializer.java) |
+| Protobuf       | [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-protobuf.html#protobuf-serializer) | [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-protobuf.html#protobuf-deserializer) |
 
-- Float - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/FloatSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/FloatDeserializer.html)
+### SerializationTypes
 
-- Double - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/DoubleSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/DoubleDeserializer.html)
+The [`SerializationTypes.class`](common/src/main/java/confluent/client/common/SerializationTypes.java) is used to determine the type of data type that needs to be serialized/deserialized via a range of methods:
 
-- Integer - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/IntegerSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/IntegerDeserializer.html)
+1. #### Headers
+This method is used to determine the serialization type from the headers and compared against an Enum matching the data type via `valueOf`
 
-- Long - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/LongSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/LongDeserializer.html)
+2. #### String
+This method is used to determine the serialization type from a string and compared against an Enum matching the data type via `valueOf`
 
-- Short - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ShortSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ShortDeserializer.html)
+3. #### Bytes
+This method is used to determine the serialization type of the message via the comparison of bytes. (Primitives are checked first then Schema)
 
-- Bytes - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BytesSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/BytesDeserializer.html)
+| Primitive Types  | Bytes Check                                                         |
+|------------------|---------------------------------------------------------------------|
+| String (Default) | `bytes.length == 0` (edge case of possible empty string "")         |
+| Boolean          | `bytes.length == 1 && if (bytes[0] == 0x00 ` OR `bytes[0] == 0x01)` |
+| ByteArray        | `bytes.length == 1`                                                 |
+| Short            | `bytes.length == 2`                                                 | 
+| Integer          | `bytes.length == 4`                                                 |
+| Long             | `bytes.length == 8`                                                 |
+|                  |                                                                     |
 
-- ByteArray - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteArraySerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteArrayDeserializer.html)
+| Schema Types | Bytes Check                                                                                                     |
+|--------------|-----------------------------------------------------------------------------------------------------------------|
+| JSON         | `(bytes[0] == '{' && bytes[bytes.length - 1] == '}')` OR `(bytes[0] == '[' && bytes[bytes.length - 1] == ']'))` |
 
-- ByteBuffer - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteBufferSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteBufferDeserializer.html)
+**Remaining Schema Types are compared in the Schema Check**
 
-- UUID - [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/UUIDSerializer.html)
-  / [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/UUIDDeserializer.html)
+4. #### Schema
+This method is used to determine the serialization type of the message via the use of the
+Schema Registry supplier.
 
-- KafkaAvro - [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html#avro-serializer) /
-  [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html#avro-deserializer)
+| Schema Types    | Schema Type |
+|-----------------|-------------|
+| Avro            | `AVRO`      |
+| KafkaJSONSchema | `JSON`      |
+| Protobuf        | `PROTOBUF`  |
 
-- KafkaJSONSchema - [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer) /
-  [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-deserializer)
-
-- KafkaJSON - [Serializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonSerializer.java) /
-  [Deserializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonDeserializer.java)
-
-- Protobuf - [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-protobuf.html#protobuf-serializer) /
-  [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-protobuf.html#protobuf-deserializer)
-
+5. #### Class
+```mermaid
+stateDiagram-v2
+[*] --> PrimitiveTypes:   
+    state PrimitiveTypes {
+      [*] --> String
+      [*] --> Boolean
+      [*] --> Float
+      [*] --> Double
+      [*] --> Integer
+      [*] --> Long
+      [*] --> Short
+      [*] --> Bytes
+      [*] --> ByteArray
+      [*] --> ByteBuffer
+      [*] --> UUID
+      
+}
+[*] --> SchemaTypes: 
+    state SchemaTypes {
+      [*] --> KafkaAvro
+      [*] --> KafkaJSONSchema
+      [*] --> KafkaJSON
+      [*] --> Protobuf
+}
+```
