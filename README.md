@@ -77,11 +77,15 @@ Kafka Producer Initialization
 | ByteBuffer      | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteBufferSerializer.html) | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/ByteBufferDeserializer.html) |
 | UUID            | [Serializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/UUIDSerializer.html)       | [Deserializer](https://docs.confluent.io/platform/current/clients/javadocs/javadoc/org/apache/kafka/common/serialization/UUIDDeserializer.html)       |
 
+| Schemaless Types| Serializer Docs | Deserializer Docs |
+|-----------------|-----------------|-------------------|
+| KafkaJSON      | [Serializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonSerializer.java) | [Deserializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonDeserializer.java) |
+
 | Schema Types   | Serializer Docs | Deserializer Docs |
 |----------------|------------|--------------|
 | KafkaAvro      | [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html#avro-serializer)        | [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-avro.html#avro-deserializer)    |
 | KafkaJSONSchema| [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer) | [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-deserializer) |
-| KafkaJSON      | [Serializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonSerializer.java) | [Deserializer](https://github.com/confluentinc/schema-registry/blob/master/json-serializer/src/main/java/io/confluent/kafka/serializers/KafkaJsonDeserializer.java) |
+
 | Protobuf       | [Serializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-protobuf.html#protobuf-serializer) | [Deserializer](https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-protobuf.html#protobuf-deserializer) |
 
 ### SerializationTypes
@@ -107,9 +111,9 @@ This method is used to determine the serialization type of the message via the c
 | Long             | `bytes.length == 8`                                                 |
 |                  |                                                                     |
 
-| Schema Types | Bytes Check                                                                                                     |
-|--------------|-----------------------------------------------------------------------------------------------------------------|
-| JSON         | `(bytes[0] == '{' && bytes[bytes.length - 1] == '}')` OR `(bytes[0] == '[' && bytes[bytes.length - 1] == ']'))` |
+| Schemaless Types | Bytes Check                                                                                                     |
+|------------------|-----------------------------------------------------------------------------------------------------------------|
+| JSON             | `(bytes[0] == '{' && bytes[bytes.length - 1] == '}')` OR `(bytes[0] == '[' && bytes[bytes.length - 1] == ']'))` |
 
 **Remaining Schema Types are compared in the Schema Check**
 
@@ -126,26 +130,17 @@ Schema Registry supplier.
 5. #### Class
 ```mermaid
 stateDiagram-v2
-[*] --> PrimitiveTypes:   
-    state PrimitiveTypes {
-      [*] --> String
-      [*] --> Boolean
-      [*] --> Float
-      [*] --> Double
-      [*] --> Integer
-      [*] --> Long
-      [*] --> Short
-      [*] --> Bytes
-      [*] --> ByteArray
-      [*] --> ByteBuffer
-      [*] --> UUID
-      
-}
-[*] --> SchemaTypes: 
-    state SchemaTypes {
-      [*] --> KafkaAvro
-      [*] --> KafkaJSONSchema
-      [*] --> KafkaJSON
-      [*] --> Protobuf
-}
+    state if_state <<choice>>
+    state fork_state <<fork>>
+    [*] --> if_state
+    if_state --> PrimitiveTypes: bytes <=8
+    if_state --> fork_state: bytes > 8
+    fork_state --> SchemaRegistryTypes: hasMagicByte
+    fork_state --> SchemalessTypes
+    state SchemalessTypes {
+        state is_json <<choice>>
+        is_json --> json: if '{...}' or '[...]'
+        is_json --> string: else
+    }
+
 ```
