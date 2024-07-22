@@ -8,11 +8,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.confluent</groupId>
-        <artifactId>data-stream-composer-ser-des</artifactId>
+        <artifactId>kafka-client-smart-ser-des</artifactId>
         <version>1.0.6-SNAPSHOT</version>
     </parent>
 
-    <artifactId>data-stream-composer-test-utils</artifactId>
+    <artifactId>kafka-client-smart-test-utils</artifactId>
 
     <properties>
         <apache.common.version>3.14.0</apache.common.version>
