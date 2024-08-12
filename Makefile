@@ -78,7 +78,7 @@ endif
 MASTER_BRANCH ?= main
 UPDATE_MK_INCLUDE := true
 UPDATE_MK_INCLUDE_AUTO_MERGE := true
-SERVICE_NAME := data-stream-composer-ser-des
+SERVICE_NAME := kafka-client-smart-ser-des
 IMAGE_NAME := $(SERVICE_NAME)
 
 include ./mk-include/cc-begin.mk
