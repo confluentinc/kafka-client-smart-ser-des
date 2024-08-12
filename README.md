@@ -1,7 +1,7 @@
 # Kafka Client Smart Serializer / Deserializer
 
 ## Overview
-This repository contains the smart serializer and deserializer for kafka connectors.
+This repository contains the smart serializer and deserializer for Apache Kafka® clients.
 
 The smart serializer and deserializer allows for engineers to create consumers and producers without knowing the
 underlying stream contents.
