@@ -8,11 +8,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.confluent</groupId>
-        <artifactId>data-stream-composer-ser-des</artifactId>
+        <artifactId>kafka-client-smart-ser-des</artifactId>
         <version>1.0.6-SNAPSHOT</version>
     </parent>
 
-    <artifactId>data-stream-composer-ser-des-integration</artifactId>
+    <artifactId>kafka-client-smart-ser-des-integration</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -23,22 +23,22 @@
     <dependencies>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>data-stream-composer-connect</artifactId>
+            <artifactId>kafka-client-smart-connect</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>data-stream-composer-serializer</artifactId>
+            <artifactId>kafka-client-smart-serializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>data-stream-composer-deserializer</artifactId>
+            <artifactId>kafka-client-smart-deserializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>data-stream-composer-test-utils</artifactId>
+            <artifactId>kafka-client-smart-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

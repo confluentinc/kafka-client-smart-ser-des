@@ -8,12 +8,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.confluent</groupId>
-    <artifactId>data-stream-composer-ser-des</artifactId>
+    <artifactId>kafka-client-smart-ser-des</artifactId>
     <version>1.0.6-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
-    <name>Confluent Serializer Deserializer</name>
+    <name>Kafka Client Smart Serializer Deserializer</name>
     <inceptionYear>2022</inceptionYear>
 
     <organization>
@@ -53,9 +53,9 @@
     </properties>
 
     <scm>
-        <connection>scm:git:git://github.com:confluentinc/data-stream-composer-ser-des.git</connection>
-        <developerConnection>scm:git:git@github.com:confluentinc/data-stream-composer-ser-des.git</developerConnection>
-        <url>https://github.com/confluentinc/data-stream-composer-ser-des.git</url>
+        <connection>scm:git:git://github.com:confluentinc/kafka-client-smart-ser-des.git</connection>
+        <developerConnection>scm:git:git@github.com:confluentinc/kafka-client-smart-ser-des.git</developerConnection>
+        <url>https://github.com/confluentinc/kafka-client-smart-ser-des.git</url>
         <tag>HEAD</tag>
     </scm>
 

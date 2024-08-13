@@ -1,7 +1,7 @@
-# Data Stream Smart Serializer / Deserializer
+# Kafka Client Smart Serializer / Deserializer
 
 ## Overview
-This repository contains the smart serializer and deserializer for kafka connectors.
+This repository contains the smart serializer and deserializer for Apache Kafka® clients.
 
 The smart serializer and deserializer allows for engineers to create consumers and producers without knowing the
 underlying stream contents.
@@ -21,8 +21,8 @@ Deserializer
 ```xml
 <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>data-stream-composer-deserializer</artifactId>
-    <version>${data-stream-composer-ser-des.version}</version>
+    <artifactId>kafka-client-smart-deserializer</artifactId>
+    <version>${kafka-client-smart-ser-des.version}</version>
 </dependency>
 ```
 
@@ -30,8 +30,8 @@ Serializer
 ```xml
 <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>data-stream-composer-serializer</artifactId>
-    <version>${data-stream-composer-ser-des.version}</version>
+    <artifactId>kafka-client-smart-serializer</artifactId>
+    <version>${kafka-client-smart-ser-des.version}</version>
 </dependency>
 ```
 
@@ -39,8 +39,8 @@ Common (Schema Registry Client Config and Utils)
 ```xml
  <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>data-stream-composer-ser-des-common</artifactId>
-    <version>${data-stream-composer-ser-des.version}</version>
+    <artifactId>kafka-client-smart-ser-des-common</artifactId>
+    <version>${kafka-client-smart-ser-des.version}</version>
 </dependency>
 ```
 ### Producer

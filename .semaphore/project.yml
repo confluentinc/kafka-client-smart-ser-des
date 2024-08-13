@@ -6,12 +6,12 @@
 apiVersion: v1alpha
 kind: Project
 metadata:
-  name: data-stream-composer-ser-des
+  name: kafka-client-smart-ser-des
   description: ""
 spec:
   visibility: private
   repository:
-    url: git@github.com:confluentinc/data-stream-composer-ser-des.git
+    url: git@github.com:confluentinc/kafka-client-smart-ser-des.git
     run_on:
     - branches
     - tags

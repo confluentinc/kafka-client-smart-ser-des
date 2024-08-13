@@ -20,7 +20,7 @@ do this by adding the following Maven dependency to your project's `pom.xml` fil
 ```xml
 <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>data-stream-composer-deserializer</artifactId>
+    <artifactId>kafka-client-smart-deserializer</artifactId>
     <version>{deserializer-version}</version>
 </dependency>
 <dependency>
@@ -32,7 +32,7 @@ do this by adding the following Maven dependency to your project's `pom.xml` fil
 Alternatively, if you're using Gradle, you can add the following dependency to your build.gradle file:
 
 ```groovy
-implementation 'io.confluent.confluent:data-stream-composer-deserializer:{deserializer-version}'
+implementation 'io.confluent.confluent:kafka-client-smart-deserializer:{deserializer-version}'
 implementation 'org.apache.kafka:kafka-clients:{kafka-version}'
 ```
 Replace `{kafka-version}` and `{deserializer-version}` with the version you are using.
