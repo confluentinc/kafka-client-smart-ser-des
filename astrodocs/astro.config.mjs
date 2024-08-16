@@ -1,10 +1,15 @@
 import { defineConfig } from 'astro/config'
 import starlight from '@astrojs/starlight'
+import rehypeMermaid from 'rehype-mermaid'
+import rehypeRaw from 'rehype-raw'
 
 import robotsTxt from 'astro-robots-txt'
 
 // https://astro.build/config
 export default defineConfig({
+    markdown: {
+        rehypePlugins: [rehypeRaw, rehypeMermaid]
+    },
 	build: {
 		inlineStylesheets: 'always'
 	},

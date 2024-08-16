@@ -145,7 +145,6 @@ stateDiagram-v2
         is_json --> json: if '{...}' or '[...]'
         is_json --> string: else
     }
-
 ```
 
 # Documentation How-To
