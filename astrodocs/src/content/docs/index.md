@@ -152,7 +152,7 @@ stateDiagram-v2
 
 ## Publishing new documentation
 
-To publish new documentation, first ensure the latest version of the `Data Stream Composer` repo is present.
+To publish new documentation, first ensure the latest version of the `Kafka Client Builder Smart Ser Des` repo is present.
 
 Then run the following command:
 
@@ -167,7 +167,7 @@ chmod +x publish-github-page-docs.sh
 
 ## Accessing documentation
 
-To access the documentation navigate to [Data Stream Composer Github Page](cuddly-dollop-n8y3wn5.pages.github.io/)
+To access the documentation navigate to [Kafka Client Builder Smart Ser Des](https://congenial-adventure-re43n14.pages.github.io/)
 or locally run the following command:
 
 ```bash
