@@ -7,7 +7,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "gh-pages": "astro build && rm -rf ../docs/* && mv ./dist/* ../docs/ && mv ./dist/.nojekyll ../docs/",
+    "gh-pages": "astro build && rm -rf ../docs/* && mv ./dist/* ../docs/",
     "astro": "astro"
   },
   "dependencies": {
