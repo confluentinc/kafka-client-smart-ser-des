@@ -55,7 +55,7 @@ output/
 
 # Redundant files for the documentation
 docs_src/_build
-docs/
+./astrodocs/docs/
 .sendsafe/config
 .sendsafe/node_modules
 .sendsafe/package-lock.json
