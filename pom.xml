@@ -26,7 +26,7 @@
         <confluent.connect.version>7.6.2</confluent.connect.version>
 
         <!--        External Dependencies-->
-        <avro.version>1.11.3</avro.version>
+        <avro.version>1.12.0</avro.version>
         <commons-io.version>2.16.1</commons-io.version>
         <commons-codec.version>1.17.0</commons-codec.version>
         <connect.version>7.6.1-ce</connect.version>
