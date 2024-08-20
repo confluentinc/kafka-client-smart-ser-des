@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Copyright (C) 2022-2024 Confluent, Inc.
+#
+
 
 # Change to the astrodocs directory
 cd astrodocs
