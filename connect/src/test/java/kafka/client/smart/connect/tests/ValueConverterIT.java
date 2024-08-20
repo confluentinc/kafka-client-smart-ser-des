@@ -4,9 +4,9 @@
 
 package kafka.client.smart.connect.tests;
 
-import io.confluent.common.test.utils.RCSUtils;
-import io.confluent.common.test.utils.SRUtils;
-import io.confluent.common.test.utils.containers.KafkaCluster;
+import kafka.client.smart.test.utils.RCSUtils;
+import kafka.client.smart.test.utils.SRUtils;
+import kafka.client.smart.test.utils.containers.KafkaCluster;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;

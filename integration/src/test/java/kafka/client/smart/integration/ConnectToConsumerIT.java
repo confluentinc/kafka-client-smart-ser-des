@@ -9,7 +9,7 @@ import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import kafka.client.smart.deserializer.ConfluentDeserializer;
 import kafka.client.smart.integration.model.Employee;
-import io.confluent.common.test.utils.SRUtils;
+import kafka.client.smart.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
