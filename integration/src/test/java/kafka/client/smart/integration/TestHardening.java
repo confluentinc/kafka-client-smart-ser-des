@@ -4,9 +4,9 @@
 
 package kafka.client.smart.integration;
 
-import io.confluent.common.test.utils.RCSUtils;
-import io.confluent.common.test.utils.SRUtils;
-import io.confluent.common.test.utils.containers.KafkaCluster;
+import kafka.client.smart.test.utils.RCSUtils;
+import kafka.client.smart.test.utils.SRUtils;
+import kafka.client.smart.test.utils.containers.KafkaCluster;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.Tailer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

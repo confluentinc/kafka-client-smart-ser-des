@@ -87,7 +87,7 @@
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>
-            <artifactId>kafka-client-smart-ser-des-common</artifactId>
+            <artifactId>kafka-client-smart-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

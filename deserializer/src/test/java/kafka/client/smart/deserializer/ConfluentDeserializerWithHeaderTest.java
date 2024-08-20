@@ -8,7 +8,7 @@ import com.google.common.collect.Maps;
 import kafka.client.smart.common.SerializationTypes;
 import kafka.client.smart.deserializer.record.OrderRecord;
 import kafka.client.smart.serializer.ConfluentSerializer;
-import io.confluent.common.test.utils.SRUtils;
+import kafka.client.smart.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;

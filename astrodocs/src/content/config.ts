@@ -1,3 +1,7 @@
+///
+/// Copyright (C) 2022-2024 Confluent, Inc.
+///
+
 import { defineCollection } from 'astro:content';
 import { docsSchema, i18nSchema } from '@astrojs/starlight/schema';
 

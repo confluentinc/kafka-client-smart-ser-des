@@ -7,7 +7,7 @@ package kafka.client.smart.deserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import kafka.client.smart.deserializer.record.OrderRecord;
-import io.confluent.common.test.utils.SRUtils;
+import kafka.client.smart.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;

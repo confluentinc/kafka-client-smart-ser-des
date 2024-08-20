@@ -2,7 +2,7 @@
  * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
-package io.confluent.common.test.utils;
+package kafka.client.smart.test.utils;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteSource;
