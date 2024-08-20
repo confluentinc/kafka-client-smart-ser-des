@@ -39,7 +39,6 @@
         <kafka-clients-version>7.6.1-ce</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.6.1</kafka-serializer-version>
-        <kafka-server-common-version>7.6.1-ce</kafka-server-common-version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-failsafe-plugin.version>3.4.0</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
@@ -355,7 +354,7 @@
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-server-common</artifactId>
-                <version>${kafka-server-common-version}</version>
+                <version>${kafka-clients-version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
