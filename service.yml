@@ -30,10 +30,10 @@ make:
 code_artifact:
   enable: true
   package_paths:
-    - maven-releases/maven/io.confluent/kafka-client-smart-ser-des-integration
+    - maven-releases/maven/io.confluent/kafka-client-smart-integration
     - maven-releases/maven/io.confluent/kafka-client-smart-connect
     - maven-releases/maven/io.confluent/kafka-client-smart-deserializer
     - maven-releases/maven/io.confluent/kafka-client-smart-serializer
-    - maven-releases/maven/io.confluent/kafka-client-smart-ser-des-common
+    - maven-releases/maven/io.confluent/kafka-client-smart-common
     - maven-releases/maven/io.confluent/kafka-client-smart-test-utils
     - maven-releases/maven/io.confluent/kafka-client-smart-ser-des
