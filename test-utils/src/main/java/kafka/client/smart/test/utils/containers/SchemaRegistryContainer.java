@@ -2,7 +2,7 @@
  * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
-package io.confluent.common.test.utils.containers;
+package kafka.client.smart.test.utils.containers;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;

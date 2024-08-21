@@ -4,7 +4,7 @@
 
 package kafka.client.smart.integration;
 
-import io.confluent.common.test.utils.SRUtils;
+import kafka.client.smart.test.utils.SRUtils;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;

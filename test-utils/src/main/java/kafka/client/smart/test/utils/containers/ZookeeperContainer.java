@@ -2,9 +2,9 @@
  * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
-package io.confluent.common.test.utils.containers;
+package kafka.client.smart.test.utils.containers;
 
-import io.confluent.common.test.utils.Environment;
+import kafka.client.smart.test.utils.Environment;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;

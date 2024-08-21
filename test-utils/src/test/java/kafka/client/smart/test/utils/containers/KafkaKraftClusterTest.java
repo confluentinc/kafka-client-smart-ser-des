@@ -2,13 +2,13 @@
  * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
-package io.confluent.common.test.utils.containers;
+package kafka.client.smart.test.utils.containers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
-import io.confluent.common.test.utils.KafkaConsumer;
-import io.confluent.common.test.utils.KafkaProducer;
+import kafka.client.smart.test.utils.KafkaConsumer;
+import kafka.client.smart.test.utils.KafkaProducer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;

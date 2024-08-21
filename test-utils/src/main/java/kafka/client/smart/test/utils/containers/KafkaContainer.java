@@ -2,10 +2,10 @@
  * Copyright (C) 2022-2024 Confluent, Inc.
  */
 
-package io.confluent.common.test.utils.containers;
+package kafka.client.smart.test.utils.containers;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import io.confluent.common.test.utils.Environment;
+import kafka.client.smart.test.utils.Environment;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
