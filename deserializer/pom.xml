@@ -9,7 +9,7 @@
     <parent>
         <groupId>io.confluent</groupId>
         <artifactId>kafka-client-smart-ser-des</artifactId>
-        <version>1.0.8-SNAPSHOT</version>
+        <version>1.0.8</version>
     </parent>
 
     <artifactId>kafka-client-smart-deserializer</artifactId>
