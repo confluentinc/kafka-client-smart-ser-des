@@ -19,7 +19,7 @@
         <assertj.version>3.26.0</assertj.version>
         <confluent.version>7.5.0</confluent.version>
         <kafka.version>${confluent.version}-ce</kafka.version>
-        <junit.version>5.10.3</junit.version>
+        <junit.version>5.11.3</junit.version>
 
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
