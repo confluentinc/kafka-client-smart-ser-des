@@ -34,7 +34,7 @@
         <junit-jupiter-version>5.10.3</junit-jupiter-version>
         <junit-launcher.version>1.11.0</junit-launcher.version>
         <license.mode>format</license.mode>
-        <logback.version>1.5.7</logback.version>
+        <logback.version>1.5.13</logback.version>
         <lombok.version>1.18.34</lombok.version>
         <kafka-clients-version>7.7.0-ce</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
