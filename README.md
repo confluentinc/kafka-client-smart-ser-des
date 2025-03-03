@@ -39,7 +39,7 @@ Common (Schema Registry Client Config and Utils)
 ```xml
  <dependency>
     <groupId>io.confluent</groupId>
-    <artifactId>kafka-client-smart-ser-des-common</artifactId>
+    <artifactId>kafka-client-smart-common</artifactId>
     <version>${kafka-client-smart-ser-des.version}</version>
 </dependency>
 ```
