@@ -40,7 +40,7 @@
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.7.0</kafka-serializer-version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.4.0</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
         <mockito-core.version>5.12.0</mockito-core.version>
