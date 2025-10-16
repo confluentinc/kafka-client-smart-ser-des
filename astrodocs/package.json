@@ -11,8 +11,22 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.25.5",
-    "astro": "^4.14.2",
-    "astro-robots-txt": "^1.0.0"
+    "@astrojs/starlight": "^0.36.1",
+    "@babel/helpers": "^7.26.10",
+    "@pagefind/default-ui": "^1.1.1",
+    "astro": "^5.14.3",
+    "astro-robots-txt": "^1.0.0",
+    "cookie": "^0.7.0",
+    "cross-spawn": "^7.0.5",
+    "devalue": "^5.3.2",
+    "dset": "^3.1.4",
+    "esbuild": "^0.25.0",
+    "micromatch": "^4.0.8",
+    "nanoid": "^5.0.9",
+    "pagefind": "^1.1.1",
+    "path-to-regexp": "^8.0.0",
+    "prismjs": "^1.30.0",
+    "rollup": "^4.22.4",
+    "vite": "^7.1.5"
   }
 }
