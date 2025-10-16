@@ -364,7 +364,7 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>4.27.5</version>
+                <version>3.25.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
