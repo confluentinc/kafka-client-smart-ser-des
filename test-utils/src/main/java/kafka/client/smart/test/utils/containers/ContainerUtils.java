@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.test.utils.containers;
@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName;
 @UtilityClass
 public class ContainerUtils {
 
-  public final String DEFAULT_CP_IMAGE_TAG = "7.5.1";
+  public final String DEFAULT_CP_IMAGE_TAG = "7.7.0";
 
   /**
    * Determines the Docker image name to use based on the current environment. Confluent appends the
