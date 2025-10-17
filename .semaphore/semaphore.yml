@@ -22,9 +22,7 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
-          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
-          - echo "Using Java version: $JAVA_VERSION"
-          - sem-version java $JAVA_VERSION
+          - sem-version java 11
           - java -version
       jobs:
         - name: "dependencies"
@@ -42,9 +40,7 @@ blocks:
       prologue:
         commands:
           - checkout
-          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
-          - echo "Using Java version: $JAVA_VERSION"
-          - sem-version java $JAVA_VERSION
+          - sem-version java 11
           - java -version
           - cache restore kafka-client-dependencies
       jobs:
@@ -58,9 +54,7 @@ blocks:
       prologue:
         commands:
           - checkout
-          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
-          - echo "Using Java version: $JAVA_VERSION"
-          - sem-version java $JAVA_VERSION
+          - sem-version java 11
           - java -version
           - cache restore kafka-client-dependencies
       jobs:
