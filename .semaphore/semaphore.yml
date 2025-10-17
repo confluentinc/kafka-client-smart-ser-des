@@ -29,7 +29,9 @@ blocks:
           - chmod 700 ~/.netrc
           - make docker-login-ci
           - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - echo "Using Java version: $JAVA_VERSION"
           - sem-version java $JAVA_VERSION
+          - java -version
       jobs:
         - name: "dependencies"
           commands:
@@ -52,7 +54,9 @@ blocks:
         commands:
           - checkout
           - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - echo "Using Java version: $JAVA_VERSION"
           - sem-version java $JAVA_VERSION
+          - java -version
           - cache restore kafka-client-dependencies
       jobs:
         - name: "run unit tests"
@@ -66,7 +70,9 @@ blocks:
         commands:
           - checkout
           - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - echo "Using Java version: $JAVA_VERSION"
           - sem-version java $JAVA_VERSION
+          - java -version
           - cache restore kafka-client-dependencies
       jobs:
         - name: "run integration tests"

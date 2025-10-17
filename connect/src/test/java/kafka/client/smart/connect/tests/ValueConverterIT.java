@@ -51,10 +51,13 @@ public class ValueConverterIT {
     private Connect connect;
     @Test
     public void testDefaultAVRO() throws InterruptedException, IOException, RestClientException {
+        log.info("Starting testDefaultAVRO...");
 
         createConnectorConfig("connector.properties", "connector.properties");
+        log.info("Connector config created");
 
         startConnect();
+        log.info("Connect started, waiting for messages...");
 
         SinkTailListener listener = startListener();
         boolean awaitResult = listener.getLatch().await(1000, java.util.concurrent.TimeUnit.SECONDS);
@@ -98,8 +101,9 @@ public class ValueConverterIT {
         deleteFile("/tmp/connector_sink.properties");
         deleteFile("/tmp/test.sink.txt");
 
-        cluster = KafkaCluster.defaultCluster().withReuse(true);
+        cluster = KafkaCluster.defaultCluster().withReuse(true).withWaitTimeout(5);
         log.info("Starting Kafka cluster...");
+        log.info("Kafka cluster configuration: {}", cluster);
         cluster.start();
         log.info("Kafka cluster started. Bootstrap servers: {}", cluster.getBootstrapServers());
 
@@ -130,6 +134,7 @@ public class ValueConverterIT {
     }
 
     private void createConfigFile() throws IOException {
+        log.info("Creating connect-standalone.properties with bootstrap servers: {}", cluster.getBootstrapServers());
         String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ValueConverterIT.class);
         config = config.replace("{{bootstrap.servers}}", cluster.getBootstrapServers());
 
@@ -141,9 +146,11 @@ public class ValueConverterIT {
         FileWriter myWriter = new FileWriter("/tmp/connect-standalone.properties");
         myWriter.write(config);
         myWriter.close();
+        log.info("Created connect-standalone.properties");
     }
 
     private void createConnectorConfig(String srcFilename, String targetFilename) throws IOException {
+        log.info("Creating connector config from {} to {}", srcFilename, targetFilename);
         final Path schema = RCSUtils.getResourcePath("/emp.avsc", ValueConverterIT.class);
         String config = RCSUtils.getResourceAsString("/" + srcFilename, ValueConverterIT.class);
         config = config.replace("{{schema}}", schema.toString());
@@ -151,6 +158,7 @@ public class ValueConverterIT {
         FileWriter myWriter = new FileWriter("/tmp/" + targetFilename);
         myWriter.write(config);
         myWriter.close();
+        log.info("Created connector config: /tmp/{}", targetFilename);
     }
 
     private void stopConnect() {
@@ -171,21 +179,26 @@ public class ValueConverterIT {
     }
 
     private Thread startConnect() {
+        log.info("Starting Kafka Connect worker thread...");
         final Thread connectorThread = new Thread(() -> {
             try {
+                log.info("Starting connect worker with config files...");
                 startConnectWorker(new String[] {
                         "/tmp/connect-standalone.properties",
                         "/tmp/connector.properties",
                         "/tmp/connector_sink.properties"
                 });
+                log.info("Connect worker started, waiting for stop...");
                 connect.awaitStop();
             } catch (Throwable e) {
                 log.error("Error running connector", e);
             } finally {
+                log.info("Stopping connect worker...");
                 stopConnect();
             }
         });
         connectorThread.start();
+        log.info("Kafka Connect worker thread started");
 
         return connectorThread;
     }
