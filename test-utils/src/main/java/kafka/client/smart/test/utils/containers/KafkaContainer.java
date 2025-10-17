@@ -1,11 +1,12 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.test.utils.containers;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import kafka.client.smart.test.utils.Environment;
+import kafka.client.smart.test.utils.containers.ContainerUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,8 +25,8 @@ public class KafkaContainer extends GenericContainer<KafkaContainer> {
   static {
     DEFAULT_IMAGE =
         (Environment.isARM())
-            ? DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.0.arm64")
-            : DockerImageName.parse("confluentinc/cp-kafka").withTag("7.5.0");
+            ? DockerImageName.parse("confluentinc/cp-kafka").withTag(ContainerUtils.DEFAULT_CP_IMAGE_TAG + ".arm64")
+            : DockerImageName.parse("confluentinc/cp-kafka").withTag(ContainerUtils.DEFAULT_CP_IMAGE_TAG);
   }
 
   private static final String STARTER_SCRIPT = "/testcontainers_start.sh";

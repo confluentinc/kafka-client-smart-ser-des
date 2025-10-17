@@ -1,10 +1,11 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.test.utils.containers;
 
 import kafka.client.smart.test.utils.Environment;
+import kafka.client.smart.test.utils.containers.ContainerUtils;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,8 @@ public class ZookeeperContainer extends GenericContainer<ZookeeperContainer> {
   static {
     DEFAULT_IMAGE =
         (Environment.isARM())
-            ? DockerImageName.parse("confluentinc/cp-zookeeper").withTag("7.5.0.arm64")
-            : DockerImageName.parse("confluentinc/cp-zookeeper").withTag("7.5.0");
+            ? DockerImageName.parse("confluentinc/cp-zookeeper").withTag(ContainerUtils.DEFAULT_CP_IMAGE_TAG + ".arm64")
+            : DockerImageName.parse("confluentinc/cp-zookeeper").withTag(ContainerUtils.DEFAULT_CP_IMAGE_TAG);
   }
 
   public ZookeeperContainer() {
