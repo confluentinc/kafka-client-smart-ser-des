@@ -1,9 +1,3 @@
-# This file is managed by ServiceBot plugin - Semaphore. The content in this file is created using a common
-# template and configurations in service.yml.
-# Any modifications made to version, name, agent, and global_job_config will be overwritten by the generated
-# content in nightly runs. Code changes made to the remaining sections will not be affected.
-# For more information, please refer to the page:
-# https://confluentinc.atlassian.net/wiki/spaces/Foundations/pages/2871296194/Add+SemaphoreCI
 version: v1.0
 name: build-test-release
 agent:
@@ -15,7 +9,7 @@ auto_cancel:
   running:
     when: "branch != 'main'"
 blocks:
-  - name: Build
+  - name: "resolve dependencies"
     dependencies: []
     task:
       env_vars:
@@ -28,42 +22,46 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
-          - sem-version java 8
+          - sem-version java 11
+          - java -version
       jobs:
-        - name: Build without Tests
+        - name: "dependencies"
           commands:
-            - ./mvnw clean install -DskipTests
-            - cache store
-  - name: Test
-    dependencies: [Build]
+            - cache restore kafka-client-dependencies
+            - ./mvnw dependency:go-offline clean install -DskipTests
+      epilogue:
+        on_pass:
+          commands:
+            - if [ "$SEMAPHORE_GIT_WORKING_BRANCH" = "main" ]; then cache delete kafka-client-dependencies; cache store kafka-client-dependencies .m2/; fi
+
+  - name: "unit tests"
+    dependencies: [ "resolve dependencies" ]
     task:
       prologue:
         commands:
           - checkout
-          - cache restore
+          - sem-version java 11
+          - java -version
+          - cache restore kafka-client-dependencies
       jobs:
-        - name: Unit Tests
+        - name: "run unit tests"
           commands:
             - ./mvnw verify -Punit
 
-        - name: Integration Tests
+  - name: "integration tests"
+    dependencies: [ "resolve dependencies" ]
+    task:
+      prologue:
+        commands:
+          - checkout
+          - sem-version java 11
+          - java -version
+          - cache restore kafka-client-dependencies
+      jobs:
+        - name: "run integration tests"
           commands:
             - ./mvnw verify -Pintegration
-
       epilogue:
         always:
           commands:
             - test-results publish **/target/*-reports/*.xml
-
-after_pipeline:
-  task:
-    jobs:
-      - name: Publish Results
-        commands:
-          - test-results gen-pipeline-report
-
-promotions:
-  - name: Publish to Internal Maven
-    pipeline_file: publish_to_codeartifact.yml
-    auto_promote:
-      when: "result = 'passed' and tag =~ '.*'"
