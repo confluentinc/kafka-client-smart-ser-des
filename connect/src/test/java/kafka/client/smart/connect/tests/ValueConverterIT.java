@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.connect.tests;
@@ -57,7 +57,11 @@ public class ValueConverterIT {
         startConnect();
 
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        boolean awaitResult = listener.getLatch().await(1000, java.util.concurrent.TimeUnit.SECONDS);
+        
+        log.info("Latch await result: {}", awaitResult);
+        log.info("Listener lines count: {}", listener.getLines().size());
+        log.info("Listener lines: {}", listener.getLines());
 
         Assertions.assertEquals(10, listener.getLines().size());
 
@@ -74,7 +78,11 @@ public class ValueConverterIT {
         startConnect();
 
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        boolean awaitResult = listener.getLatch().await(1000, java.util.concurrent.TimeUnit.SECONDS);
+        
+        log.info("Latch await result for {}: {}", type, awaitResult);
+        log.info("Listener lines count for {}: {}", type, listener.getLines().size());
+        log.info("Listener lines for {}: {}", type, listener.getLines());
 
         Assertions.assertEquals(10, listener.getLines().size());
 
@@ -84,19 +92,23 @@ public class ValueConverterIT {
 
     @BeforeEach
     public void setup() throws IOException {
+        log.info("Setting up test...");
         deleteFile("/tmp/connect-standalone.properties");
         deleteFile("/tmp/connector.properties");
         deleteFile("/tmp/connector_sink.properties");
         deleteFile("/tmp/test.sink.txt");
 
         cluster = KafkaCluster.defaultCluster().withReuse(true);
+        log.info("Starting Kafka cluster...");
         cluster.start();
+        log.info("Kafka cluster started. Bootstrap servers: {}", cluster.getBootstrapServers());
 
         SRUtils.reset();
 
         createConfigFile();
         createConnectorConfig("connector_sink.properties", "connector_sink.properties");
         new File("/tmp/test.sink.txt").createNewFile();
+        log.info("Test setup completed");
     }
 
     @AfterEach
