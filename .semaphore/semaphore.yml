@@ -15,7 +15,7 @@ auto_cancel:
   running:
     when: "branch != 'main'"
 blocks:
-  - name: Build
+  - name: "resolve dependencies"
     dependencies: []
     task:
       env_vars:
@@ -28,25 +28,49 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
-          - sem-version java 8
+          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - echo "Using Java version: $JAVA_VERSION"
+          - sem-version java $JAVA_VERSION
+          - java -version
       jobs:
-        - name: Build without Tests
+        - name: "dependencies"
           commands:
-            - ./mvnw clean install -DskipTests
-            - cache store
-  - name: Test
-    dependencies: [Build]
+            - cache restore kafka-client-dependencies
+            - ./mvnw dependency:go-offline clean install -DskipTests
+      epilogue:
+        on_pass:
+          commands:
+            - if [ "$SEMAPHORE_GIT_WORKING_BRANCH" = "main" ]; then cache delete kafka-client-dependencies; cache store kafka-client-dependencies .m2/; fi
+
+  - name: "unit tests"
+    dependencies: [ "resolve dependencies" ]
     task:
       prologue:
         commands:
           - checkout
-          - cache restore
+          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - echo "Using Java version: $JAVA_VERSION"
+          - sem-version java $JAVA_VERSION
+          - java -version
+          - cache restore kafka-client-dependencies
       jobs:
-        - name: Unit Tests
+        - name: "run unit tests"
           commands:
             - ./mvnw verify -Punit
 
-        - name: Integration Tests
+  - name: "integration tests"
+    dependencies: [ "resolve dependencies" ]
+    task:
+      prologue:
+        commands:
+          - checkout
+          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - echo "Using Java version: $JAVA_VERSION"
+          - sem-version java $JAVA_VERSION
+          - java -version
+          - cache restore kafka-client-dependencies
+      jobs:
+        - name: "run integration tests"
           commands:
             - ./mvnw verify -Pintegration
 
@@ -59,11 +83,3 @@ after_pipeline:
   task:
     jobs:
       - name: Publish Results
-        commands:
-          - test-results gen-pipeline-report
-
-promotions:
-  - name: Publish to Internal Maven
-    pipeline_file: publish_to_codeartifact.yml
-    auto_promote:
-      when: "result = 'passed' and tag =~ '.*'"
