@@ -40,12 +40,7 @@ blocks:
       epilogue:
         on_pass:
           commands:
-            # Guard to prevent PR removing cache
-            - >-
-              if [ "$SEMAPHORE_GIT_WORKING_BRANCH" = "main" ]; then 
-                cache delete kafka-client-dependencies;
-                cache store kafka-client-dependencies .m2/;
-              fi
+            - if [ "$SEMAPHORE_GIT_WORKING_BRANCH" = "main" ]; then cache delete kafka-client-dependencies; cache store kafka-client-dependencies .m2/; fi
 
   - name: "unit tests"
     dependencies: [ "resolve dependencies" ]
@@ -88,11 +83,3 @@ after_pipeline:
   task:
     jobs:
       - name: Publish Results
-        commands:
-          - test-results gen-pipeline-report
-
-promotions:
-  - name: Publish to Internal Maven
-    pipeline_file: publish_to_codeartifact.yml
-    auto_promote:
-      when: "result = 'passed' and tag =~ '.*'"
