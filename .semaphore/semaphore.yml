@@ -21,8 +21,6 @@ blocks:
       env_vars:
         - name: MAVEN_OPTS
           value: "-Dmaven.repo.local=.m2"
-        - name: JAVA_VERSION
-          value: $(./scripts/get-java-version.sh)
       prologue:
         commands:
           - checkout
@@ -30,6 +28,7 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
+          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
           - sem-version java $JAVA_VERSION
       jobs:
         - name: "dependencies"
@@ -52,6 +51,8 @@ blocks:
       prologue:
         commands:
           - checkout
+          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - sem-version java $JAVA_VERSION
           - cache restore kafka-client-dependencies
       jobs:
         - name: "run unit tests"
@@ -64,6 +65,8 @@ blocks:
       prologue:
         commands:
           - checkout
+          - export JAVA_VERSION=$(./scripts/get-java-version.sh)
+          - sem-version java $JAVA_VERSION
           - cache restore kafka-client-dependencies
       jobs:
         - name: "run integration tests"
