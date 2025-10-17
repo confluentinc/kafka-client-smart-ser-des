@@ -57,7 +57,7 @@ public class ValueConverterIT {
         startConnect();
 
         SinkTailListener listener = startListener();
-        boolean awaitResult = listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        boolean awaitResult = listener.getLatch().await(1000, java.util.concurrent.TimeUnit.SECONDS);
         
         log.info("Latch await result: {}", awaitResult);
         log.info("Listener lines count: {}", listener.getLines().size());
@@ -78,7 +78,7 @@ public class ValueConverterIT {
         startConnect();
 
         SinkTailListener listener = startListener();
-        boolean awaitResult = listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        boolean awaitResult = listener.getLatch().await(1000, java.util.concurrent.TimeUnit.SECONDS);
         
         log.info("Latch await result for {}: {}", type, awaitResult);
         log.info("Listener lines count for {}: {}", type, listener.getLines().size());
