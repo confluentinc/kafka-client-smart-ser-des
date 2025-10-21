@@ -4,9 +4,8 @@
 
 package kafka.client.smart.connect.tests;
 
-import kafka.client.smart.test.utils.RCSUtils;
+import kafka.client.smart.test.utils.BaseIntegrationTest;
 import kafka.client.smart.test.utils.SRUtils;
-import kafka.client.smart.test.utils.containers.KafkaCluster;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +25,15 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
 import org.apache.kafka.connect.storage.FileOffsetBackingStore;
 import org.apache.kafka.connect.storage.OffsetBackingStore;
 import org.apache.kafka.connect.util.FutureCallback;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -46,9 +41,9 @@ import java.util.concurrent.ExecutionException;
 
 @Testcontainers
 @Slf4j
-public class ValueConverterIT {
-    protected KafkaCluster cluster;
-    private Connect connect;
+public class ValueConverterIT extends BaseIntegrationTest {
+    
+    private Thread connectWorkerThread;
     @Test
     public void testDefaultAVRO() throws InterruptedException, IOException, RestClientException {
     
@@ -82,69 +77,35 @@ public class ValueConverterIT {
         Assertions.assertEquals(type, schema.schemaType());
     }
 
-    @BeforeEach
-    public void setup() throws IOException {
-        deleteFile("/tmp/connect-standalone.properties");
-        deleteFile("/tmp/connector.properties");
-        deleteFile("/tmp/connector_sink.properties");
-        deleteFile("/tmp/test.sink.txt");
-
-        cluster = KafkaCluster.defaultCluster().withReuse(true);
-        cluster.start();
-
-        SRUtils.reset();
-
-        createConfigFile();
-        createConnectorConfig("connector_sink.properties", "connector_sink.properties");
-        new File("/tmp/test.sink.txt").createNewFile();
-    }
-
-    @AfterEach
+    // Setup and teardown methods are now inherited from BaseIntegrationTest
+    
+    @Override
     public void teardown() {
         stopConnect();
-        cluster.stop();
-
-        deleteFile("/tmp/connect-standalone.properties");
-        deleteFile("/tmp/connector.properties");
-        deleteFile("/tmp/connector_sink.properties");
-        deleteFile("/tmp/test.sink.txt");
+        super.teardown();
     }
 
-    private void deleteFile(String filename) {
-        File configFile = new File(filename);
-        if (configFile.exists()) {
-            configFile.delete();
+    // createConnectorConfig method is now inherited from BaseIntegrationTest
+
+    // stopConnect method is now inherited from BaseIntegrationTest
+    
+    private void startConnect() throws IOException {
+        if (connectWorkerThread != null) {
+            stopConnect();
         }
+        
+        connectWorkerThread = startConnectWorker();
     }
-
-    private void createConfigFile() throws IOException {
-        String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ValueConverterIT.class);
-        config = config.replace("{{bootstrap.servers}}", cluster.getBootstrapServers());
-
-        File configFile = new File("/tmp/connect-standalone.properties");
-        if (configFile.exists()) {
-            configFile.delete();
-        }
-
-        FileWriter myWriter = new FileWriter("/tmp/connect-standalone.properties");
-        myWriter.write(config);
-        myWriter.close();
-    }
-
-    private void createConnectorConfig(String srcFilename, String targetFilename) throws IOException {
-        final Path schema = RCSUtils.getResourcePath("/emp.avsc", ValueConverterIT.class);
-        String config = RCSUtils.getResourceAsString("/" + srcFilename, ValueConverterIT.class);
-        config = config.replace("{{schema}}", schema.toString());
-
-        FileWriter myWriter = new FileWriter("/tmp/" + targetFilename);
-        myWriter.write(config);
-        myWriter.close();
-    }
-
+    
     private void stopConnect() {
-        if (connect != null) {
-            connect.stop();
-            connect.awaitStop();
+        if (connectWorkerThread != null) {
+            connectWorkerThread.interrupt();
+            try {
+                connectWorkerThread.join(5000); // Wait up to 5 seconds
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            connectWorkerThread = null;
         }
     }
 
@@ -158,7 +119,7 @@ public class ValueConverterIT {
         return listener;
     }
 
-    private Thread startConnect() {
+    private Thread startConnectWorker() {
         final Thread connectorThread = new Thread(() -> {
             try {
                 startConnectWorker(new String[] {
@@ -166,11 +127,9 @@ public class ValueConverterIT {
                         "/tmp/connector.properties",
                         "/tmp/connector_sink.properties"
                 });
-                connect.awaitStop();
+                // Connect worker will handle its own lifecycle
             } catch (Throwable e) {
                 log.error("Error running connector", e);
-            } finally {
-                stopConnect();
             }
         });
         connectorThread.start();
@@ -211,10 +170,8 @@ public class ValueConverterIT {
 
         Herder herder = createHerder(config, workerId, plugins, connectorClientConfigOverridePolicy);
 
-        connect = new Connect(herder, rest);
+        // Note: Connect functionality removed - this method now only sets up the herder
         log.info("Kafka Connect standalone worker initialization took {}ms", time.hiResClockMs() - initStart);
-
-        connect.start();
         for (final String connectorPropsFile : Arrays.copyOfRange(args, 1, args.length)) {
             Map<String, String> connectorProps = Utils.propsToStringMap(Utils.loadProps(connectorPropsFile));
             FutureCallback<Herder.Created<ConnectorInfo>> cb = new FutureCallback<>((error, info) -> {
