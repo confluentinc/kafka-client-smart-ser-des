@@ -14,11 +14,11 @@ global_job_config:
       value: "-Dmaven.repo.local=.m2"
   prologue:
     commands:
-      - sem-version java 8
+      - sem-version java 17
       - checkout
       - make show-args
-      - . vault-setup
-      - . vault-sem-get-secret csid_aws_credentials
+      - ". vault-setup"
+      - ". vault-sem-get-secret csid_aws_credentials"
       - make init-ci
   epilogue:
     always:

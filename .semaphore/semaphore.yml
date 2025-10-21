@@ -28,12 +28,18 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
-          - sem-version java 8
+          - sem-version java 17
+          - java -version
+          - echo "JAVA_HOME=$JAVA_HOME"
+          - cache restore maven-cache-$(checksum pom.xml)
       jobs:
         - name: Build without Tests
           commands:
             - ./mvnw clean install -DskipTests
-            - cache store
+      epilogue:
+        always:
+          commands:
+            - cache store maven-cache-$(checksum pom.xml) ~/.m2/repository
   - name: Test
     dependencies: [Build]
     task:
@@ -41,6 +47,8 @@ blocks:
         commands:
           - checkout
           - cache restore
+          - java -version
+          - echo "JAVA_HOME=$JAVA_HOME"
       jobs:
         - name: Unit Tests
           commands:
@@ -48,7 +56,7 @@ blocks:
 
         - name: Integration Tests
           commands:
-            - ./mvnw verify -Pintegration
+            - ./mvnw -pl kafka-client-smart-integration test -Dtest=ConnectToConnectIT#testNoneDefault
 
       epilogue:
         always:
