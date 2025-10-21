@@ -30,31 +30,31 @@ public final class TypeDetectionService {
      * @return The corresponding SerializationTypes enum value
      */
     public static SerializationTypes detectFromClass(Class<?> tClass) {
-        if (tClass.isAssignableFrom(byte[].class)) {
+        if (byte[].class.isAssignableFrom(tClass)) {
             return SerializationTypes.ByteArray;
-        } else if (tClass.isAssignableFrom(Boolean.class)) {
+        } else if (Boolean.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Boolean;
-        } else if (tClass.isAssignableFrom(String.class)) {
+        } else if (String.class.isAssignableFrom(tClass)) {
             return SerializationTypes.String;
-        } else if (tClass.isAssignableFrom(Bytes.class)) {
+        } else if (Bytes.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Bytes;
-        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
+        } else if (ByteBuffer.class.isAssignableFrom(tClass)) {
             return SerializationTypes.ByteBuffer;
-        } else if (tClass.isAssignableFrom(Float.class)) {
+        } else if (Float.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Float;
-        } else if (tClass.isAssignableFrom(Double.class)) {
+        } else if (Double.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Double;
-        } else if (tClass.isAssignableFrom(Integer.class)) {
+        } else if (Integer.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Integer;
-        } else if (tClass.isAssignableFrom(Long.class)) {
+        } else if (Long.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Long;
-        } else if (tClass.isAssignableFrom(Short.class)) {
+        } else if (Short.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Short;
-        } else if (tClass.isAssignableFrom(UUID.class)) {
+        } else if (UUID.class.isAssignableFrom(tClass)) {
             return SerializationTypes.UUID;
-        } else if (tClass.isAssignableFrom(IndexedRecord.class)) {
+        } else if (IndexedRecord.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Avro;
-        } else if (tClass.isAssignableFrom(Message.class)) {
+        } else if (Message.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Protobuf;
         }
 

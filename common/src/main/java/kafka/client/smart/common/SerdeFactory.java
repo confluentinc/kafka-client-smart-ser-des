@@ -39,6 +39,9 @@ public final class SerdeFactory {
      */
     @SuppressWarnings("unchecked")
     public static <T> Serializer<T> createSerializer(SerializationTypes serializationType) {
+        if (serializationType == null) {
+            return new KafkaJsonSerializer<>();
+        }
         switch (serializationType) {
             case String:
                 log.info("String detected, using String serializer.");
@@ -101,6 +104,9 @@ public final class SerdeFactory {
      */
     @SuppressWarnings("unchecked")
     public static <T> Deserializer<T> createDeserializer(SerializationTypes serializationType, Supplier<SchemaRegistryClient> srSupplier) {
+        if (serializationType == null) {
+            return (Deserializer<T>) new ByteArrayDeserializer();
+        }
         switch (serializationType) {
             case Avro:
                 return (Deserializer<T>) new KafkaAvroDeserializer(srSupplier.get());
@@ -124,6 +130,8 @@ public final class SerdeFactory {
                 return (Deserializer<T>) new UUIDDeserializer();
             case String:
                 return (Deserializer<T>) new StringDeserializer();
+            case Boolean:
+                return (Deserializer<T>) new BooleanDeserializer();
             case Bytes:
                 return (Deserializer<T>) new BytesDeserializer();
             case ByteBuffer:

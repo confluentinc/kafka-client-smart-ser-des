@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.deserializer;
@@ -79,13 +79,14 @@ public class ConfluentDeserializerTest {
     public void testDeserializeBoolean(Class<?> clazz) {
         // Given
         Properties props = new Properties();
-        byte[] expected = new byte[]{(byte) (anyBoolean() ? 1 : 0)};
+        boolean expectedBoolean = anyBoolean();
+        byte[] expectedBytes = new byte[]{(byte) (expectedBoolean ? 1 : 0)};
 
         // When
-        Object actual = confluentDeserializer(props, false, expected, Boolean.class);
+        Object actual = confluentDeserializer(props, false, expectedBytes, Boolean.class);
 
         // Then
-        assertEquals(expected, actual);
+        assertEquals(expectedBoolean, actual);
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")
@@ -100,7 +101,18 @@ public class ConfluentDeserializerTest {
         Object actual = confluentDeserializer(props, false, expected, clazz);
 
         // Then
-        assertEquals(expected, actual);
+        if (clazz == null) {
+            // When clazz is null, type is detected from bytes
+            // Single byte [0] or [1] is detected as Boolean
+            if (expected.length == 1 && (expected[0] == 0x00 || expected[0] == 0x01)) {
+                assertEquals(expected[0] == 0x01, actual);
+            } else {
+                assertEquals(expected, actual);
+            }
+        } else {
+            // When clazz is byte[].class, expect the original byte array
+            assertEquals(expected, actual);
+        }
     }
 
     @ParameterizedTest(name = "#{index} - Run test with args={0}")

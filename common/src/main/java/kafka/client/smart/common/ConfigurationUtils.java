@@ -134,6 +134,9 @@ public final class ConfigurationUtils {
      * @return Configuration string with placeholders replaced
      */
     public static String replacePlaceholders(String config, Map<String, String> replacements) {
+        if (config == null) {
+            return null;
+        }
         String result = config;
         for (Map.Entry<String, String> entry : replacements.entrySet()) {
             result = result.replace(entry.getKey(), entry.getValue());
@@ -150,6 +153,9 @@ public final class ConfigurationUtils {
      * @return Configuration string with placeholder replaced
      */
     public static String replacePlaceholder(String config, String placeholder, String value) {
+        if (config == null) {
+            return null;
+        }
         return config.replace(placeholder, value);
     }
 
@@ -160,6 +166,9 @@ public final class ConfigurationUtils {
      * @return Map representation of the properties
      */
     public static Map<String, Object> propertiesToMap(Properties properties) {
+        if (properties == null) {
+            return new HashMap<>();
+        }
         Map<String, Object> map = new HashMap<>();
         properties.forEach((key, value) -> map.put(key.toString(), value));
         return map;
@@ -172,6 +181,9 @@ public final class ConfigurationUtils {
      * @return Properties object
      */
     public static Properties mapToProperties(Map<String, Object> map) {
+        if (map == null) {
+            return new Properties();
+        }
         Properties properties = new Properties();
         map.forEach((key, value) -> properties.setProperty(key, value.toString()));
         return properties;
@@ -186,6 +198,9 @@ public final class ConfigurationUtils {
      * @return The modified Properties object
      */
     public static Properties replaceInValues(Properties properties, String key, String value) {
+        if (properties == null) {
+            return new Properties();
+        }
         Properties result = new Properties();
         properties.forEach((k, v) -> {
             String newValue = v.toString().replace(key, value);
@@ -203,6 +218,9 @@ public final class ConfigurationUtils {
      * @return The Properties object for chaining
      */
     public static Properties withProperty(Properties properties, String key, String value) {
+        if (properties == null) {
+            return new Properties();
+        }
         properties.setProperty(key, value);
         return properties;
     }
