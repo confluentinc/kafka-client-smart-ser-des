@@ -30,26 +30,31 @@ public final class TypeDetectionService {
      * @return The corresponding SerializationTypes enum value
      */
     public static SerializationTypes detectFromClass(Class<?> tClass) {
-        if (byte[].class.isAssignableFrom(tClass)) {
-            return SerializationTypes.ByteArray;
-        } else if (Boolean.class.isAssignableFrom(tClass)) {
+        if (tClass == null) {
+            return SerializationTypes.JsonSchema;
+        }
+        
+        // Handle primitive types and their wrapper classes
+        if (tClass == boolean.class || Boolean.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Boolean;
+        } else if (tClass == int.class || Integer.class.isAssignableFrom(tClass)) {
+            return SerializationTypes.Integer;
+        } else if (tClass == long.class || Long.class.isAssignableFrom(tClass)) {
+            return SerializationTypes.Long;
+        } else if (tClass == float.class || Float.class.isAssignableFrom(tClass)) {
+            return SerializationTypes.Float;
+        } else if (tClass == double.class || Double.class.isAssignableFrom(tClass)) {
+            return SerializationTypes.Double;
+        } else if (tClass == short.class || Short.class.isAssignableFrom(tClass)) {
+            return SerializationTypes.Short;
+        } else if (byte[].class.isAssignableFrom(tClass)) {
+            return SerializationTypes.ByteArray;
         } else if (String.class.isAssignableFrom(tClass)) {
             return SerializationTypes.String;
         } else if (Bytes.class.isAssignableFrom(tClass)) {
             return SerializationTypes.Bytes;
         } else if (ByteBuffer.class.isAssignableFrom(tClass)) {
             return SerializationTypes.ByteBuffer;
-        } else if (Float.class.isAssignableFrom(tClass)) {
-            return SerializationTypes.Float;
-        } else if (Double.class.isAssignableFrom(tClass)) {
-            return SerializationTypes.Double;
-        } else if (Integer.class.isAssignableFrom(tClass)) {
-            return SerializationTypes.Integer;
-        } else if (Long.class.isAssignableFrom(tClass)) {
-            return SerializationTypes.Long;
-        } else if (Short.class.isAssignableFrom(tClass)) {
-            return SerializationTypes.Short;
         } else if (UUID.class.isAssignableFrom(tClass)) {
             return SerializationTypes.UUID;
         } else if (IndexedRecord.class.isAssignableFrom(tClass)) {
