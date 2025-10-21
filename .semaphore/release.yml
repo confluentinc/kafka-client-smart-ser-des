@@ -16,7 +16,9 @@ global_job_config:
       value: "-Dmaven.repo.local=.m2"
   prologue:
     commands:
-      - sem-version java 8
+      - JAVA_VERSION=$(cat .semaphore/java-version 2>/dev/null || echo "17")
+      - echo "Using Java version: $JAVA_VERSION"
+      - sem-version java $JAVA_VERSION
       - checkout
       - make show-args
       - . vault-setup
