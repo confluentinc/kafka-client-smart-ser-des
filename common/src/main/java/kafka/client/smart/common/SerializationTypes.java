@@ -1,23 +1,18 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.common;
 
-import com.google.protobuf.Message;
 import kafka.client.smart.common.schema.SchemaRegistryUtils;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.generic.IndexedRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
-import org.apache.kafka.common.utils.Bytes;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 /**
@@ -159,35 +154,7 @@ public enum SerializationTypes {
 
 
     public static SerializationTypes fromClass(Class<?> tClass) {
-        if (tClass.isAssignableFrom(byte[].class)) {
-            return ByteArray;
-        } else if (tClass.isAssignableFrom(Boolean.class)) {
-          return  Boolean;
-        } else if (tClass.isAssignableFrom(String.class)) {
-            return String;
-        } else if (tClass.isAssignableFrom(Bytes.class)) {
-            return Bytes;
-        } else if (tClass.isAssignableFrom(ByteBuffer.class)) {
-            return ByteBuffer;
-        } else if (tClass.isAssignableFrom(Float.class)) {
-            return Float;
-        } else if (tClass.isAssignableFrom(Double.class)) {
-            return Double;
-        } else if (tClass.isAssignableFrom(Integer.class)) {
-            return Integer;
-        } else if (tClass.isAssignableFrom(Long.class)) {
-            return Long;
-        } else if (tClass.isAssignableFrom(Short.class)) {
-            return Short;
-        } else if (tClass.isAssignableFrom(UUID.class)) {
-            return UUID;
-        } else if (tClass.isAssignableFrom(IndexedRecord.class)) {
-            return Avro;
-        } else if (tClass.isAssignableFrom(Message.class)) {
-            return Protobuf;
-        }
-
-        return JsonSchema;
+        return TypeDetectionService.detectFromClass(tClass);
     }
 
 
@@ -199,36 +166,6 @@ public enum SerializationTypes {
      * @return The serialization type
      */
     public static SerializationTypes fromClass(Object data, boolean srConfigured) {
-        if (data instanceof String) {
-            return SerializationTypes.String;
-        } else if (data instanceof Boolean) {
-            return SerializationTypes.Boolean;
-        } else if (data instanceof byte[]) {
-            return SerializationTypes.ByteArray;
-        } else if (data instanceof Short) {
-            return SerializationTypes.Short;
-        } else if (data instanceof Integer) {
-            return SerializationTypes.Integer;
-        } else if (data instanceof Long) {
-            return SerializationTypes.Long;
-        } else if (data instanceof Float) {
-            return SerializationTypes.Float;
-        } else if (data instanceof Double) {
-            return SerializationTypes.Double;
-        } else if (data instanceof Bytes) {
-            return SerializationTypes.Bytes;
-        } else if (data instanceof UUID) {
-            return SerializationTypes.UUID;
-        } else if (data instanceof ByteBuffer) {
-            return SerializationTypes.ByteBuffer;
-        } else if (data instanceof Message) {
-            return SerializationTypes.Protobuf;
-        } else if (data instanceof IndexedRecord) {
-            return SerializationTypes.Avro;
-        } else if (srConfigured) {
-            return SerializationTypes.JsonSchema;
-        } else {
-            return SerializationTypes.Json;
-        }
+        return TypeDetectionService.detectFromObject(data, srConfigured);
     }
 }

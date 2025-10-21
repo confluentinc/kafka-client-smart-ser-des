@@ -1,15 +1,12 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.deserializer.internal;
 
 import kafka.client.smart.common.SerializationTypes;
+import kafka.client.smart.common.SerdeFactory;
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
-import io.confluent.kafka.serializers.KafkaAvroDeserializer;
-import io.confluent.kafka.serializers.KafkaJsonDeserializer;
-import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
-import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.*;
@@ -63,37 +60,7 @@ public class ConfluentDeserializerInternal<T> implements Deserializer<T> {
      * @return The deserializer.
      */
     private Deserializer<?> getDeserializer(SerializationTypes serializationType, Supplier<SchemaRegistryClient> supplier) {
-        switch (serializationType) {
-            case Avro:
-                return new KafkaAvroDeserializer(supplier.get());
-            case Json:
-                return new KafkaJsonDeserializer<>();
-            case JsonSchema:
-                return new KafkaJsonSchemaDeserializer<>(supplier.get());
-            case Protobuf:
-                return new KafkaProtobufDeserializer<>(supplier.get());
-            case Long:
-                return new LongDeserializer();
-            case Integer:
-                return new IntegerDeserializer();
-            case Float:
-                return new FloatDeserializer();
-            case Double:
-                return new DoubleDeserializer();
-            case Short:
-                return new ShortDeserializer();
-            case UUID:
-                return new UUIDDeserializer();
-            case String:
-                return new StringDeserializer();
-            case Bytes:
-                return new BytesDeserializer();
-            case ByteBuffer:
-                return new ByteBufferDeserializer();
-            case ByteArray:
-            default:
-                return new ByteArrayDeserializer();
-        }
+        return SerdeFactory.createDeserializer(serializationType, supplier);
     }
 
 }

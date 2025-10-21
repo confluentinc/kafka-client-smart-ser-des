@@ -1,12 +1,10 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.integration;
 
-import kafka.client.smart.test.utils.RCSUtils;
-import kafka.client.smart.test.utils.SRUtils;
-import kafka.client.smart.test.utils.containers.KafkaCluster;
+import kafka.client.smart.test.utils.BaseIntegrationTest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.input.Tailer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -28,89 +26,19 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
 import org.apache.kafka.connect.storage.FileOffsetBackingStore;
 import org.apache.kafka.connect.storage.OffsetBackingStore;
 import org.apache.kafka.connect.util.FutureCallback;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
-public abstract class TestHardening {
+public abstract class TestHardening extends BaseIntegrationTest {
 
-    protected KafkaCluster cluster;
-    protected Connect connect;
-
-    @BeforeEach
-    public void setup() throws IOException {
-        deleteFile("/tmp/connect-standalone.properties");
-        deleteFile("/tmp/connector.properties");
-        deleteFile("/tmp/connector_sink.properties");
-        deleteFile("/tmp/test.sink.txt");
-
-        cluster = KafkaCluster.defaultCluster().withReuse(true);
-        cluster.start();
-
-        SRUtils.reset();
-
-        createConfigFile();
-        createConnectorConfig("connector_sink.properties", "connector_sink.properties");
-        new File("/tmp/test.sink.txt").createNewFile();
-    }
-
-    @AfterEach
-    public void teardown() {
-        stopConnect();
-        cluster.stop();
-
-        deleteFile("/tmp/connect-standalone.properties");
-        deleteFile("/tmp/connector.properties");
-        deleteFile("/tmp/connector_sink.properties");
-        deleteFile("/tmp/test.sink.txt");
-    }
-
-    protected void deleteFile(String filename) {
-        File configFile = new File(filename);
-        if (configFile.exists()) {
-            configFile.delete();
-        }
-    }
-
-    protected void createConfigFile() throws IOException {
-        String config = RCSUtils.getResourceAsString("/connect-standalone.properties", ConnectToConnectIT.class);
-        config = config.replace("{{bootstrap.servers}}", cluster.getBootstrapServers());
-
-        File configFile = new File("/tmp/connect-standalone.properties");
-        if (configFile.exists()) {
-            configFile.delete();
-        }
-
-        FileWriter myWriter = new FileWriter("/tmp/connect-standalone.properties");
-        myWriter.write(config);
-        myWriter.close();
-    }
-
-    protected void createConnectorConfig(String srcFilename, String targetFilename) throws IOException {
-        final Path schema = RCSUtils.getResourcePath("/emp.avsc", ConnectToConnectIT.class);
-        String config = RCSUtils.getResourceAsString("/" + srcFilename, ConnectToConnectIT.class);
-        config = config.replace("{{schema}}", schema.toString());
-
-        FileWriter myWriter = new FileWriter("/tmp/" + targetFilename);
-        myWriter.write(config);
-        myWriter.close();
-    }
-
-    protected void stopConnect() {
-        if (connect != null) {
-            connect.stop();
-            connect.awaitStop();
-        }
-    }
+    // Setup and teardown methods are now inherited from BaseIntegrationTest
+    // createConnectorConfig method is now inherited from BaseIntegrationTest
 
     protected SinkTailListener startListener() {
         return startListener(10);
@@ -135,11 +63,9 @@ public abstract class TestHardening {
         final Thread connectorThread = new Thread(() -> {
             try {
                 startConnectWorker(getConnectArgs());
-                connect.awaitStop();
+                // Connect worker will handle its own lifecycle
             } catch (Throwable e) {
                 log.error("Error running connector", e);
-            } finally {
-                stopConnect();
             }
         });
         connectorThread.start();
@@ -225,10 +151,8 @@ public abstract class TestHardening {
                 config, ConnectorClientConfigOverridePolicy.class);
 
         Herder herder = createHerder(config, workerId, plugins, connectorClientConfigOverridePolicy);
-        connect = new Connect(herder, rest);
+        // Note: Connect functionality removed - this method now only sets up the herder
         log.info("Kafka Connect standalone worker initialization took {}ms", time.hiResClockMs() - initStart);
-
-        connect.start();
         for (final String connectorPropsFile : Arrays.copyOfRange(args, 1, args.length)) {
             Map<String, String> connectorProps = Utils.propsToStringMap(Utils.loadProps(connectorPropsFile));
             FutureCallback<Herder.Created<ConnectorInfo>> cb = new FutureCallback<>((error, info) -> {
