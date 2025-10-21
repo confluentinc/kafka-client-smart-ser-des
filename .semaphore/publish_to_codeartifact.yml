@@ -14,7 +14,7 @@ global_job_config:
       value: "-Dmaven.repo.local=.m2"
   prologue:
     commands:
-      - sem-version java 8
+      - sem-version java 21
       - checkout
       - make show-args
       - . vault-setup
