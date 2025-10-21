@@ -26,29 +26,29 @@
         <confluent.connect.version>7.7.0</confluent.connect.version>
 
         <!--        External Dependencies-->
-        <avro.version>1.12.0</avro.version>
-        <commons-io.version>2.16.1</commons-io.version>
-        <commons-codec.version>1.17.1</commons-codec.version>
+        <avro.version>1.12.1</avro.version>
+        <commons-io.version>2.20.0</commons-io.version>
+        <commons-codec.version>1.19.0</commons-codec.version>
         <connect.version>7.7.0-ce</connect.version>
         <connect-file.version>7.7.0-ce</connect-file.version>
-        <junit-jupiter-version>5.10.3</junit-jupiter-version>
-        <junit-launcher.version>1.11.0</junit-launcher.version>
+        <junit-jupiter-version>5.14.0</junit-jupiter-version>
+        <junit-launcher.version>1.14.0</junit-launcher.version>
         <license.mode>format</license.mode>
-        <logback.version>1.5.13</logback.version>
-        <lombok.version>1.18.34</lombok.version>
+        <logback.version>1.5.20</logback.version>
+        <lombok.version>1.18.42</lombok.version>
         <kafka-clients-version>7.7.0-ce</kafka-clients-version>
-        <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
+        <kafka-connect-datagen.version>0.7.x-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.7.0</kafka-serializer-version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-failsafe-plugin.version>3.4.0</maven-failsafe-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
-        <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
-        <mockito-core.version>5.12.0</mockito-core.version>
-        <mycila.version>4.5</mycila.version>
-        <reactor-bom.version>2023.0.9</reactor-bom.version>
-        <slf4j.version>2.0.16</slf4j.version>
-        <testcontainers.version>1.20.1</testcontainers.version>
-        <license-maven-plugin.version>4.5</license-maven-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <mockito-core.version>5.20.0</mockito-core.version>
+        <mycila.version>4.6</mycila.version>
+        <reactor-bom.version>2023.0.19</reactor-bom.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
+        <license-maven-plugin.version>4.6</license-maven-plugin.version>
     </properties>
 
     <scm>
@@ -364,12 +364,12 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>3.25.5</version>
+                <version>3.25.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.18.0</version>
+                <version>3.19.0</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
@@ -379,27 +379,27 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>9.4.57.v20241219</version>
+                <version>9.4.58.v20250814</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.26.0</version>
+                <version>1.28.0</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec</artifactId>
-                <version>4.1.125.Final</version>
+                <version>4.2.7.Final</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-codec-http</artifactId>
-                <version>4.1.125.Final</version>
+                <version>4.2.7.Final</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-common</artifactId>
-                <version>4.1.118.Final</version>
+                <version>4.2.7.Final</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
