@@ -127,6 +127,11 @@ public abstract class TestHardening {
     }
 
     protected void startConnect() {
+        // Debug: Print all environment variables
+        log.info("=== Environment Variables ===");
+        System.getenv().forEach((k,v) -> log.info("{}={}", k, v));
+        log.info("=== End Environment Variables ===");
+        
         final Thread connectorThread = new Thread(() -> {
             try {
                 startConnectWorker(getConnectArgs());

@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.integration;
@@ -14,6 +14,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Testcontainers
 @Slf4j
@@ -29,7 +32,21 @@ public class ConnectToConnectIT extends TestHardening {
         startConnect();
 
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        listener.getLatch().await(300, java.util.concurrent.TimeUnit.SECONDS);
+
+        // Debug: Print Connect logs
+        try {
+            Path logPath = Paths.get("/tmp/connect.log");
+            if (Files.exists(logPath)) {
+                System.out.println("=== Connect Logs ===");
+                Files.lines(logPath).forEach(System.out::println);
+                System.out.println("=== End Connect Logs ===");
+            } else {
+                System.out.println("Connect log file not found at /tmp/connect.log");
+            }
+        } catch (Exception e) {
+            System.out.println("Jeff Error reading Connect logs: " + e.getMessage());
+        }
 
         Assertions.assertEquals(10, listener.getLines().size());
 

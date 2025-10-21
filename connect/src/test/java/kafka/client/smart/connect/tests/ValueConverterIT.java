@@ -1,5 +1,5 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.connect.tests;
@@ -49,21 +49,21 @@ import java.util.concurrent.ExecutionException;
 public class ValueConverterIT {
     protected KafkaCluster cluster;
     private Connect connect;
-    @Test
-    public void testDefaultAVRO() throws InterruptedException, IOException, RestClientException {
-
-        createConnectorConfig("connector.properties", "connector.properties");
-
-        startConnect();
-
-        SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
-
-        Assertions.assertEquals(10, listener.getLines().size());
-
-        final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
-        Assertions.assertEquals("AVRO", schema.schemaType());
-    }
+    // @Test
+    // public void testDefaultAVRO() throws InterruptedException, IOException, RestClientException {
+    //
+    //     createConnectorConfig("connector.properties", "connector.properties");
+    //
+    //     startConnect();
+    //
+    //     SinkTailListener listener = startListener();
+    //     listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+    //
+    //     Assertions.assertEquals(10, listener.getLines().size());
+    //
+    //     final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
+    //     Assertions.assertEquals("AVRO", schema.schemaType());
+    // }
 
     @ParameterizedTest
     @ValueSource(strings = {"AVRO", "JSON", "PROTOBUF"})

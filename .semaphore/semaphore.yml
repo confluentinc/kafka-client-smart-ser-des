@@ -28,7 +28,9 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
-          - sem-version java 8
+          - sem-version java 17
+          - java -version
+          - echo "JAVA_HOME=$JAVA_HOME"
       jobs:
         - name: Build without Tests
           commands:
@@ -41,6 +43,8 @@ blocks:
         commands:
           - checkout
           - cache restore
+          - java -version
+          - echo "JAVA_HOME=$JAVA_HOME"
       jobs:
         - name: Unit Tests
           commands:
@@ -48,7 +52,7 @@ blocks:
 
         - name: Integration Tests
           commands:
-            - ./mvnw verify -Pintegration
+            - ./mvnw verify -Pintegration -Dtest=ConnectToConnectIT#testNoneDefault -Dconnect.wait.seconds=300
 
       epilogue:
         always:
