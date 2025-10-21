@@ -6,12 +6,28 @@ This repository contains the smart serializer and deserializer for Apache KafkaÂ
 The smart serializer and deserializer allows for engineers to create consumers and producers without knowing the
 underlying stream contents.
 
-If a low dependency model is required is it recommended to review usage of required serializer and deserializer libraries as outlined [here](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html); as this repository includes all serializers and deserializers by default.
+If a low dependency model is required, it is recommended to review usage of required serializer and deserializer libraries as outlined [here](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html), as this repository includes all serializers and deserializers by default.
 
-## Table Of Content
+## Table of Contents
 
-- [Installation](#Installation)
-- [Supported data types](#Supported-data-types)
+- [Kafka Client Smart Serializer / Deserializer](#kafka-client-smart-serializer--deserializer)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Maven](#maven)
+    - [Producer](#producer)
+    - [Consumer](#consumer)
+  - [Supported data types](#supported-data-types)
+    - [SerializationTypes](#serializationtypes)
+  - [Contributing](#contributing)
+    - [Getting Started](#getting-started)
+    - [Development Setup](#development-setup)
+    - [Making Changes](#making-changes)
+    - [Submitting Changes](#submitting-changes)
+    - [Code Standards](#code-standards)
+    - [Types of Contributions](#types-of-contributions)
+    - [Questions or Issues?](#questions-or-issues)
+    - [Code of Conduct](#code-of-conduct)
 
 ## Installation
 
@@ -53,7 +69,7 @@ Kafka Producer Initialization
         new ConfluentSerializer<>(properties,false));
 ```
 ### Consumer
-Kafka Producer Initialization
+Kafka Consumer Initialization
 ```java
  try(KafkaConsumer<K, V> consumer=new KafkaConsumer<>(
         properties,
@@ -143,3 +159,92 @@ stateDiagram-v2
     }
 
 ```
+
+## Contributing
+
+We welcome contributions to the Kafka Client Smart Serializer/Deserializer project! Here's how you can get involved:
+
+### Getting Started
+
+1. **Clone your fork** locally:
+   ```
+   git clone https://github.com/your-username/kafka-client-smart-ser-des.git
+   cd kafka-client-smart-ser-des
+   ```
+
+### Development Setup
+
+1. **Install dependencies**:
+   ```
+   mvn clean install
+   ```
+
+2. **Run tests** to ensure everything works:
+   ```
+   mvn clean test
+   ```
+
+3. **Run integration tests** (if applicable):
+   ```
+   mvn verify
+   ```
+
+### Making Changes
+
+1. **Create a feature branch**:
+   ```
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make your changes** following these guidelines:
+   - Follow the existing code style and conventions
+   - Add appropriate unit tests for new functionality
+   - Update documentation as needed
+   - Ensure all tests pass
+
+3. **Commit your changes** with clear, descriptive commit messages:
+   ```
+   git add .
+   git commit -m "Add feature: brief description of changes"
+   ```
+
+### Submitting Changes
+
+1. **Push your branch** to your fork:
+   ```
+   git push origin feature/your-feature-name
+   ```
+
+2. **Create a Pull Request** on GitHub with:
+   - A clear title and description
+   - Reference to any related issues
+   - Screenshots or examples if applicable
+
+### Code Standards
+
+- **Java**: Follow standard Java conventions and the existing code style
+- **Testing**: Maintain or improve test coverage
+- **Documentation**: Update README and other docs as needed
+- **Backwards Compatibility**: Consider impact on existing users
+
+### Types of Contributions
+
+We welcome various types of contributions:
+
+-  **Bug fixes**
+-  **New features**
+-  **Documentation improvements**
+-  **Test enhancements**
+-  **Performance optimizations**
+-  **Code refactoring**
+
+### Questions or Issues?
+
+- **Bug reports**: Use GitHub Issues with detailed reproduction steps
+- **Feature requests**: Use GitHub Issues with clear use cases
+
+### Code of Conduct
+
+Please be respectful and constructive in all interactions. We aim to create a welcoming environment for all contributors.
+
+Thank you for contributing to the Kafka Client Smart Serializer/Deserializer project! 
