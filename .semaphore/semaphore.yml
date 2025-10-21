@@ -28,7 +28,8 @@ blocks:
           - chmod 700 ~/.m2/settings.xml
           - chmod 700 ~/.netrc
           - make docker-login-ci
-          - sem-version java 21
+          - JAVA_VERSION=$(cat .semaphore/java-version)
+          - sem-version java $JAVA_VERSION
       jobs:
         - name: Build without Tests
           commands:
