@@ -8,6 +8,8 @@ underlying stream contents.
 
 If a low dependency model is required, it is recommended to review usage of required serializer and deserializer libraries as outlined [here](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/index.html), as this repository includes all serializers and deserializers by default.
 
+Here is a talk from [Current 24](https://current.confluent.io/2024-sessions/simplifying-apache-kafka-r-easy-configurations-for-immediate-impact) where the library was presented.
+
 ## Table of Contents
 
 - [Kafka Client Smart Serializer / Deserializer](#kafka-client-smart-serializer--deserializer)
