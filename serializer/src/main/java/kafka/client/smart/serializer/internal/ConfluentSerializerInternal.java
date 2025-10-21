@@ -1,26 +1,19 @@
 /*-
- * Copyright (C) 2022-2024 Confluent, Inc.
+ * Copyright (C) 2022-2025 Confluent, Inc.
  */
 
 package kafka.client.smart.serializer.internal;
 
-import com.google.protobuf.Message;
 import kafka.client.smart.common.SerializationTypes;
+import kafka.client.smart.common.TypeDetectionService;
+import kafka.client.smart.common.SerdeFactory;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
-import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import io.confluent.kafka.serializers.KafkaJsonSerializer;
-import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
-import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.generic.IndexedRecord;
 import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.*;
-import org.apache.kafka.common.utils.Bytes;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * ConfluentSerializerInternal is a wrapper around the Confluent serializers.
@@ -82,96 +75,14 @@ public class ConfluentSerializerInternal<T> implements Serializer<T> {
             return;
         }
 
-        if (data instanceof String) {
-            type = SerializationTypes.String;
-        } else if (data instanceof Boolean) {
-            type = SerializationTypes.Boolean;
-        } else if (data instanceof byte[]) {
-            type = SerializationTypes.ByteArray;
-        } else if (data instanceof Short) {
-            type = SerializationTypes.Short;
-        } else if (data instanceof Integer) {
-            type = SerializationTypes.Integer;
-        } else if (data instanceof Long) {
-            type = SerializationTypes.Long;
-        } else if (data instanceof Float) {
-            type = SerializationTypes.Float;
-        } else if (data instanceof Double) {
-            type = SerializationTypes.Double;
-        } else if (data instanceof Bytes) {
-            type = SerializationTypes.Bytes;
-        } else if (data instanceof UUID) {
-            type = SerializationTypes.UUID;
-        } else if (data instanceof ByteBuffer) {
-            type = SerializationTypes.ByteBuffer;
-        } else if (data instanceof Message) {
-            type = SerializationTypes.Protobuf;
-        } else if (data instanceof IndexedRecord) {
-            type = SerializationTypes.Avro;
-        } else {
-            // Check if SR was configured
-            if (config.containsKey(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG)) {
-                type = SerializationTypes.JsonSchema;
-            } else {
-                type = SerializationTypes.Json;
-            }
-        }
+        boolean srConfigured = config.containsKey(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG);
+        type = TypeDetectionService.detectFromInstance(data, srConfigured);
 
         inner = getSerializerInstance(type);
         inner.configure(config, isKey);
     }
 
-    @SuppressWarnings("unchecked")
     protected Serializer<T> getSerializerInstance(SerializationTypes serializationTypes) {
-        switch (serializationTypes) {
-            case String:
-                log.info("String detected, using String serializer.");
-                return (Serializer<T>) new StringSerializer();
-            case Boolean:
-                log.info("Boolean detected, using Boolean serializer");
-                return (Serializer<T>) new BooleanSerializer();
-            case Bytes:
-                log.info("Bytes detected, using Bytes serializer.");
-                return (Serializer<T>) new BytesSerializer();
-            case ByteArray:
-                log.info("Byte array detected, using ByteArray serializer.");
-                return (Serializer<T>) new ByteArraySerializer();
-            case ByteBuffer:
-                log.info("ByteBuffer detected, using ByteBuffer serializer.");
-                return (Serializer<T>) new ByteBufferSerializer();
-            case Short:
-                log.info("Short detected, using Short serializer.");
-                return (Serializer<T>) new ShortSerializer();
-            case Integer:
-                log.info("Integer detected, using Integer serializer.");
-                return (Serializer<T>) new IntegerSerializer();
-            case Long:
-                log.info("Long detected, using Long serializer.");
-                return (Serializer<T>) new LongSerializer();
-            case Float:
-                log.info("Float detected, using Float serializer.");
-                return (Serializer<T>) new FloatSerializer();
-            case Double:
-                log.info("Double detected, using Double serializer.");
-                return (Serializer<T>) new DoubleSerializer();
-            case UUID:
-                log.info("UUID detected, using UUID serializer.");
-                return (Serializer<T>) new UUIDSerializer();
-            case Protobuf:
-                log.info("Protobuf message detected, using Protobuf serializer.");
-                return (Serializer<T>) new KafkaProtobufSerializer<>();
-            case Avro:
-                log.info("Avro record detected, using Avro serializer.");
-                return (Serializer<T>) new KafkaAvroSerializer();
-            case JsonSchema:
-                log.info("Schema Registry configured, using JSON Schema serializer.");
-                return new KafkaJsonSchemaSerializer<>();
-            default:
-            case Json:
-                log.warn("Schema Registry not configured, falling back to JSON schemaless serializer. " +
-                        "If you want to use JSON Schema, configure the serializer with the " +
-                        "appropriate key/value serializers and the " + AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG + " property.");
-                return new KafkaJsonSerializer<>();
-        }
+        return SerdeFactory.createSerializer(serializationTypes);
     }
 }
