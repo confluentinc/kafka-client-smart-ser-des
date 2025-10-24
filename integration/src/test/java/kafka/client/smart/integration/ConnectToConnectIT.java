@@ -34,19 +34,6 @@ public class ConnectToConnectIT extends TestHardening {
         SinkTailListener listener = startListener();
         listener.getLatch().await(300, java.util.concurrent.TimeUnit.SECONDS);
 
-        // Debug: Print Connect logs
-        try {
-            Path logPath = Paths.get("/tmp/connect.log");
-            if (Files.exists(logPath)) {
-                System.out.println("=== Connect Logs ===");
-                Files.lines(logPath).forEach(System.out::println);
-                System.out.println("=== End Connect Logs ===");
-            } else {
-                System.out.println("Connect log file not found at /tmp/connect.log");
-            }
-        } catch (Exception e) {
-            System.out.println("Jeff Error reading Connect logs: " + e.getMessage());
-        }
 
         Assertions.assertEquals(10, listener.getLines().size());
 
