@@ -10,6 +10,7 @@
         <groupId>io.confluent</groupId>
         <artifactId>kafka-client-smart-ser-des</artifactId>
         <version>1.0.9-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>kafka-client-smart-test-utils</artifactId>
@@ -19,7 +20,6 @@
         <assertj.version>3.26.0</assertj.version>
         <confluent.version>7.7.0</confluent.version>
         <kafka.version>${confluent.version}-ce</kafka.version>
-        <junit.version>6.0.0</junit.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -82,8 +82,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
