@@ -71,6 +71,11 @@
             </dependency>
             <dependency>
                 <groupId>io.confluent</groupId>
+                <artifactId>kafka-connect-avro-data</artifactId>
+                <version>${confluent.connect.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.confluent</groupId>
                 <artifactId>kafka-avro-serializer</artifactId>
                 <version>${kafka-serializer-version}</version>
             </dependency>
@@ -241,7 +246,7 @@
         <java.version>17</java.version>
         
         <!--        Confluent Dependencies-->
-        <confluent.connect.version>7.7.0</confluent.connect.version>
+        <confluent.connect.version>7.9.0</confluent.connect.version>
 
         <!--        External Dependencies-->
         <avro.version>1.12.0</avro.version>
@@ -254,7 +259,7 @@
         <license.mode>format</license.mode>
         <logback.version>1.5.19</logback.version>
         <lombok.version>1.18.34</lombok.version>
-        <kafka-clients-version>7.7.0-ce</kafka-clients-version>
+        <kafka-clients-version>7.9.0-ce</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
         <kafka-serializer-version>7.9.0</kafka-serializer-version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
