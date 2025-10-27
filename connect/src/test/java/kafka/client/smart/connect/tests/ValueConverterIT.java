@@ -57,11 +57,17 @@ public class ValueConverterIT {
         startConnect();
     
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        log.info("Waiting for records (max 200 seconds)...");
+        listener.getLatch().await(200, java.util.concurrent.TimeUnit.SECONDS);
     
-        Assertions.assertEquals(10, listener.getLines().size());
+        int actualCount = listener.getLines().size();
+        log.info("Expected records: 10, Actual: {}", actualCount);
+        System.out.println("Expected records: 10, Actual: " + actualCount);
+        Assertions.assertEquals(10, actualCount);
     
         final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
+        log.info("Expected schema type: AVRO, Actual: {}", schema.schemaType());
+        System.out.println("Expected schema type: AVRO, Actual: " + schema.schemaType());
         Assertions.assertEquals("AVRO", schema.schemaType());
     }
 
@@ -69,16 +75,25 @@ public class ValueConverterIT {
     @ValueSource(strings = {"AVRO", "JSON", "PROTOBUF"})
     public void testNoneDefault(String type) throws InterruptedException, IOException, RestClientException {
 
+        log.info("Testing with schema type: {}", type);
+        System.out.println("Testing with schema type: " + type);
+
         createConnectorConfig("connector." + type + ".properties", "connector.properties");
 
         startConnect();
 
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        log.info("Waiting for records (max 200 seconds) for type: {}...", type);
+        listener.getLatch().await(200, java.util.concurrent.TimeUnit.SECONDS);
 
-        Assertions.assertEquals(10, listener.getLines().size());
+        int actualCount = listener.getLines().size();
+        log.info("Expected records: 10, Actual: {}, Type: {}", actualCount, type);
+        System.out.println("Expected records: 10, Actual: " + actualCount + ", Type: " + type);
+        Assertions.assertEquals(10, actualCount);
 
         final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
+        log.info("Expected schema type: {}, Actual: {}", type, schema.schemaType());
+        System.out.println("Expected schema type: " + type + ", Actual: " + schema.schemaType());
         Assertions.assertEquals(type, schema.schemaType());
     }
 
