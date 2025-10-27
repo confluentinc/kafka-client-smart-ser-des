@@ -224,7 +224,7 @@
         <lombok.version>1.18.34</lombok.version>
         <kafka-clients-version>7.7.0-ce</kafka-clients-version>
         <kafka-connect-datagen.version>0.7.0-SNAPSHOT</kafka-connect-datagen.version>
-        <kafka-serializer-version>7.7.0</kafka-serializer-version>
+        <kafka-serializer-version>7.9.0</kafka-serializer-version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-failsafe-plugin.version>3.4.0</maven-failsafe-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
