@@ -26,6 +26,7 @@ import org.apache.kafka.connect.runtime.standalone.StandaloneHerder;
 import org.apache.kafka.connect.storage.FileOffsetBackingStore;
 import org.apache.kafka.connect.storage.OffsetBackingStore;
 import org.apache.kafka.connect.util.FutureCallback;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ExecutionException;
 
 @Testcontainers
@@ -51,17 +53,48 @@ public class ValueConverterIT {
     private Connect connect;
     @Test
     public void testDefaultAVRO() throws InterruptedException, IOException, RestClientException {
+        log.info("===== Starting testDefaultAVRO =====");
+        System.out.println("===== Starting testDefaultAVRO =====");
     
         createConnectorConfig("connector.properties", "connector.properties");
     
+        log.info("Starting Kafka Connect...");
+        System.out.println("Starting Kafka Connect...");
         startConnect();
+        
+        // Wait for Connect to be ready
+        log.info("Waiting for Kafka Connect to be ready...");
+        System.out.println("Waiting for Kafka Connect to be ready...");
+        Awaitility.await()
+            .atMost(30, TimeUnit.SECONDS)
+            .pollInterval(2, TimeUnit.SECONDS)
+            .until(() -> connect != null);
+        log.info("Kafka Connect is ready");
+        System.out.println("Kafka Connect is ready");
     
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        log.info("Waiting for records (max 200 seconds)...");
+        System.out.println("Waiting for records (max 200 seconds)...");
+        listener.getLatch().await(200, java.util.concurrent.TimeUnit.SECONDS);
     
-        Assertions.assertEquals(10, listener.getLines().size());
+        int actualCount = listener.getLines().size();
+        log.info("Expected records: 10, Actual: {}", actualCount);
+        System.out.println("Expected records: 10, Actual: " + actualCount);
+        
+        // Fail fast with clear message
+        if (actualCount == 0) {
+            System.err.println("ERROR: No records received! Check container logs and Kafka Connect status.");
+            log.error("No records received! Kafka cluster running: {}, Connect started: {}", 
+                cluster != null && cluster.isRunning(), connect != null);
+            printContainerLogs();
+        }
+        
+        Assertions.assertEquals(10, actualCount, 
+            String.format("Expected 10 records but got %d. Check Kafka Connect logs.", actualCount));
     
         final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
+        log.info("Expected schema type: AVRO, Actual: {}", schema.schemaType());
+        System.out.println("Expected schema type: AVRO, Actual: " + schema.schemaType());
         Assertions.assertEquals("AVRO", schema.schemaType());
     }
 
@@ -69,34 +102,78 @@ public class ValueConverterIT {
     @ValueSource(strings = {"AVRO", "JSON", "PROTOBUF"})
     public void testNoneDefault(String type) throws InterruptedException, IOException, RestClientException {
 
+        log.info("===== Starting testNoneDefault with type: {} =====", type);
+        System.out.println("===== Starting testNoneDefault with type: " + type + " =====");
+
         createConnectorConfig("connector." + type + ".properties", "connector.properties");
 
+        log.info("Starting Kafka Connect...");
+        System.out.println("Starting Kafka Connect...");
         startConnect();
+        
+        // Wait for Connect to be ready
+        log.info("Waiting for Kafka Connect to be ready...");
+        System.out.println("Waiting for Kafka Connect to be ready...");
+        Awaitility.await()
+            .atMost(30, TimeUnit.SECONDS)
+            .pollInterval(2, TimeUnit.SECONDS)
+            .until(() -> connect != null);
+        log.info("Kafka Connect is ready");
+        System.out.println("Kafka Connect is ready");
 
         SinkTailListener listener = startListener();
-        listener.getLatch().await(100, java.util.concurrent.TimeUnit.SECONDS);
+        log.info("Waiting for records (max 200 seconds) for type: {}...", type);
+        System.out.println("Waiting for records (max 200 seconds) for type: " + type + "...");
+        listener.getLatch().await(200, java.util.concurrent.TimeUnit.SECONDS);
 
-        Assertions.assertEquals(10, listener.getLines().size());
+        int actualCount = listener.getLines().size();
+        log.info("Expected records: 10, Actual: {}, Type: {}", actualCount, type);
+        System.out.println("Expected records: 10, Actual: " + actualCount + ", Type: " + type);
+        
+        // Fail fast with clear message
+        if (actualCount == 0) {
+            System.err.println("ERROR: No records received for type " + type + "! Check container logs and Kafka Connect status.");
+            log.error("No records received for type {}! Kafka cluster running: {}, Connect started: {}", 
+                type, cluster != null && cluster.isRunning(), connect != null);
+            printContainerLogs();
+        }
+        
+        Assertions.assertEquals(10, actualCount,
+            String.format("Expected 10 records but got %d for type %s. Check Kafka Connect logs.", actualCount, type));
 
         final ParsedSchema schema = SRUtils.getSRClient().getSchemaById(1);
+        log.info("Expected schema type: {}, Actual: {}", type, schema.schemaType());
+        System.out.println("Expected schema type: " + type + ", Actual: " + schema.schemaType());
         Assertions.assertEquals(type, schema.schemaType());
     }
 
     @BeforeEach
     public void setup() throws IOException {
+        log.info("===== Starting test setup =====");
+        System.out.println("===== Starting test setup =====");
+        
         deleteFile("/tmp/connect-standalone.properties");
         deleteFile("/tmp/connector.properties");
         deleteFile("/tmp/connector_sink.properties");
         deleteFile("/tmp/test.sink.txt");
 
+        log.info("Starting Kafka cluster with Testcontainers...");
+        System.out.println("Starting Kafka cluster with Testcontainers...");
         cluster = KafkaCluster.defaultCluster().withReuse(true);
         cluster.start();
+        log.info("Kafka cluster started. Bootstrap servers: {}", cluster.getBootstrapServers());
+        System.out.println("Kafka cluster started. Bootstrap servers: " + cluster.getBootstrapServers());
 
         SRUtils.reset();
+        log.info("Schema Registry utilities reset");
+        System.out.println("Schema Registry utilities reset");
 
         createConfigFile();
         createConnectorConfig("connector_sink.properties", "connector_sink.properties");
         new File("/tmp/test.sink.txt").createNewFile();
+        
+        log.info("===== Test setup completed =====");
+        System.out.println("===== Test setup completed =====");
     }
 
     @AfterEach
@@ -243,5 +320,24 @@ public class ValueConverterIT {
                 connectorClientConfigOverridePolicy);
 
         return new StandaloneHerder(worker, config.kafkaClusterId(), connectorClientConfigOverridePolicy);
+    }
+    
+    private void printContainerLogs() {
+        try {
+            log.info("===== Printing Container Logs =====");
+            System.out.println("===== Printing Container Logs =====");
+            
+            if (cluster != null) {
+                String containerLogs = cluster.getContainerLogs();
+                log.error("Kafka container logs: {}", containerLogs);
+                System.err.println("=== Kafka Container Logs ===");
+                System.err.println(containerLogs);
+            }
+            
+            System.out.println("===== End Container Logs =====");
+        } catch (Exception e) {
+            log.error("Failed to print container logs", e);
+            System.err.println("Failed to print container logs: " + e.getMessage());
+        }
     }
 }
