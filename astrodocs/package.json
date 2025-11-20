@@ -14,7 +14,7 @@
     "@astrojs/starlight": "^0.36.1",
     "@babel/helpers": "^7.26.10",
     "@pagefind/default-ui": "^1.1.1",
-    "astro": "^5.15.6",
+    "astro": "^5.15.9",
     "astro-robots-txt": "^1.0.0",
     "cookie": "^0.7.0",
     "cross-spawn": "^7.0.5",
