@@ -57,6 +57,10 @@ blocks:
           - echo "JAVA_HOME=$JAVA_HOME"
           - java -version
           - cache restore maven-cache-$(checksum pom.xml)
+          - echo "=== Docker Diagnostics ==="
+          - docker version || echo "Docker version check failed"
+          - docker ps -a || echo "Docker ps check failed"
+          - echo "=== End Docker Diagnostics ==="
       jobs:
         - name: Run All Tests
           commands:
