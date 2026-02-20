@@ -23,6 +23,11 @@ semaphore:
         - name: NEXT_PROJECT_VERSION
           required: true
           default_value: "X.Y.Z-SNAPSHOT"
+  managed_sections:
+    - version
+    - name
+    - agent
+    - global_job_config
 make:
   enable: true
   enable_updates: true
