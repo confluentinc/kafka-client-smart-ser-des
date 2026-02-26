@@ -217,8 +217,8 @@
         <commons-codec.version>1.17.1</commons-codec.version>
         <connect.version>7.7.0-ce</connect.version>
         <connect-file.version>7.7.0-ce</connect-file.version>
-        <junit-jupiter-version>5.10.3</junit-jupiter-version>
-        <junit-launcher.version>1.11.0</junit-launcher.version>
+        <junit-jupiter-version>6.0.1</junit-jupiter-version>
+        <junit-launcher.version>6.0.1</junit-launcher.version>
         <license.mode>format</license.mode>
         <logback.version>1.5.25</logback.version>
         <lombok.version>1.18.34</lombok.version>
@@ -233,7 +233,7 @@
         <mycila.version>4.5</mycila.version>
         <reactor-bom.version>2023.0.9</reactor-bom.version>
         <slf4j.version>2.0.16</slf4j.version>
-        <testcontainers.version>1.20.1</testcontainers.version>
+        <testcontainers.version>2.0.2</testcontainers.version>
         <license-maven-plugin.version>4.5</license-maven-plugin.version>
     </properties>
 
