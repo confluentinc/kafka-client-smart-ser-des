@@ -217,7 +217,7 @@
         <commons-codec.version>1.17.1</commons-codec.version>
         <connect.version>7.7.0-ce</connect.version>
         <connect-file.version>7.7.0-ce</connect-file.version>
-        <junit-jupiter-version>5.10.3</junit-jupiter-version>
+        <junit-jupiter-version>6.0.1</junit-jupiter-version>
         <junit-launcher.version>1.11.0</junit-launcher.version>
         <license.mode>format</license.mode>
         <logback.version>1.5.25</logback.version>
