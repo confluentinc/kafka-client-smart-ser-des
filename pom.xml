@@ -209,7 +209,7 @@
         <java.version>17</java.version>
         
         <!--        Confluent Dependencies-->
-        <confluent.connect.version>7.7.0</confluent.connect.version>
+        <confluent.connect.version>8.1.0</confluent.connect.version>
 
         <!--        External Dependencies-->
         <avro.version>1.12.0</avro.version>
