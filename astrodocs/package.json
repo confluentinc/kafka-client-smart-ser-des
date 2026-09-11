@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.36.1",
-    "@babel/helpers": "^7.26.10",
+    "@babel/helpers": "^8.0.0",
     "@pagefind/default-ui": "^1.1.1",
     "astro": "^5.18.1",
     "astro-robots-txt": "^1.0.0",
