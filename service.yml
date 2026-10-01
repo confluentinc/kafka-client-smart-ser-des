@@ -7,22 +7,20 @@ lang: java
 lang_version: unknown
 git:
   enable: true
-github:
-  enable: true
 semaphore:
   enable: true
   pipeline_enable: false
   tasks:
     - name: release
       branch: main
-      pipeline_file: ".semaphore/release.yml"
+      pipeline_file: .semaphore/release.yml
       parameters:
         - name: PROJECT_VERSION
           required: true
-          default_value: "X.Y.Z"
+          default_value: X.Y.Z
         - name: NEXT_PROJECT_VERSION
           required: true
-          default_value: "X.Y.Z-SNAPSHOT"
+          default_value: X.Y.Z-SNAPSHOT
   managed_sections:
     - version
     - name
